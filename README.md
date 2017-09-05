@@ -2,6 +2,6 @@
 Text to Music by Audiophile
 
 # What does T2M ?
-- Generieren von Musik aus Texten
-- Adaption der Stimmung des Textes
-- Durch komplexe Algorithmen werden harmonisch klingende Melodien generiert, die lyrische Meisterwerke musikalisch untermalen
+- Generates Music from Texts
+- Analyzes Mood 
+- Through complex algorithms harmonically sounding melodies are generated
