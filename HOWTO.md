@@ -32,5 +32,5 @@ When making a commit to the repository please adhere to the following instructio
        \- Changes as bullet points <br>
        \- Put space before and after the '-' character <br>
        \- Indent sub points with 4 spaces
-4. Click Commit
-5. Go to VCS -> Git -> Push... and click Push
+4. Click **Commit**
+5. Go to VCS -> Git -> Push... and click **Push**
