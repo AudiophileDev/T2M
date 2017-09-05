@@ -1,6 +1,6 @@
-# Text to Music (T2M)
+![Audiophile Logo](audiophile_logo.png)
+# Text to Music - Turn your article into music
 Text to Music by Audiophile
-
 # What does T2M do?
 - Generating music from texts
 - Analyzing different moods of the text
