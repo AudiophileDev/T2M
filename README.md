@@ -1,2 +1,2 @@
-# t2m
-Text to Music 
+# Text to Music (T2M)
+Text to Music by Audiophile
