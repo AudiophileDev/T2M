@@ -1,6 +1,7 @@
 package com.audiophile.t2m;
 
 import com.audiophile.t2m.text.TextAnalyser;
+import com.audiophile.t2m.text.TextReader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,21 +21,9 @@ public class Main {
         System.out.println("Starting T2M...");
         System.out.println("Input file: " + args[0]);
 
-        String inputFile = args[0],
-                fileContent;
-        try {
-            fileContent = readTxtFile(inputFile);
-        } catch (FileNotFoundException e) {
-            System.out.flush();
-            System.err.println(e.getMessage());
-            return;
-        } catch (IOException e) {
-            System.out.flush();
-            System.err.println("Error reading file \"" + inputFile + "\"");
-            return;
-        }
-
-        TextAnalyser analyizer = new TextAnalyser(fileContent);
+        String inputFile = args[0];
+        TextReader textReader = new TextReader(inputFile);
+        TextAnalyser analyizer = new TextAnalyser(textReader.getFileContent());
     }
 
     /**
@@ -53,27 +42,6 @@ public class Main {
                 throw new IllegalArgumentException("Argument " + (i + 1) + " is not a valid file name");
 
         //TODO Validate parameters
-    }
-
-    /**
-     * Reads a given txt file
-     *
-     * @param fileName String Path to the file
-     * @return String Plain File content
-     * @throws IOException Throws an error if the file was not found or could not be read
-     */
-    private static String readTxtFile(String fileName) throws IOException {
-        File file = new File(fileName);
-        if (!file.exists())
-            throw new FileNotFoundException("The file \"" + fileName + "\" does not exist");
-
-        FileInputStream stream = new FileInputStream(file);
-        byte[] data = new byte[(int) file.length()];
-        int fileLength = stream.read(data);
-        stream.close();
-
-        System.out.println("File length: " + fileLength + " bytes");
-        return new String(data, "UTF-8");
     }
 
     /**
