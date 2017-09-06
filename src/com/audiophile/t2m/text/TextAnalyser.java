@@ -2,7 +2,9 @@ package com.audiophile.t2m.text;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 /**
  * @author Simon
@@ -20,6 +22,7 @@ public class TextAnalyser {
 
     /**
      * Returns sentences as array
+     *
      * @return Sentence[] Sentences as array
      */
     public Sentence[] getSentences() {
@@ -42,9 +45,14 @@ public class TextAnalyser {
              start = end, end = iterator.next()) {
             String sentence = text.substring(start, end).trim();
             // Exclude empty sentences
-            if (sentence.length() > 0)
-                sentenceList.add(sentence);
+            if (sentence.length() > 0) {
+                Stream.of(sentence.split("\n"))
+                        .filter(s -> s.length() > 0)
+                        .forEach(sentenceList::add);
+            }
         }
+        sentenceList.trimToSize(); // Remove unused indices
+
         // Convert ArrayList to array
         String[] sentences = new String[sentenceList.size()];
         sentenceList.toArray(sentences);
