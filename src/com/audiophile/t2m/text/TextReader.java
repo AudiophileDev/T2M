@@ -17,11 +17,11 @@ public class TextReader {
         } catch (FileNotFoundException e) {
             System.out.flush();
             System.err.println(e.getMessage());
-            return;
+            System.exit(1);
         } catch (IOException e) {
             System.out.flush();
             System.err.println("Error reading file \"" + inputFile + "\"");
-            return;
+            System.exit(1);
         }
     }
 
