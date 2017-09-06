@@ -18,7 +18,7 @@ public class Sentence {
 
     public Sentence(String text) {
         analyse(text);
-        System.out.println("Sentence: wordCount:" + this.wordCount + "; avgWordLength: " + avgWordLength + "; sentenceType: " + sentenceType);
+        System.out.println("Sentence: wordCount:" + this.wordCount + "; avgWordLength: " + String.format("%.2f",avgWordLength) + "; sentenceType: " + sentenceType);
     }
 
     /**
