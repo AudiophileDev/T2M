@@ -5,9 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-/**
- * Created by Tobi on 06.09.2017.
- */
+
 public class TextReader {
     private String fileContent;
 
