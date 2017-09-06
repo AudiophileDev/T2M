@@ -51,15 +51,17 @@ public class Sentence {
             this.avgWordLength += this.wordLength[i];
         }
         this.wordCount = this.words.length; // Set number of words
-        this.avgWordLength /= (float)this.wordCount;
+        this.avgWordLength /= (float) this.wordCount;
 
-        // Define the sentence type by last word/character
-        this.sentenceType = mapSentenceType(words[wordCount - 1]);
-        // If mapping failed, try second last word (last word might be a quotation mark)
-        if (sentenceType == null && wordCount > 1) {
-            this.sentenceType = mapSentenceType(words[wordCount - 2]);
-            if (sentenceType == null)
-                this.sentenceType = SentenceType.Statement;
+        if (wordCount > 0) {
+            // Define the sentence type by last word/character
+            this.sentenceType = mapSentenceType(words[wordCount - 1]);
+            // If mapping failed, try second last word (last word might be a quotation mark)
+            if (sentenceType == null && wordCount > 1) {
+                this.sentenceType = mapSentenceType(words[wordCount - 2]);
+                if (sentenceType == null)
+                    this.sentenceType = SentenceType.Statement;
+            }
         }
     }
 
