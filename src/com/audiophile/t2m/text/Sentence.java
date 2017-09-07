@@ -18,7 +18,8 @@ public class Sentence {
 
     public Sentence(String text) {
         analyse(text);
-        System.out.println("Sentence: wordCount:" + this.wordCount + "; avgWordLength: " + String.format("%.2f",avgWordLength) + "; sentenceType: " + sentenceType);
+        if (this.wordCount != 0) //if is valid sentence (!= "\r" etc.)
+            System.out.println("Sentence: wordCount:" + this.wordCount + "; avgWordLength: " + String.format("%.2f", avgWordLength) + "; sentenceType: " + sentenceType);
     }
 
     /**
