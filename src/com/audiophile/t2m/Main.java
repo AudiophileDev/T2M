@@ -4,8 +4,6 @@ import com.audiophile.t2m.text.TextAnalyser;
 import com.audiophile.t2m.text.TextReader;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Main {
@@ -24,7 +22,7 @@ public class Main {
 
         String inputFile = args[0];
         TextReader textReader = new TextReader(inputFile);
-        TextAnalyser analyizer = new TextAnalyser(textReader.getFileContent());
+        TextAnalyser analyser = new TextAnalyser(textReader.getFileContent());
     }
 
     /**

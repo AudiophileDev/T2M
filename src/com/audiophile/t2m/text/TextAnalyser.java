@@ -1,8 +1,9 @@
 package com.audiophile.t2m.text;
 
+import com.audiophile.t2m.music.Generator;
+
 import java.text.BreakIterator;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Locale;
 import java.util.stream.Stream;
 
@@ -12,12 +13,17 @@ import java.util.stream.Stream;
  */
 public class TextAnalyser {
     private Sentence[] sentences;
+    private float[] avgWordLength;
 
     public TextAnalyser(String text) {
         String[] sentencesList = splitSentences(text);
         sentences = new Sentence[sentencesList.length];
-        for (int i = 0; i < sentences.length; i++)
-            sentences[i] = new Sentence(sentencesList[i]);
+        avgWordLength = new float[sentencesList.length];
+        for (int i = 0; i < sentences.length; i++) {
+            this.sentences[i] = new Sentence(sentencesList[i]);
+            this.avgWordLength[i] = sentences[i].getAvgWordLength();
+        }
+        Generator g = new Generator(avgWordLength);
     }
 
     /**
@@ -27,6 +33,15 @@ public class TextAnalyser {
      */
     public Sentence[] getSentences() {
         return sentences;
+    }
+
+    /**
+     * Returns average word length for further generation processes
+     *
+     * @return float[] average word length as array
+     */
+    public float[] getAvgWordLength() {
+        return avgWordLength;
     }
 
     /**
