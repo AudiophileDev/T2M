@@ -8,13 +8,20 @@ import java.util.Locale;
 import java.util.stream.Stream;
 
 /**
- * @author Simon
+ * @author Simon Niedermayr
  * Created on 05.09.2017.
  */
 public class TextAnalyser {
     private Sentence[] sentences;
     private float[] avgWordLength;
 
+    /**
+     * Creates a new <code>TextAnalyser</code>, which starts splitting the text into sentences and words.<br>
+     * Furthermore the average word length is calculated and each sentence is analysed individually.
+     *
+     * @param text text to be analysed as string
+     * @see com.audiophile.t2m.text.Sentence
+     */
     public TextAnalyser(String text) {
         String[] sentencesList = splitSentences(text);
         sentences = new Sentence[sentencesList.length];
@@ -29,7 +36,7 @@ public class TextAnalyser {
     /**
      * Returns sentences as array
      *
-     * @return Sentence[] Sentences as array
+     * @return Sentences as array
      */
     public Sentence[] getSentences() {
         return sentences;
@@ -38,17 +45,18 @@ public class TextAnalyser {
     /**
      * Returns average word length for further generation processes
      *
-     * @return float[] average word length as array
+     * @return average word length as array
      */
     public float[] getAvgWordLength() {
         return avgWordLength;
     }
 
     /**
-     * Splits string into sentences
+     * Splits string into sentences by line breaks and punctuation marks.
      *
-     * @param text String text
-     * @return String[] Sentences as string array
+     * @param text the text to be split
+     * @return Sentences as string array
+     * @see java.text.BreakIterator#getSentenceInstance(Locale)
      */
     private String[] splitSentences(String text) {
         BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.GERMAN);

@@ -1,9 +1,9 @@
 package com.audiophile.t2m;
 
+import com.audiophile.t2m.reader.FileReader;
 import com.audiophile.t2m.text.TextAnalyser;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
@@ -23,7 +23,7 @@ public class Main {
 
         String inputFile = args[0], fileContent="";
         try {
-            fileContent = readTxtFile(inputFile);
+            fileContent = FileReader.ReadPlainFile(inputFile);
         } catch (FileNotFoundException e) {
             System.out.flush();
             System.err.println(e.getMessage());
@@ -37,10 +37,11 @@ public class Main {
     }
 
     /**
-     * This methods validates the input arguments and makes sure the syntax is right
-     * Arguments: -[input file] -[output file]
+     * This methods validates the input arguments and makes sure the syntax is right <br>
+     * Arguments: -[input file] -[output file] <br>
+     * Example: article.txt "music/output.mp3"
      *
-     * @param args String[] Array of arguments
+     * @param args Array of arguments, which are validated
      */
     private static void validateArguments(String[] args) throws IllegalArgumentException {
         // Check if enough arguments were provided
@@ -55,10 +56,11 @@ public class Main {
     }
 
     /**
-     * Checks weather a file name is valid or not.
+     * Checks weather a file name is valid or not. <br>
      *
-     * @param file String Name of the File
+     * @param file Name of the file
      * @return Validity of the file name
+     * @see File#getCanonicalPath()
      */
     private static boolean isFilenameValid(String file) {
         File f = new File(file);
@@ -68,26 +70,5 @@ public class Main {
         } catch (IOException e) {
             return false;
         }
-    }
-
-    /**
-     * Reads a given txt file
-     *
-     * @param fileName String Path to the file
-     * @return String Plain File content
-     * @throws IOException Throws an error if the file was not found or could not be read
-     */
-    private static String readTxtFile(String fileName) throws IOException {
-        File file = new File(fileName);
-        if (!file.exists())
-            throw new FileNotFoundException("The file \"" + fileName + "\" does not exist");
-
-        FileInputStream stream = new FileInputStream(file);
-        byte[] data = new byte[(int) file.length()];
-        int fileLength = stream.read(data);
-        stream.close();
-
-        System.out.println("File length: " + fileLength + " bytes");
-        return new String(data, "UTF-8");
     }
 }
