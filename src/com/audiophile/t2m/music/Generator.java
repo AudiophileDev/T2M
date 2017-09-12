@@ -11,7 +11,7 @@ public class Generator {
         float ratio = (76 / min + 200 / max) / 2; //75 = lower bpm bound, 200=higher bpm bound
         for (Float f : avgWordLengths) {
             this.tempo.put(f, Math.round(f * ratio)); //temporary solution => real calculation will follow
-            System.out.println(String.format("%.2f", f) + "->" + tempo.get(f));
+            //System.out.println(String.format("%.2f", f) + "->" + tempo.get(f));
         }
     }
 
