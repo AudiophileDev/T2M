@@ -5,14 +5,13 @@ import com.audiophile.t2m.text.Sentence;
 import com.audiophile.t2m.text.TextAnalyser;
 import com.audiophile.t2m.text.WordsDB;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.embed.swing.SwingNode;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -20,13 +19,10 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import org.fxmisc.richtext.InlineCssTextArea;
 
-import javax.swing.*;
 import javax.swing.text.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.HashMap;
 
 public class Visualizer extends Application {
@@ -136,18 +132,22 @@ public class Visualizer extends Application {
             colorContainer.getChildren().add(box);
         });
 
-        SwingNode swingNode = (SwingNode) root.lookup("#textContainer");
+        //SwingNode swingNode = (SwingNode) root.lookup("#textContainer");
+        ScrollPane scrollPane = (javafx.scene.control.ScrollPane) root.lookup("#scrollContainer");
         TextField similarityField = (TextField) root.lookup("#similarityField");
         Slider similaritySlider = (Slider) root.lookup("#similaritySlider");
         similaritySlider.setValue(WordsDB.DEFAULT_IN_SIMILARITY);
         similarityField.setText(String.valueOf(WordsDB.DEFAULT_IN_SIMILARITY));
 
         DefaultStyledDocument document = new DefaultStyledDocument();
-        JTextPane textPane = new JTextPane(document);
+        //JTextPane textPane = new JTextPane(document);
+        InlineCssTextArea textArea = new InlineCssTextArea(text);
+        //textArea.setPre
+        scrollPane.setContent(textArea);
         //textPane.setSize(100,Short.MAX_VALUE);
-        swingNode.setContent(textPane);
-        textPane.setEditable(false);
-        textPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
+        //swingNode.setContent(textPane);
+        //textPane.setEditable(false);
+        //textPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
 
 
         StyleContext context = new StyleContext();
@@ -155,9 +155,9 @@ public class Visualizer extends Application {
         colorMapping.forEach((k, v) -> context.addStyle(k, null)
                 .addAttribute(StyleConstants.Foreground, new java.awt.Color((int) (v.getRed() * 255), (int) (v.getGreen() * 255), (int) (v.getBlue() * 255))));
 
-        updateDocument(document, context, similaritySlider.getValue());
-        textPane.setSize(200, 500);
-        textPane.validate();
+        //updateDocument(document, context, similaritySlider.getValue());
+        //textPane.setSize(200, 500);
+        //textPane.validate();
 
         //textPane.setPreferredSize(new Dimension(200,600));
 
@@ -165,7 +165,7 @@ public class Visualizer extends Application {
         Label databaseWord = (Label) root.lookup("#databaseWord");
 
         // Enable clicking on words
-        textPane.addMouseListener(new MouseAdapter() {
+        /*textPane.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
                 int pos = textPane.viewToModel(e.getPoint()); // Get index in text
@@ -181,7 +181,7 @@ public class Visualizer extends Application {
                         databaseWord.setText("-");
                 });
             }
-        });
+        });*/
 
         similaritySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             double value = ((int) (newValue.doubleValue() * 100)) / 100.0;
