@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="100.0" minWidth="100.0" prefHeight="400.0"
-            prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="100.0" minWidth="100.0" prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
     <top>
-        <FlowPane id="colorContainer" alignment="CENTER" columnHalignment="CENTER" hgap="10.0"
-                  maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" rowValignment="TOP"
-                  style="padd: 10;" vgap="10.0">
+        <FlowPane id="colorContainer" alignment="CENTER" columnHalignment="CENTER" hgap="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" rowValignment="TOP" style="padd: 10;" vgap="10.0">
             <padding>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </padding>
             <children>
                 <HBox spacing="5.0">
                     <children>
                         <Label style="-fx-background-color: lightgrey;" text="A">
                             <opaqueInsets>
-                                <Insets/>
+                                <Insets />
                             </opaqueInsets>
                             <padding>
-                                <Insets left="3.0" right="3.0"/>
+                                <Insets left="3.0" right="3.0" />
                             </padding>
                             <font>
-                                <Font name="System Bold" size="13.0"/>
+                                <Font name="System Bold" size="13.0" />
                             </font>
                         </Label>
-                        <Label text="Exclamation"/>
+                        <Label text="Exclamation" />
                     </children>
                 </HBox>
                 <HBox spacing="5.0">
                     <children>
                         <Label style="-fx-background-color: lightgrey;" text="A">
                             <font>
-                                <Font name="Arial Italic" size="13.0"/>
+                                <Font name="Arial Italic" size="13.0" />
                             </font>
                             <opaqueInsets>
-                                <Insets/>
+                                <Insets />
                             </opaqueInsets>
                             <padding>
-                                <Insets left="3.0" right="3.0"/>
+                                <Insets left="3.0" right="3.0" />
                             </padding>
                         </Label>
-                        <Label text="Question"/>
+                        <Label text="Question" />
                     </children>
                 </HBox>
             </children>
@@ -52,25 +52,22 @@
     <bottom>
         <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
             <children>
-                <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                      minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
+                <HBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
                     <children>
-                        <TextField id="wordField" editable="false"/>
-                        <Label text="Database:"/>
-                        <Label id="databaseWord" text="-"/>
+                        <TextField id="wordField" editable="false" />
+                        <Label text="Database:" />
+                        <Label id="databaseWord" text="-" />
                     </children>
                 </HBox>
-                <HBox alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0"
-                      HBox.hgrow="ALWAYS">
+                <HBox alignment="CENTER_RIGHT" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" HBox.hgrow="ALWAYS">
                     <children>
-                        <Label text="Similarity:"/>
+                        <Label text="Similarity:" />
                         <HBox alignment="CENTER">
                             <children>
-                                <Slider id="similaritySlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0"
-                                        minorTickCount="1" snapToTicks="true"/>
+                                <Slider id="similaritySlider" blockIncrement="0.1" majorTickUnit="0.1" max="1.0" minorTickCount="1" snapToTicks="true" />
                                 <TextField id="similarityField" prefHeight="10.0" prefWidth="50.0" text="0">
                                     <font>
-                                        <Font size="10.0"/>
+                                        <Font size="10.0" />
                                     </font>
                                 </TextField>
                             </children>
@@ -79,13 +76,11 @@
                 </HBox>
             </children>
             <padding>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
             </padding>
         </HBox>
     </bottom>
-    <center>
-        <ScrollPane id="scrollContainer" fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308"
-                    maxWidth="1.7976931348623157E308" minHeight="20.0" minWidth="100.0" pannable="true"
-                    prefHeight="300.0" prefWidth="400.0" BorderPane.alignment="CENTER"/>
-    </center>
+   <center>
+      <BorderPane id="scrollContainer" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+   </center>
 </BorderPane>

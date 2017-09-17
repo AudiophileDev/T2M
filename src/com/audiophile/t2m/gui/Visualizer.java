@@ -5,13 +5,13 @@ import com.audiophile.t2m.text.Sentence;
 import com.audiophile.t2m.text.TextAnalyser;
 import com.audiophile.t2m.text.WordsDB;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -19,10 +19,13 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.InlineCssTextArea;
 
-import javax.swing.text.*;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class Visualizer extends Application {
@@ -56,49 +59,45 @@ public class Visualizer extends Application {
     }
 
     //TODO do calculation in own thread and updated document when finished
-    private void updateDocument(DefaultStyledDocument document, StyleContext context, double minSimilarity) {
-        Style defaultStyle = context.addStyle("Default", null);
-        char[] punctuationMarks = new char[]{'.', '?', ',', '!', ';', '"', '\'',};
+    public void updateText(InlineCssTextArea textArea, double minSimilarity, HashMap<String, Color> colorMapping) {
+        //char[] punctuationMarks = new char[]{'.', '?', ',', '!', ';', '"', '\'',};
+        textArea.clear();
         try {
             int cursor = 0;
             for (Sentence s : analyser.getSentences()) {
-                Sentence.SentenceType type = s.getSentenceType();
                 String[] words = s.getWords();
                 for (int i = 0; i < words.length; i++) {
                     String w = words[i];
                     Pair<String, WordsDB.WordAttributes> attr = WordsDB.GetWordAttribute(w, minSimilarity);
-                    Style style = attr != null ? context.getStyle(attr.getValue().tendency.toString()) : defaultStyle;
-
-                    //word type highlighting
-                    switch (type) {
-                        case Question:
-                            style.addAttribute(StyleConstants.Background, new java.awt.Color(221, 221, 221));
-                            style.addAttribute(StyleConstants.Italic, true);
-                            break;
-                        case Exclamation:
-                            style.addAttribute(StyleConstants.Background, new java.awt.Color(221, 221, 221));
-                            style.addAttribute(StyleConstants.Bold, true);
-                            break;
-                        default:
-                            style.removeAttribute(StyleConstants.Italic);
-                            style.removeAttribute(StyleConstants.Bold);
-                            style.removeAttribute(StyleConstants.Background);
-                    }
                     wordIndex.put(cursor, new Pair<>(w, attr));
-                    document.insertString(cursor, w, style);
+                    textArea.insertText(cursor, w);
+                    int old = cursor;
                     cursor += w.length();
-                    if (!contains(punctuationMarks, words[Math.min(words.length - 1, i + 1)].charAt(0)) && i + 1 != words.length) {
-                        document.insertString(cursor, " ", style);
+                    if (attr != null) {
+                        Color c = colorMapping.get(attr.getValue().tendency.toString());
+                        System.out.println(colorToHex(c));
+                        textArea.setStyle(old, cursor, "-fx-fill: #" + colorToHex(c) + ";-fx-font-weight: bold;");
+                    }
+                    if (/*!contains(punctuationMarks, words[Math.min(words.length - 1, i + 1)].charAt(0)) &&*/ i + 1 != words.length) {
+                        textArea.insertText(cursor, " ");
+                        textArea.setStyle(cursor, cursor + 1, "");
                         cursor++;
                     }
                 }
-                document.insertString(cursor, "\n", null);
+                textArea.insertText(cursor, "\n");
                 cursor++;
             }
 
-        } catch (BadLocationException | IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String colorToHex(Color c) {
+        String red = Integer.toHexString((int) (c.getRed() * 255)),
+                green = Integer.toHexString((int) (c.getGreen() * 255)),
+                blue = Integer.toHexString((int) (c.getBlue() * 255));
+        return String.format("%2s%2s%2s", red, green, blue).replace(' ', '0');
     }
 
     @Override
@@ -132,37 +131,47 @@ public class Visualizer extends Application {
             colorContainer.getChildren().add(box);
         });
 
-        //SwingNode swingNode = (SwingNode) root.lookup("#textContainer");
-        ScrollPane scrollPane = (javafx.scene.control.ScrollPane) root.lookup("#scrollContainer");
+        BorderPane scrollContainer = (BorderPane) root.lookup("#scrollContainer");
         TextField similarityField = (TextField) root.lookup("#similarityField");
         Slider similaritySlider = (Slider) root.lookup("#similaritySlider");
         similaritySlider.setValue(WordsDB.DEFAULT_IN_SIMILARITY);
         similarityField.setText(String.valueOf(WordsDB.DEFAULT_IN_SIMILARITY));
 
-        DefaultStyledDocument document = new DefaultStyledDocument();
-        //JTextPane textPane = new JTextPane(document);
         InlineCssTextArea textArea = new InlineCssTextArea(text);
-        //textArea.setPre
-        scrollPane.setContent(textArea);
-        //textPane.setSize(100,Short.MAX_VALUE);
-        //swingNode.setContent(textPane);
-        //textPane.setEditable(false);
-        //textPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 0, 10));
-
+        VirtualizedScrollPane scrollPane1 = new VirtualizedScrollPane<>(textArea);
+        textArea.setWrapText(true);
+        textArea.setEditable(false);
+        scrollContainer.setCenter(scrollPane1);
 
         StyleContext context = new StyleContext();
 
         colorMapping.forEach((k, v) -> context.addStyle(k, null)
                 .addAttribute(StyleConstants.Foreground, new java.awt.Color((int) (v.getRed() * 255), (int) (v.getGreen() * 255), (int) (v.getBlue() * 255))));
 
+        updateText(textArea, similaritySlider.getValue(), colorMapping);
         //updateDocument(document, context, similaritySlider.getValue());
         //textPane.setSize(200, 500);
         //textPane.validate();
 
         //textPane.setPreferredSize(new Dimension(200,600));
 
+
         TextField wordField = (TextField) root.lookup("#wordField");
         Label databaseWord = (Label) root.lookup("#databaseWord");
+        textArea.setOnMouseReleased(event -> {
+            int pos = textArea.getCaretPosition();
+            // Get next last word where index is lower than pos
+            int index = wordIndex.keySet().stream().filter(k -> k < pos).max(Comparator.comparingInt(v -> v)).orElse(0);
+            wordField.setText(wordIndex.get(index).getKey());
+            Pair<String, WordsDB.WordAttributes> p = wordIndex.get(index).getValue();
+            // Update later to avoid thread problems
+            Platform.runLater(() -> {
+                if (p != null)
+                    databaseWord.setText(p.getKey());
+                else
+                    databaseWord.setText("-");
+            });
+        });
 
         // Enable clicking on words
         /*textPane.addMouseListener(new MouseAdapter() {
@@ -192,7 +201,7 @@ public class Visualizer extends Application {
             if (!newValue.matches("\\d{0,7}([.]\\d{0,4})?")) {
                 similarityField.setText(oldValue);
             } else {
-                updateDocument(document, context, similaritySlider.getValue());
+                updateText(textArea, similaritySlider.getValue(), colorMapping);
             }
         });
         similarityField.focusedProperty().addListener((observable, oldValue, newValue) -> {
