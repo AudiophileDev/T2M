@@ -1,5 +1,7 @@
 package com.audiophile.t2m;
 
+import com.audiophile.t2m.MusicGenerator.Merger;
+import com.audiophile.t2m.MusicGenerator.Tempo;
 import com.audiophile.t2m.text.TextAnalyser;
 import com.audiophile.t2m.text.TextReader;
 
@@ -23,6 +25,7 @@ public class Main {
         String inputFile = args[0];
         TextReader textReader = new TextReader(inputFile);
         TextAnalyser analyser = new TextAnalyser(textReader.getFileContent());
+        Merger merger = new Merger(new Tempo(analyser.getAvgWordLength()));
     }
 
     /**
