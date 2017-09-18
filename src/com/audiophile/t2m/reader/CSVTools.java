@@ -1,5 +1,7 @@
 package com.audiophile.t2m.reader;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +10,7 @@ import java.util.List;
  * @author Simon Niedermayr
  * Created on 12.09.2017
  */
-public class CSVReader {
+public class CSVTools {
 
     // Default split characters for csv files
     private static final char DEFAULT_SEPARATOR = ',';
@@ -140,5 +142,29 @@ public class CSVReader {
         String[] array = new String[result.size()];
         result.toArray(array);
         return array;
+    }
+
+    //TODO doc
+    public static void WriteFile(String fileName, String[][] content) throws IOException {
+        File file = new File(fileName);
+        if (!file.exists() && file.createNewFile())
+            return;
+
+        StringBuilder builder = new StringBuilder();
+        for (String[] line : content) {
+            for (int i = 0; i < line.length; i++) {
+                String cell = line[i];
+                if (cell != null) {
+                    builder.append(DEFAULT_QUOTE);
+                    builder.append(cell);
+                    builder.append(DEFAULT_QUOTE);
+                }
+                builder.append(i == line.length - 1 ? "" : DEFAULT_SEPARATOR);
+            }
+            builder.append("\n");
+        }
+        FileWriter writer = new FileWriter(fileName);
+        writer.write(builder.toString());
+        writer.close();
     }
 }

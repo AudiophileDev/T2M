@@ -11,6 +11,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
@@ -75,7 +76,6 @@ public class Visualizer extends Application {
                     cursor += w.length();
                     if (attr != null) {
                         Color c = colorMapping.get(attr.getValue().tendency.toString());
-                        System.out.println(colorToHex(c));
                         textArea.setStyle(old, cursor, "-fx-fill: #" + colorToHex(c) + ";-fx-font-weight: bold;");
                     }
                     if (/*!contains(punctuationMarks, words[Math.min(words.length - 1, i + 1)].charAt(0)) &&*/ i + 1 != words.length) {
@@ -133,8 +133,6 @@ public class Visualizer extends Application {
 
         BorderPane scrollContainer = (BorderPane) root.lookup("#scrollContainer");
         TextField similarityField = (TextField) root.lookup("#similarityField");
-        Slider similaritySlider = (Slider) root.lookup("#similaritySlider");
-        similaritySlider.setValue(WordsDB.DEFAULT_IN_SIMILARITY);
         similarityField.setText(String.valueOf(WordsDB.DEFAULT_IN_SIMILARITY));
 
         InlineCssTextArea textArea = new InlineCssTextArea(text);
@@ -148,70 +146,102 @@ public class Visualizer extends Application {
         colorMapping.forEach((k, v) -> context.addStyle(k, null)
                 .addAttribute(StyleConstants.Foreground, new java.awt.Color((int) (v.getRed() * 255), (int) (v.getGreen() * 255), (int) (v.getBlue() * 255))));
 
-        updateText(textArea, similaritySlider.getValue(), colorMapping);
-        //updateDocument(document, context, similaritySlider.getValue());
-        //textPane.setSize(200, 500);
-        //textPane.validate();
-
-        //textPane.setPreferredSize(new Dimension(200,600));
+        updateText(textArea, Double.parseDouble(similarityField.getText()), colorMapping);
 
 
-        TextField wordField = (TextField) root.lookup("#wordField");
-        Label databaseWord = (Label) root.lookup("#databaseWord");
+        Label wordLabel = (Label) root.lookup("#wordLabel");
+        TextField databaseWordField = (TextField) root.lookup("#databaseWord");
+        Button updateButton = (Button) root.lookup("#updateButton");
+        Slider tendencySlider = (Slider) root.lookup("#tendencySlider");
+        TextField effectField = (TextField) root.lookup("#effectField");
+
+        final Pair<String, WordsDB.WordAttributes>[] databaseWord = new Pair[1];
         textArea.setOnMouseReleased(event -> {
             int pos = textArea.getCaretPosition();
             // Get next last word where index is lower than pos
             int index = wordIndex.keySet().stream().filter(k -> k < pos).max(Comparator.comparingInt(v -> v)).orElse(0);
-            wordField.setText(wordIndex.get(index).getKey());
+            String selected = wordIndex.get(index).getKey();
             Pair<String, WordsDB.WordAttributes> p = wordIndex.get(index).getValue();
+            databaseWord[0] = p;
             // Update later to avoid thread problems
             Platform.runLater(() -> {
-                if (p != null)
-                    databaseWord.setText(p.getKey());
-                else
-                    databaseWord.setText("-");
+                wordLabel.setText(selected);
+                if (p != null) {
+                    databaseWordField.setText(p.getKey());
+                    updateButton.setText("Remove");
+                    tendencySlider.setValue(p.getValue().tendency.ordinal());
+                    effectField.setText(p.getValue().effect);
+
+                } else {
+                    databaseWordField.setText(selected);
+                    updateButton.setText("Add");
+                    tendencySlider.setValue(2);
+                }
             });
         });
 
         // Enable clicking on words
-        /*textPane.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent e) {
-                int pos = textPane.viewToModel(e.getPoint()); // Get index in text
-                // Get next last word where index is lower than pos
-                int index = wordIndex.keySet().stream().filter(k -> k < pos).max(Comparator.comparingInt(v -> v)).orElse(0);
-                wordField.setText(wordIndex.get(index).getKey());
-                Pair<String, WordsDB.WordAttributes> p = wordIndex.get(index).getValue();
-                // Update later to avoid thread problems
-                Platform.runLater(() -> {
-                    if (p != null)
-                        databaseWord.setText(p.getKey());
-                    else
-                        databaseWord.setText("-");
-                });
-            }
-        });*/
 
-        similaritySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            double value = ((int) (newValue.doubleValue() * 100)) / 100.0;
-            similarityField.setText(value + "");
-            similaritySlider.setValue(value);
+
+        tendencySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (databaseWord[0] == null)
+                updateButton.setText("Add");
+            else if (databaseWord[0].getValue().tendency.ordinal() != newValue.intValue())
+                updateButton.setText("Update");
+            else
+                updateButton.setText("Remove");
         });
+
+
+        databaseWordField.textProperty().addListener((observable, oldValue, newValue) -> {
+            updateButton.setDisable(newValue.length() == 0);
+            updateButton.setText(newValue.equals(databaseWord[0]) ? "Remove" : "Add");
+        });
+
         similarityField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d{0,7}([.]\\d{0,4})?")) {
+            if (!newValue.matches("\\d{0,7}([.]\\d{0,4})?"))
                 similarityField.setText(oldValue);
-            } else {
-                updateText(textArea, similaritySlider.getValue(), colorMapping);
-            }
         });
         similarityField.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue)
-                similaritySlider.setValue(Double.parseDouble(similarityField.getText()));
+                updateText(textArea, Double.parseDouble(similarityField.getText()), colorMapping);
         });
+
         similarityField.setOnKeyReleased(event -> {
             if (event.getCode() == KeyCode.ENTER)
                 root.requestFocus();
         });
+
+        updateButton.onActionProperty().setValue(event -> {
+            String value = updateButton.getText();
+            switch (value) {
+                case "Update":
+                case "Add":
+                    try {
+                        WordsDB.setWord(databaseWordField.getText(),
+                                new WordsDB.WordAttributes(
+                                        WordsDB.WordTendency.map(String.valueOf((int) tendencySlider.getValue())),
+                                        effectField.getText()));
+                        updateButton.setText("Remove");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "Remove":
+                    try {
+                        WordsDB.removeWord(databaseWordField.getText());
+                        updateButton.setText("Add");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    System.err.println("Error processing database method \"" + value + "\"");
+                    return;
+            }
+            updateText(textArea, Double.parseDouble(similarityField.getText()), colorMapping);
+        });
+
     }
 
 }
