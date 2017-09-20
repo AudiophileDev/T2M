@@ -1,4 +1,4 @@
-package com.audiophile.t2m.MusicGenerator;
+package com.audiophile.t2m.musicGenerator;
 
 import java.util.HashMap;
 

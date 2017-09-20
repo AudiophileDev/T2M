@@ -1,4 +1,4 @@
-package com.audiophile.t2m.MusicGenerator;
+package com.audiophile.t2m.musicGenerator;
 
 import javax.sound.midi.Sequence;
 
