@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 /**
+ * A class that represents a sentence in a text and holds it meta data and analytics values.
  * @author Simon
  * Created on 05.09.2017.
  */
@@ -16,16 +17,27 @@ public class Sentence {
     private int[] wordLength; // Length of every word
     private String[] words; // All words in the sentence as array
 
+    /**
+     * Creates a <code>Sentence</code> and analyses it.
+     *
+     * @param text sentence as text
+     * @see #analyse(String)
+     */
     public Sentence(String text) {
         analyse(text);
-        if (this.wordCount != 0) //if is valid sentence (!= "\r" etc.)
-            System.out.println("Sentence: wordCount:" + this.wordCount + "; avgWordLength: " + String.format("%.2f", avgWordLength) + "; sentenceType: " + sentenceType);
     }
 
     /**
-     * Analyses the sentence and calculates the meta data of the sentence
+     * Analyses the sentence and calculates the meta data of the sentence. <br>
+     * Therefore the given sentence is first split into words and the following values are calculated:
+     * <ul>
+     *     <li><code>SentenceType</code></li>
+     *     <li>word count</li>
+     *     <li>average word length</li>
+     *     <li>word length for every word</li>
+     * </ul>
      *
-     * @param text String The sentence as plain text
+     * @param text The sentence as plain text
      */
     private void analyse(String text) {
         // Breaking sentence into words
@@ -66,6 +78,12 @@ public class Sentence {
         }
     }
 
+    /**
+     * Maps a character to a valid <code>SentenceType</code>
+     *
+     * @param character character to be mapped
+     * @return <code>SentenceType</code> of the sentence
+     */
     private SentenceType mapSentenceType(String character) {
         switch (character) {
             case "?":

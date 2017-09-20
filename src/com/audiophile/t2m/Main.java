@@ -1,39 +1,85 @@
 package com.audiophile.t2m;
 
+import com.audiophile.t2m.reader.FileReader;
 import com.audiophile.t2m.musicGenerator.Merger;
 import com.audiophile.t2m.musicGenerator.Tempo;
 import com.audiophile.t2m.text.TextAnalyser;
-import com.audiophile.t2m.text.TextReader;
+import com.audiophile.t2m.text.WordsDB;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Main {
+
     public static void main(String[] args) {
-        System.out.println("Hello World!");
-        try {
-            validateArguments(args);
-        } catch (IllegalArgumentException e) {
-            // Flush out stream to ensure messages have the right order in the console
-            System.out.flush();
-            System.err.println(e.getMessage());
+        long startTime = System.currentTimeMillis();
+
+        if (!checkArguments(args))
             return;
-        }
+
         System.out.println("Starting T2M...");
+        System.out.println("Loading word database");
+
+        if (!loadDatabase("wordsDB.csv"))
+            return;
+
         System.out.println("Input file: " + args[0]);
 
-        String inputFile = args[0];
-        TextReader textReader = new TextReader(inputFile);
-        TextAnalyser analyser = new TextAnalyser(textReader.getFileContent());
+        StringBuffer buffer = new StringBuffer();
+        if (!loadTextFile(args[0], buffer))
+            return;
+
+        TextAnalyser analyser = new TextAnalyser(buffer.toString());
         Merger merger = new Merger(new Tempo(analyser.getAvgWordLength()));
-        //TODO add all parameters to merger constructor
+        long endTime = System.currentTimeMillis();
+        System.out.println("Text analyze finished in " + (endTime - startTime) + "ms");
+    }
+
+    public static boolean loadDatabase(String file) {
+        try {
+            WordsDB.loadDB(file);
+            return true;
+        } catch (IOException e) {
+            System.out.flush();
+            System.err.println(e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean checkArguments(String[] args) {
+        try {
+            validateArguments(args);
+            return true;
+        } catch (IllegalArgumentException e) {
+            System.out.flush();
+            System.err.println(e.getMessage());
+            return false;
+        }
+
+    }
+
+    public static boolean loadTextFile(String file, StringBuffer buffer) {
+        try {
+            buffer.append(FileReader.ReadPlainFile(file));
+            return true;
+        } catch (FileNotFoundException e) {
+            System.out.flush();
+            System.err.println(e.getMessage());
+            return false;
+        } catch (IOException e) {
+            System.out.flush();
+            System.err.println("Error reading file \"" + file + "\"");
+            return false;
+        }
     }
 
     /**
-     * This methods validates the input arguments and makes sure the syntax is right
-     * Arguments: -[input file] -[output file]
+     * This methods validates the input arguments and makes sure the syntax is right <br>
+     * Arguments: -[input file] -[output file] <br>
+     * Example: article.txt "music/output.mp3"
      *
-     * @param args String[] Array of arguments
+     * @param args Array of arguments, which are validated
      */
     private static void validateArguments(String[] args) throws IllegalArgumentException {
         // Check if enough arguments were provided
@@ -48,10 +94,11 @@ public class Main {
     }
 
     /**
-     * Checks weather a file name is valid or not.
+     * Checks weather a file name is valid or not. <br>
      *
-     * @param file String Name of the File
+     * @param file Name of the file
      * @return Validity of the file name
+     * @see File#getCanonicalPath()
      */
     private static boolean isFilenameValid(String file) {
         File f = new File(file);
