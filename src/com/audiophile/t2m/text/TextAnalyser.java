@@ -28,7 +28,8 @@ public class TextAnalyser {
         avgWordLength = new float[sentencesList.length];
         for (int i = 0; i < sentences.length; i++) {
             this.sentences[i] = new Sentence(sentencesList[i]);
-            this.avgWordLength[i] = sentences[i].getAvgWordLength();
+            float avg = sentences[i].getAvgWordLength();
+            this.avgWordLength[i] = Float.isFinite(avg)?avg:0;
         }
         Generator g = new Generator(avgWordLength);
     }
@@ -70,7 +71,7 @@ public class TextAnalyser {
             // Exclude empty sentences
             if (sentence.length() > 0) {
                 Stream.of(sentence.split("\n"))
-                        .filter(s -> s.length() > 0)
+                        .filter(s -> s.length() > 0 && !s.equals("\r"))
                         .forEach(sentenceList::add);
             }
         }

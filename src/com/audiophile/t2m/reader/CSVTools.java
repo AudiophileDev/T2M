@@ -30,6 +30,8 @@ public class CSVTools {
      */
     public static String[][] ReadFile(String fileName) throws IOException {
         String content = FileReader.ReadPlainFile(fileName);
+        if (content.isEmpty())
+            return new String[0][0];
         String[][] table = null;
         String[] lines = content.split("\n");
         for (int i = 0; i < lines.length; i++) {

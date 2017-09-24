@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+
+<SplitPane dividerPositions="0.8" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <items>
+      <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="100.0" minWidth="200.0" prefHeight="700.0" prefWidth="700.0">
+         <bottom>
+            <GridPane hgap="10.0" vgap="5.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label id="wordLabel" prefWidth="150.0" text="-" />
+                  <Label text="Database:" GridPane.columnIndex="1" />
+                  <Button id="updateButton" disable="true" mnemonicParsing="false" text="Add" GridPane.columnIndex="4" />
+                  <Label text="Similarity:" GridPane.columnIndex="5" />
+                  <TextField id="similarityField" prefHeight="10.0" prefWidth="50.0" text="0" GridPane.columnIndex="6">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                  </TextField>
+                  <Slider id="tendencySlider" blockIncrement="1.0" majorTickUnit="1.0" max="4.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="2.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <TextField id="databaseWord" prefWidth="150.0" promptText="Word" GridPane.columnIndex="2" />
+                  <TextField id="effectField" prefWidth="80.0" promptText="Effekt" GridPane.columnIndex="3" />
+               </children>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="NEVER" />
+                  <ColumnConstraints hgrow="NEVER" />
+                  <ColumnConstraints hgrow="NEVER" />
+                  <ColumnConstraints hgrow="NEVER" />
+                  <ColumnConstraints hgrow="NEVER" />
+                  <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="-Infinity" />
+                  <ColumnConstraints hgrow="NEVER" />
+               </columnConstraints>
+               <padding>
+                  <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+               </padding>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
+            </GridPane>
+         </bottom>
+         <center>
+            <BorderPane id="scrollContainer" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </center>
+         <top>
+            <FlowPane id="colorContainer" alignment="CENTER" columnHalignment="CENTER" hgap="10.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" rowValignment="TOP" style="padd: 10;" vgap="10.0" BorderPane.alignment="CENTER">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </FlowPane>
+         </top>
+      </BorderPane>
+      <VBox alignment="TOP_CENTER" fillWidth="false" SplitPane.resizableWithParent="false">
+         <children>
+            <VBox VBox.vgrow="ALWAYS">
+               <children>
+                  <LineChart id="avgWordLengthChart" alternativeRowFillVisible="false" animated="false" createSymbols="false" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" maxHeight="200.0" stylesheets="@style.css" title="avg word length / sentence" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
+                     <xAxis>
+                        <CategoryAxis animated="false" endMargin="0.0" side="BOTTOM" startMargin="0.0" tickLabelGap="0.0" tickLabelsVisible="false" tickLength="0.0" tickMarkVisible="false" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis animated="false" forceZeroInRange="false" lowerBound="10.0" maxHeight="100.0" prefHeight="200.0" side="LEFT" tickLabelGap="5.0" tickUnit="1.0" upperBound="10.0" />
+                     </yAxis>
+                  </LineChart>
+                  <LineChart id="wordsPerSentenceChart" alternativeRowFillVisible="false" animated="false" createSymbols="false" horizontalGridLinesVisible="false" horizontalZeroLineVisible="false" maxHeight="200.0" maxWidth="-Infinity" stylesheets="@style.css" title="words / sentence" verticalGridLinesVisible="false" verticalZeroLineVisible="false">
+                     <xAxis>
+                        <CategoryAxis animated="false" endMargin="0.0" side="BOTTOM" startMargin="0.0" tickLabelGap="0.0" tickLabelsVisible="false" tickLength="0.0" tickMarkVisible="false" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis animated="false" forceZeroInRange="false" lowerBound="10.0" maxHeight="100.0" side="LEFT" tickLabelGap="5.0" tickUnit="1.0" upperBound="10.0" />
+                     </yAxis>
+                  </LineChart>
+               </children>
+            </VBox>
+            <FlowPane alignment="TOP_CENTER" columnHalignment="CENTER" rowValignment="TOP" VBox.vgrow="NEVER">
+               <children>
+                  <Label text="smoothing radius " textAlignment="RIGHT" wrapText="true" />
+                  <Slider id="smoothRadiusSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="3.0" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </FlowPane>
+         </children>
+         <padding>
+            <Insets bottom="15.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </VBox>
+   </items>
+</SplitPane>

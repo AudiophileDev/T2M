@@ -7,7 +7,8 @@ public class Generator {
 
     public Generator(float[] avgWordLengths) {
         tempo = new HashMap<>();
-        float min = this.getBounds(avgWordLengths).getMin(), max = this.getBounds(avgWordLengths).getMax();
+        float min = this.getBounds(avgWordLengths).getMin(),
+                max = this.getBounds(avgWordLengths).getMax();
         float ratio = (76 / min + 200 / max) / 2; //75 = lower bpm bound, 200=higher bpm bound
         for (Float f : avgWordLengths) {
             this.tempo.put(f, Math.round(f * ratio)); //temporary solution => real calculation will follow
@@ -17,6 +18,8 @@ public class Generator {
 
     public V2 getBounds(float[] avgWordLengths) {
         V2 bounds = new V2(0.0F, 0.0F);
+        if(avgWordLengths.length==0)
+            return bounds;
         float max = avgWordLengths[0], min = avgWordLengths[0];
         for (float f : avgWordLengths) {
             if (f < min) bounds.setMin(f);
