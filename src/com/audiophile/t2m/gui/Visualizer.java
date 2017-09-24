@@ -51,17 +51,9 @@ public class Visualizer extends Application {
         launch(args);
     }
 
-
-    private static boolean contains(char[] array, char c) {
-        for (char ch : array)
-            if (c == ch)
-                return true;
-        return false;
-    }
-
     //TODO do calculation in own thread and updated document when finished
     public void updateText(InlineCssTextArea textArea, double minSimilarity, HashMap<String, Color> colorMapping) {
-        //char[] punctuationMarks = new char[]{'.', '?', ',', '!', ';', '"', '\'',};
+        double scrollOffset = textArea.getEstimatedScrollY(); // make sure the user scroll stays in position
         textArea.clear();
         try {
             int cursor = 0;
@@ -87,7 +79,7 @@ public class Visualizer extends Application {
                 textArea.insertText(cursor, "\n");
                 cursor++;
             }
-
+            Platform.runLater(() -> textArea.setEstimatedScrollY(scrollOffset));
         } catch (IOException e) {
             e.printStackTrace();
         }
