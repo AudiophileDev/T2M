@@ -12,6 +12,8 @@ import java.io.IOException;
 
 public class Main {
 
+    static int testTime = 10;
+
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
 

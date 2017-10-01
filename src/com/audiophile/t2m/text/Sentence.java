@@ -65,12 +65,14 @@ public class Sentence {
             String w = wordList.get(i);
             // Default <values
             DatabaseHandler.Entry entry = null;
-            try {
-                entry = DatabaseHandler.FindWord(w, minWordSimilarity);
+            // Only search for words with more than three characters in database
+            if (w.length() > 3)
+                try {
+                    entry = DatabaseHandler.FindWord(w, minWordSimilarity);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             this.words[i] = new Word(w, entry);
             this.wordLength[i] = words[i].getName().length();
             this.avgWordLength += this.wordLength[i];

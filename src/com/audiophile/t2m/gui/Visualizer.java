@@ -321,7 +321,7 @@ public class Visualizer extends Application {
             Platform.runLater(() -> {
                 wordLabel.setText(selected);
                 if (p.getEntry() != null) {
-                    databaseWordField.setText(p.getName());
+                    databaseWordField.setText(p.getEntry().getName());
                     updateButton.setText("Remove");
                     tendencySlider.setValue(p.getEntry().getTendency().ordinal());
                     effectField.setText(p.getEntry().getEffect());
@@ -338,7 +338,7 @@ public class Visualizer extends Application {
 
 
         tendencySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (databaseWord[0].getEntry() == null)
+            if (databaseWord[0] == null || databaseWord[0].getEntry() == null)
                 updateButton.setText("Add");
             else if (databaseWord[0].getEntry().getTendency().ordinal() != newValue.intValue())
                 updateButton.setText("Update");

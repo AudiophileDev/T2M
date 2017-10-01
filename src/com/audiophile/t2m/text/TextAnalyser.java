@@ -27,7 +27,7 @@ public class TextAnalyser {
         for (int i = 0; i < sentences.length; i++) {
             this.sentences[i] = new Sentence(sentencesList[i]);
             float avg = sentences[i].getAvgWordLength();
-            this.avgWordLength[i] = Float.isFinite(avg)?avg:0;
+            this.avgWordLength[i] = Float.isFinite(avg) ? avg : 0;
         }
     }
 
@@ -64,6 +64,7 @@ public class TextAnalyser {
         for (int end = iterator.next();
              end != BreakIterator.DONE;
              start = end, end = iterator.next()) {
+
             String sentence = text.substring(start, end).trim();
             // Exclude empty sentences
             if (sentence.length() > 0) {
