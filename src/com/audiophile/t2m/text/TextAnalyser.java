@@ -1,7 +1,5 @@
 package com.audiophile.t2m.text;
 
-import com.audiophile.t2m.music.Generator;
-
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -31,7 +29,6 @@ public class TextAnalyser {
             float avg = sentences[i].getAvgWordLength();
             this.avgWordLength[i] = Float.isFinite(avg)?avg:0;
         }
-        Generator g = new Generator(avgWordLength);
     }
 
     /**
