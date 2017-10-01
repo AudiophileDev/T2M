@@ -8,11 +8,7 @@
       <root url="jar://$MAVEN_REPOSITORY$/org/reactfx/reactfx/2.0-M5/reactfx-2.0-M5.jar!/" />
       <root url="jar://$MAVEN_REPOSITORY$/org/fxmisc/flowless/flowless/0.5.2/flowless-0.5.2.jar!/" />
     </CLASSES>
-    <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.7-M5/richtextfx-0.7-M5-javadoc.jar!/" />
-    </JAVADOC>
-    <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/fxmisc/richtext/richtextfx/0.7-M5/richtextfx-0.7-M5-sources.jar!/" />
-    </SOURCES>
+    <JAVADOC />
+    <SOURCES />
   </library>
 </component>

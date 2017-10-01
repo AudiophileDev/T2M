@@ -18,7 +18,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-
 <SplitPane dividerPositions="0.8" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <items>
       <BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="100.0" minWidth="200.0" prefHeight="700.0" prefWidth="700.0">
@@ -92,7 +91,7 @@
             <FlowPane alignment="TOP_CENTER" columnHalignment="CENTER" rowValignment="TOP" VBox.vgrow="NEVER">
                <children>
                   <Label text="smoothing radius " textAlignment="RIGHT" wrapText="true" />
-                  <Slider id="smoothRadiusSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" min="1.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="3.0" />
+                  <Slider id="smoothRadiusSlider" blockIncrement="1.0" majorTickUnit="1.0" max="9.0" minorTickCount="0" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="3.0" />
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

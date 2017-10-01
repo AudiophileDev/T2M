@@ -41,16 +41,16 @@ import java.util.function.BiConsumer;
 public class Visualizer extends Application {
 
     private static TextAnalyser analyser;
-    private static String text;
-    HashMap<Integer, Pair<String, Pair<String, WordsDB.WordAttributes>>> wordIndex = new HashMap<>(100);
+    private HashMap<Integer, Pair<String, Pair<String, WordsDB.WordAttributes>>> wordIndex = new HashMap<>(100);
 
     public static void main(String[] args) {
         launch(args);
     }
 
     //TODO do calculation in own thread and updated document when finished
-    public void updateText(InlineCssTextArea textArea, double minSimilarity, HashMap<String, Color> colorMapping) {
+    private void updateText(InlineCssTextArea textArea, double minSimilarity, HashMap<String, Color> colorMapping) {
         double scrollOffset = textArea.getEstimatedScrollY(); // make sure the user scroll stays in position
+        char[] punctuationMarks = new char[]{'.', '?', ',', '!', ';', '"', '\'',};
         textArea.clear();
         try {
             int cursor = 0;
@@ -67,7 +67,7 @@ public class Visualizer extends Application {
                         Color c = colorMapping.get(attr.getValue().tendency.toString());
                         textArea.setStyle(old, cursor, "-fx-fill: #" + colorToHex(c) + ";-fx-font-weight: bold;");
                     }
-                    if (/*!contains(punctuationMarks, words[Math.min(words.length - 1, i + 1)].charAt(0)) &&*/ i + 1 != words.length) {
+                    if (/*!contains(punctuationMarks, words[Math.min(words.length - 1, i + 1)].charAt(0)) && */i + 1 != words.length) {
                         textArea.insertText(cursor, " ");
                         textArea.setStyle(cursor, cursor + 1, "");
                         cursor++;
@@ -80,6 +80,13 @@ public class Visualizer extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean contains(char[] array, char c) {
+        for (char ch : array)
+            if (c == ch)
+                return true;
+        return false;
     }
 
     private String colorToHex(Color c) {
@@ -235,7 +242,7 @@ public class Visualizer extends Application {
         StringBuffer buffer = new StringBuffer();
         if (!Main.loadTextFile(articleFile.getPath(), buffer))
             return;
-        text = buffer.toString();
+        String text = buffer.toString();
         analyser = new TextAnalyser(text);
 
 
@@ -346,7 +353,7 @@ public class Visualizer extends Application {
 
         databaseWordField.textProperty().addListener((observable, oldValue, newValue) -> {
             updateButton.setDisable(newValue.length() == 0);
-            updateButton.setText(newValue.equals(databaseWord[0]) ? "Remove" : "Add");
+            updateButton.setText(newValue.equals(databaseWord[0]==null?"":databaseWord[0].getKey()) ? "Remove" : "Add");
         });
 
         similarityField.textProperty().addListener((observable, oldValue, newValue) -> {
