@@ -4,7 +4,7 @@ import com.audiophile.t2m.reader.FileReader;
 import com.audiophile.t2m.musicGenerator.Merger;
 import com.audiophile.t2m.musicGenerator.Tempo;
 import com.audiophile.t2m.text.TextAnalyser;
-import com.audiophile.t2m.text.WordsDB;
+import com.audiophile.t2m.text.DatabaseHandler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -38,7 +38,7 @@ public class Main {
 
     public static boolean loadDatabase(String file) {
         try {
-            WordsDB.loadDB(file);
+            DatabaseHandler.LoadDB(file);
             return true;
         } catch (IOException e) {
             System.out.flush();

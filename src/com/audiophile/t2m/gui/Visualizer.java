@@ -1,10 +1,7 @@
 package com.audiophile.t2m.gui;
 
 import com.audiophile.t2m.Main;
-import com.audiophile.t2m.text.Sentence;
-import com.audiophile.t2m.text.TextAnalyser;
-import com.audiophile.t2m.text.Utils;
-import com.audiophile.t2m.text.WordsDB;
+import com.audiophile.t2m.text.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -25,7 +22,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.InlineCssTextArea;
 
@@ -41,7 +37,7 @@ import java.util.function.BiConsumer;
 public class Visualizer extends Application {
 
     private static TextAnalyser analyser;
-    private HashMap<Integer, Pair<String, Pair<String, WordsDB.WordAttributes>>> wordIndex = new HashMap<>(100);
+    private HashMap<Integer, Word> wordIndex = new HashMap<>(100);
 
     public static void main(String[] args) {
         launch(args);
@@ -55,16 +51,16 @@ public class Visualizer extends Application {
         try {
             int cursor = 0;
             for (Sentence s : analyser.getSentences()) {
-                String[] words = s.getWords();
+                Word[] words = s.getWords();
                 for (int i = 0; i < words.length; i++) {
-                    String w = words[i];
-                    Pair<String, WordsDB.WordAttributes> attr = WordsDB.GetWordAttribute(w, minSimilarity);
-                    wordIndex.put(cursor, new Pair<>(w, attr));
+                    String w = words[i].getName();
+                    DatabaseHandler.Entry entry = DatabaseHandler.FindWord(w, minSimilarity);
+                    wordIndex.put(cursor, new Word(w, entry));
                     textArea.insertText(cursor, w);
                     int old = cursor;
                     cursor += w.length();
-                    if (attr != null) {
-                        Color c = colorMapping.get(attr.getValue().tendency.toString());
+                    if (entry != null) {
+                        Color c = colorMapping.get(entry.getTendency().toString());
                         textArea.setStyle(old, cursor, "-fx-fill: #" + colorToHex(c) + ";-fx-font-weight: bold;");
                     }
                     if (/*!contains(punctuationMarks, words[Math.min(words.length - 1, i + 1)].charAt(0)) && */i + 1 != words.length) {
@@ -163,7 +159,7 @@ public class Visualizer extends Application {
         boolean sn = smooth == null,
                 rn = raw == null;
         raw = arrayToSeries(raw, analyser.getAvgWordLength(), "raw");
-        smooth = arrayToSeries(smooth, Utils.smoothData(analyser.getAvgWordLength(), radius), "smooth");
+        smooth = arrayToSeries(smooth, Utils.BlurData(analyser.getAvgWordLength(), radius), "smooth");
         if (rn) {
             chart.getData().add(raw);
         }
@@ -179,7 +175,7 @@ public class Visualizer extends Application {
             wps[i] = sentences[i].getWordCount();
         }
         XYChart.Series raw = arrayToSeries(null, wps, "raw");
-        XYChart.Series smooth = arrayToSeries(null, Utils.smoothData(wps, radius), "smooth");
+        XYChart.Series smooth = arrayToSeries(null, Utils.BlurData(wps, radius), "smooth");
         chart.getData().clear();
         chart.getData().addAll(raw, smooth);
     }
@@ -206,7 +202,7 @@ public class Visualizer extends Application {
 
                 Stage finalDialog = dialog;
                 dialog.setOnCloseRequest(e -> finalDialog.hide());
-                loadedCharts.put(chart,dialog);
+                loadedCharts.put(chart, dialog);
                 dialog.show();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -239,13 +235,6 @@ public class Visualizer extends Application {
             root.setEffect(null);
         }
 
-        StringBuffer buffer = new StringBuffer();
-        if (!Main.loadTextFile(articleFile.getPath(), buffer))
-            return;
-        String text = buffer.toString();
-        analyser = new TextAnalyser(text);
-
-
         String defaultDBFile = "wordsDB.csv";
         File dbFile = new File(defaultDBFile);
         if (!dbFile.exists() || !Main.loadDatabase(defaultDBFile)) {
@@ -253,6 +242,13 @@ public class Visualizer extends Application {
                 System.err.println("Error writing new Database file");
             return;
         }
+
+        StringBuffer buffer = new StringBuffer();
+        if (!Main.loadTextFile(articleFile.getPath(), buffer))
+            return;
+        String text = buffer.toString();
+        analyser = new TextAnalyser(text);
+
 
         // Get all components
         BorderPane scrollContainer = (BorderPane) root.lookup("#scrollContainer");
@@ -295,7 +291,7 @@ public class Visualizer extends Application {
             colorContainer.getChildren().add(box);
         });
 
-        similarityField.setText(String.valueOf(WordsDB.DEFAULT_IN_SIMILARITY));
+        similarityField.setText(String.valueOf(DatabaseHandler.DEFAULT_IN_SIMILARITY));
 
         InlineCssTextArea textArea = new InlineCssTextArea(text);
         VirtualizedScrollPane scrollPane1 = new VirtualizedScrollPane<>(textArea);
@@ -311,24 +307,24 @@ public class Visualizer extends Application {
         updateText(textArea, Double.parseDouble(similarityField.getText()), colorMapping);
 
 
-        final Pair<String, WordsDB.WordAttributes>[] databaseWord = new Pair[1];
+        final Word[] databaseWord = new Word[1];
         textArea.setOnMouseReleased(event -> {
             int pos = textArea.getCaretPosition();
             // Get next last word w here index is lower than pos
             int index = wordIndex.keySet().stream().filter(k -> k < pos).max(Comparator.comparingInt(v -> v)).orElse(0);
             if (wordIndex.get(index) == null)
                 return;
-            String selected = wordIndex.get(index).getKey();
-            Pair<String, WordsDB.WordAttributes> p = wordIndex.get(index).getValue();
+            Word p = wordIndex.get(index);
+            String selected = p.getName();
             databaseWord[0] = p;
             // Update later to avoid thread problems
             Platform.runLater(() -> {
                 wordLabel.setText(selected);
-                if (p != null) {
-                    databaseWordField.setText(p.getKey());
+                if (p.getEntry() != null) {
+                    databaseWordField.setText(p.getName());
                     updateButton.setText("Remove");
-                    tendencySlider.setValue(p.getValue().tendency.ordinal());
-                    effectField.setText(p.getValue().effect);
+                    tendencySlider.setValue(p.getEntry().getTendency().ordinal());
+                    effectField.setText(p.getEntry().getEffect());
 
                 } else {
                     databaseWordField.setText(selected);
@@ -342,9 +338,9 @@ public class Visualizer extends Application {
 
 
         tendencySlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (databaseWord[0] == null)
+            if (databaseWord[0].getEntry() == null)
                 updateButton.setText("Add");
-            else if (databaseWord[0].getValue().tendency.ordinal() != newValue.intValue())
+            else if (databaseWord[0].getEntry().getTendency().ordinal() != newValue.intValue())
                 updateButton.setText("Update");
             else
                 updateButton.setText("Remove");
@@ -352,8 +348,9 @@ public class Visualizer extends Application {
 
 
         databaseWordField.textProperty().addListener((observable, oldValue, newValue) -> {
+            newValue = newValue == null ? "" : newValue;
             updateButton.setDisable(newValue.length() == 0);
-            updateButton.setText(newValue.equals(databaseWord[0]==null?"":databaseWord[0].getKey()) ? "Remove" : "Add");
+            updateButton.setText(newValue.equals(databaseWord[0] == null ? "" : databaseWord[0].getName()) ? "Remove" : "Add");
         });
 
         similarityField.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -376,10 +373,15 @@ public class Visualizer extends Application {
                 case "Update":
                 case "Add":
                     try {
-                        WordsDB.setWord(databaseWordField.getText(),
-                                new WordsDB.WordAttributes(
-                                        WordsDB.WordTendency.map(String.valueOf((int) tendencySlider.getValue())),
-                                        effectField.getText()));
+                        DatabaseHandler.SetWord(
+                                new Word(databaseWordField.getText(),
+                                        new DatabaseHandler.Entry(
+                                                databaseWordField.getText(),
+                                                Word.Tendency.map(String.valueOf((int) tendencySlider.getValue())),
+                                                effectField.getText()
+                                        )
+                                )
+                        );
                         updateButton.setText("Remove");
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -387,7 +389,7 @@ public class Visualizer extends Application {
                     break;
                 case "Remove":
                     try {
-                        WordsDB.removeWord(databaseWordField.getText());
+                        DatabaseHandler.RemoveWord(databaseWordField.getText());
                         updateButton.setText("Add");
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -408,10 +410,10 @@ public class Visualizer extends Application {
                 }));
 
         avgWordLengthChart.setOnMouseClicked(event -> {
-            enlargeChart(avgWordLengthChart, this::loadAvgWordLengthChart,primaryStage);
+            enlargeChart(avgWordLengthChart, this::loadAvgWordLengthChart, primaryStage);
         });
         wordsPerSentenceChart.setOnMouseClicked(event -> {
-            enlargeChart(wordsPerSentenceChart, this::loadWordsPerSentence,primaryStage);
+            enlargeChart(wordsPerSentenceChart, this::loadWordsPerSentence, primaryStage);
         });
 
     }

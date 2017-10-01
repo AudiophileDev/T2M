@@ -146,10 +146,22 @@ public class CSVTools {
         return array;
     }
 
-    //TODO doc
+    /**
+     * Writes an string array to a file in the CSV format.
+     * If the file does not exist jet, it is created.
+     * If the given content is null, nothing is written and no file is created.
+     * <p>
+     * Vales are separated by {@link CSVTools#DEFAULT_SEPARATOR}
+     * {@link CSVTools#DEFAULT_QUOTE} is usesd as quoting character.
+     * </p>
+     *
+     * @param fileName The path of the file to be written
+     * @param content  The content which is written to the file
+     * @throws IOException
+     */
     public static void WriteFile(String fileName, String[][] content) throws IOException {
         File file = new File(fileName);
-        if (!file.exists() && file.createNewFile())
+        if (!file.exists() && file.createNewFile() || content == null)
             return;
 
         StringBuilder builder = new StringBuilder();
