@@ -32,7 +32,7 @@ public class Main {
             return;
 
         TextAnalyser analyser = new TextAnalyser(buffer.toString());
-        Composer composer = new Composer(analyser);
+        //Composer composer = new Composer(analyser);
         long endTime = System.currentTimeMillis();
         System.out.println("Text analyze finished in " + (endTime - startTime) + "ms");
     }
