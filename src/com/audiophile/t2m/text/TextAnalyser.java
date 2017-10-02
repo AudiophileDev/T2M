@@ -51,7 +51,7 @@ public class TextAnalyser {
 
     /**
      * Splits string into sentences by line breaks and punctuation marks.
-     *
+     * hihi
      * @param text the text to be split
      * @return Sentences as string array
      * @see java.text.BreakIterator#getSentenceInstance(Locale)
