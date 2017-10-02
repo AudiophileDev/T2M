@@ -1,5 +1,7 @@
 package com.audiophile.t2m.musicGenerator;
 
+import com.audiophile.t2m.text.TextAnalyser;
+
 import javax.sound.midi.MidiChannel;
 import javax.sound.midi.Sequence;
 
@@ -7,7 +9,7 @@ public class RhythmChannel {
     private MidiChannel midiChannel;
     private Sequence sequence;
 
-    public RhythmChannel() {
+    public RhythmChannel(TextAnalyser analaysedText) {
     }
 
     public MidiChannel getMidiChannel() {
