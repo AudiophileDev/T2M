@@ -19,11 +19,11 @@ public class Tempo {
         float ratio = (76 / min + 200 / max) / 2; //75 = lower bpm bound, 200=higher bpm bound
         for (Float f : avgWordLengths) {
             bpm = Math.round(f * ratio);
-            tempo.put(f, bpm); //temporary solution => real calculation will follow
+            tempo.put(f, bpm);
             averageBpm += bpm;
             //System.out.println(String.format("%.2f -> %d", f, tempo.get(f)));
         }
-        System.out.println("Average Tempo:" + (averageBpm /= avgWordLengths.length));
+       //System.out.println("Average Tempo:" + (averageBpm /= avgWordLengths.length));
 
     }
 

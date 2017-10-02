@@ -1,10 +1,9 @@
 package com.audiophile.t2m;
 
+import com.audiophile.t2m.musicGenerator.Composer;
 import com.audiophile.t2m.reader.FileReader;
-import com.audiophile.t2m.musicGenerator.Merger;
-import com.audiophile.t2m.musicGenerator.Tempo;
-import com.audiophile.t2m.text.TextAnalyser;
 import com.audiophile.t2m.text.DatabaseHandler;
+import com.audiophile.t2m.text.TextAnalyser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,7 +32,7 @@ public class Main {
             return;
 
         TextAnalyser analyser = new TextAnalyser(buffer.toString());
-        Merger merger = new Merger(new Tempo(analyser.getAvgWordLength()));
+        Composer composer = new Composer(analyser);
         long endTime = System.currentTimeMillis();
         System.out.println("Text analyze finished in " + (endTime - startTime) + "ms");
     }
