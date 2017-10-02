@@ -38,6 +38,12 @@ public class Main {
         System.out.println("Text analyze finished in " + (endTime - startTime) + "ms");
     }
 
+    /**
+     * Loads the database and logs all errors to the console.
+     * @param file The database file to load
+     * @return True if no errors occurred during loading
+     * @see DatabaseHandler#LoadDB(String)
+     */
     public static boolean loadDatabase(String file) {
         try {
             DatabaseHandler.LoadDB(file);
@@ -49,6 +55,12 @@ public class Main {
         }
     }
 
+    /**
+     * Checks if the application was run with correct arguments.
+     * @param args The arguments the to check
+     * @return True if arguments are valid
+     * @see Main#validateArguments(String[])
+     */
     public static boolean checkArguments(String[] args) {
         try {
             validateArguments(args);
@@ -61,6 +73,14 @@ public class Main {
 
     }
 
+    /**
+     * Tries to load the content of a file to the given {@link StringBuffer}.
+     * All errors are logged to the console.
+     * @param file The path of the file to read
+     * @param buffer The buffer to which the file content is written to.
+     * @return True if no exception occurred during reading.
+     * @see FileReader#ReadPlainFile(String)
+     */
     public static boolean loadTextFile(String file, StringBuffer buffer) {
         try {
             buffer.append(FileReader.ReadPlainFile(file));
@@ -86,7 +106,7 @@ public class Main {
     private static void validateArguments(String[] args) throws IllegalArgumentException {
         // Check if enough arguments were provided
         if (args.length < 2)
-            throw new IllegalArgumentException("Number of arguments is to low");
+            throw new IllegalArgumentException("Usage: t2m -[articleFile] -[outputFile]");
         // Ensure all filenames a valid
         for (int i = 0; i < 2; i++)
             if (!isFilenameValid(args[i]))
