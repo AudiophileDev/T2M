@@ -1,4 +1,4 @@
-package com.audiophile.t2m.musicGenerator;
+package com.audiophile.t2m.music;
 
 import com.audiophile.t2m.text.TextAnalyser;
 
