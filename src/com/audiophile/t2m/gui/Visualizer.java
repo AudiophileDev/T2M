@@ -374,13 +374,9 @@ public class Visualizer extends Application {
                 case "Add":
                     try {
                         DatabaseHandler.SetWord(
-                                new Word(databaseWordField.getText(),
-                                        new DatabaseHandler.Entry(
-                                                databaseWordField.getText(),
-                                                Word.Tendency.map(String.valueOf((int) tendencySlider.getValue())),
-                                                effectField.getText()
-                                        )
-                                )
+                                databaseWordField.getText(),
+                                Word.Tendency.map(String.valueOf((int) tendencySlider.getValue())),
+                                effectField.getText()
                         );
                         updateButton.setText("Remove");
                     } catch (IOException e) {
