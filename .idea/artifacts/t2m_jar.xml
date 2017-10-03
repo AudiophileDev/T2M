@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="t2m:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/t2m_jar</output-path>
+    <root id="archive" name="t2m.jar">
+      <element id="module-output" name="t2m" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>

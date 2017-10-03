@@ -19,6 +19,7 @@ public class Harmony {
     public Harmony(String chordName) {
         this.notesName = new String[5];
         this.notesName[0] = chordName.substring(0, 1);
+        this.notesNumber = new int[5];
         this.notesNumber[0] = (int) this.notesName[0].toCharArray()[0];
         for (int i = 1; i < chordName.length(); i++) {
             try {
