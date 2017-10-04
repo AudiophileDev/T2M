@@ -36,8 +36,7 @@ public class Main {
         if (!checkArguments(args))
             return;
 
-        String dbFile = extractArgument("db", args, null);
-        assert dbFile == null;
+        String dbFile = args[2];
         // Load word database
         if (!loadDatabase(dbFile))
             return;
@@ -171,11 +170,8 @@ public class Main {
      */
     private static void validateArguments(String[] args) throws IllegalArgumentException {
         // Check if enough arguments were provided. input and output file is required
-        if (args.length < 2)
+        if (args.length < 3)
             throw new IllegalArgumentException(CLI_USAGE);
-        if (extractArgument("db", args, null) == null) {
-            throw new IllegalArgumentException("Missing words database" + "\n" + CLI_USAGE);
-        }
     }
 
     /**
