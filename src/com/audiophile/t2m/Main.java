@@ -1,6 +1,6 @@
 package com.audiophile.t2m;
 
-import com.audiophile.t2m.musicGenerator.Composer;
+import com.audiophile.t2m.music.Composer;
 import com.audiophile.t2m.reader.FileReader;
 import com.audiophile.t2m.text.DatabaseHandler;
 import com.audiophile.t2m.text.TextAnalyser;
@@ -32,7 +32,7 @@ public class Main {
             return;
 
         TextAnalyser analyser = new TextAnalyser(buffer.toString());
-        //Composer composer = new Composer(analyser);
+        Composer composer = new Composer(analyser);
         long endTime = System.currentTimeMillis();
         System.out.println("Text analyze finished in " + (endTime - startTime) + "ms");
     }

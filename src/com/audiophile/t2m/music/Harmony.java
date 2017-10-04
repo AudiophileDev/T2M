@@ -18,11 +18,13 @@ public class Harmony {
      */
     public Harmony(String chordName) {
         this.notesName = new String[5];
+        this.notesNumber = new int[3];
         this.notesName[0] = chordName.substring(0, 1);
         this.notesNumber[0] = (int) this.notesName[0].toCharArray()[0];
-        for (int i = 1; i < chordName.length(); i++) {
+        for (int i = 1; i < 3; i++) {
             try {
                 this.notesName[i] = Character.toString((char) (notesNumber[0] + 2));
+                this.notesNumber[i] = notesNumber[i - 1] + 2;
             } catch (StringIndexOutOfBoundsException e) {
                 e.printStackTrace();
             }
@@ -39,5 +41,30 @@ public class Harmony {
         this.notesName = notesName;
     }
 
-    public void intervall(String baseNote, String intervall) { }
+    public void intervall(String baseNote, String intervall) {
+    }
+
+    public String[] getNotesName() {
+        return notesName;
+    }
+
+    public void setNotesName(String[] notesName) {
+        this.notesName = notesName;
+    }
+
+    public int[] getNotesNumber() {
+        return notesNumber;
+    }
+
+    public void setNotesNumber(int[] notesNumber) {
+        this.notesNumber = notesNumber;
+    }
+
+    public int getModus() {
+        return modus;
+    }
+
+    public void setModus(int modus) {
+        this.modus = modus;
+    }
 }

@@ -2,14 +2,15 @@ package com.audiophile.t2m.music;
 
 import com.audiophile.t2m.text.TextAnalyser;
 
-import javax.sound.midi.Sequence;
+import javax.sound.midi.Instrument;
+import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Synthesizer;
 
 public class Composer {
     private RhythmChannel rhythmChannel;
     private MelodyChannel melodyChannel;
-    private Tempo tempo;
-    private String dynamic;
-    private Harmony key;
+    private MusicData musicData;
     private TextAnalyser analysedText;
 
     /**
@@ -18,18 +19,35 @@ public class Composer {
      */
     public Composer(TextAnalyser analysedText) {
         this.analysedText = analysedText;
-        this.rhythmChannel = new RhythmChannel(analysedText);
-        this.key = new Harmony(analysedText.getSentences()[0].getWords()[0].getName());
-        this.melodyChannel = new MelodyChannel(key, analysedText.getSentences());
-        this.dynamic = dynamic; //forte, piano, cresc, decresc
-        this.tempo = new Tempo(analysedText.getAvgWordLength());
+
+        //set music metadata: key, tempo, dynamic
+        this.musicData = new MusicData(new Tempo(analysedText.getAvgWordLength()),
+                "anyDynamic", /*forte, piano, cresc, decresc*/
+                new Harmony(analysedText.getSentences()[0].getWords()[0].getName().substring(0, 1)));
+        //TODO how many different keys? how will they be set
+        //TODO clarifying: just base tempo or absolute siz
+
+        //create rhythm, melody and effect tracks
+        this.rhythmChannel = new RhythmChannel(musicData, analysedText);
+        this.melodyChannel = new MelodyChannel(musicData, analysedText);
+        //TODO which arguments do the music channels need
+
+
+        //TODO add effects
+        testSynth(0, musicData.getKey().getNotesNumber()[0]);
     }
 
-    public Sequence[] mergeAudioTracks() {
-        return new Sequence[]{melodyChannel.getSequence(), rhythmChannel.getSequence()};
-    }
-
-    public int calcTemp() {
-        return new Tempo(this.analysedText.getAvgWordLength()).averageBpm;
+    public  void testSynth(int instrNumber, int noteNumber) {
+        Synthesizer s = null;
+        try {
+            s = MidiSystem.getSynthesizer();
+            s.open();
+            MidiChannel[] mc = s.getChannels();
+            Instrument[] instruments = s.getDefaultSoundbank().getInstruments();
+            mc[instrNumber % 17].noteOn(noteNumber, 600);
+            Thread.sleep(2000);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
