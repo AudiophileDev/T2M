@@ -1,7 +1,5 @@
-package com.audiophile.t2m.reader;
+package com.audiophile.t2m.io;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +24,10 @@ public class CSVTools {
      * @return The CSV table as two-dimensional string array
      * @throws IOException Throws exception if the document could not be read or does not has the expected format
      * @see <a href="https://tools.ietf.org/html/rfc4180">Common Format and MIME Type for Comma-Separated Values (CSV) Files</a>
-     * @see com.audiophile.t2m.reader.FileReader#ReadPlainFile(String)
+     * @see FileUtils#ReadPlainFile(String)
      */
     public static String[][] ReadFile(String fileName) throws IOException {
-        String content = FileReader.ReadPlainFile(fileName);
+        String content = FileUtils.ReadPlainFile(fileName);
         if (content.isEmpty())
             return new String[0][0];
         String[][] table = null;
@@ -160,10 +158,6 @@ public class CSVTools {
      * @throws IOException
      */
     public static void WriteFile(String fileName, String[][] content) throws IOException {
-        File file = new File(fileName);
-        if (!file.exists() && file.createNewFile() || content == null)
-            return;
-
         StringBuilder builder = new StringBuilder();
         for (String[] line : content) {
             for (int i = 0; i < line.length; i++) {
@@ -177,8 +171,6 @@ public class CSVTools {
             }
             builder.append("\n");
         }
-        FileWriter writer = new FileWriter(fileName);
-        writer.write(builder.toString());
-        writer.close();
+        FileUtils.WriteFile(fileName, builder.toString(), false);
     }
 }

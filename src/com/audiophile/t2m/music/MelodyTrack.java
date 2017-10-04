@@ -1,8 +1,7 @@
 package com.audiophile.t2m.music;
 
 import com.audiophile.t2m.text.Sentence;
-import com.audiophile.t2m.writer.TestWriter;
-import com.sun.media.sound.MidiUtils;
+import com.audiophile.t2m.io.TestWriter;
 
 import javax.sound.midi.*;
 

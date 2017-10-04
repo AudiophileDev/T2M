@@ -1,9 +1,6 @@
-package com.audiophile.t2m.reader;
+package com.audiophile.t2m.io;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * A class that holds a collection of methods for file reading.
@@ -11,7 +8,7 @@ import java.io.IOException;
  * @author Simon Niedermayr
  * Created on 11.09.2017
  */
-public class FileReader {
+public class FileUtils {
     /**
      * The given file is read as plain text with UTF-8 encoding and converted to a <code>String</code>
      *
@@ -23,7 +20,7 @@ public class FileReader {
     public static String ReadPlainFile(String fileName) throws IOException {
         File file = new File(fileName);
         if (!file.exists())
-            throw new FileNotFoundException("The file \"" + fileName + "\" does not exist");
+            throw new FileNotFoundException("The file \"" + file.getAbsolutePath() + "\" does not exist");
 
         // Read bytes in file
         FileInputStream stream = new FileInputStream(file);
@@ -32,6 +29,19 @@ public class FileReader {
         stream.close();
 
         return new String(data, "UTF-8");
+    }
+
+    public static void WriteFile(String fileName, String content, boolean append) throws IOException {
+        File file = new File(fileName);
+        if (!file.exists())
+            if (!file.createNewFile())
+                throw new IOException("Could not create file\"" + fileName + "\"");
+        FileWriter writer = new FileWriter(fileName);
+        if (append)
+            writer.append(content);
+        else
+            writer.write(content);
+        writer.close();
     }
 
 }

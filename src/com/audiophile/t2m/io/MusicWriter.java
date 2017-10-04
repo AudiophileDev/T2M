@@ -1,4 +1,4 @@
-package com.audiophile.t2m.writer;
+package com.audiophile.t2m.io;
 
 import javax.sound.midi.*;
 import java.io.File;
@@ -46,7 +46,7 @@ public class MusicWriter {
 
             // Specify the sequence to play, and the tempo to play it at
             sequencer.setSequence(sequence);
-            //sequencer.setTempoInBPM(120);
+           // sequencer.setTempoInBPM(120);
 
             // Use Semaphore to block thread while playing
             Semaphore s = new Semaphore(0);

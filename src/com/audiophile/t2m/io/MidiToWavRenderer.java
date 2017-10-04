@@ -1,4 +1,4 @@
-package com.audiophile.t2m.writer;
+package com.audiophile.t2m.io;
 
 import com.sun.media.sound.AudioSynthesizer;
 

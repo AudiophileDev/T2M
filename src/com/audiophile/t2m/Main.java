@@ -1,34 +1,49 @@
 package com.audiophile.t2m;
 
 import com.audiophile.t2m.music.Composer;
-import com.audiophile.t2m.reader.FileReader;
+import com.audiophile.t2m.io.FileUtils;
 import com.audiophile.t2m.text.DatabaseHandler;
 import com.audiophile.t2m.text.TextAnalyser;
-import com.audiophile.t2m.writer.MusicWriter;
+import com.audiophile.t2m.io.MusicWriter;
 
 import javax.sound.midi.Sequence;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Main {
-    private final static Logger LOGGER = Logger.getLogger(Main.class.getName());
+
+    /**
+     * Instructions for the T2M CLI usage
+     */
+    private static final String CLI_USAGE = "Usage:\n\t <articlefile> <outputfile> <databasefile> [-o  {"
+            + MusicWriter.MP3 + " | "
+            + MusicWriter.WAV + " | "
+            + MusicWriter.MIDI + " | "
+            + MusicWriter.PLAY
+            + "}] [-p]\n"
+            +"Args:\n"
+            +"\t articlefile: The article saved as file\n"
+            +"\t outputfile: The file to write the music to\n"
+            +"\t databasefile: The words database file\n"
+            +"\t -o: The output type\n"
+            +"\t -p: Enables precise search\n";
+
 
     public static void main(String[] args) {
-        LOGGER.setLevel(Level.SEVERE);
         long startTime = System.currentTimeMillis();
+
         // Check if the given arguments are valid
         if (!checkArguments(args))
             return;
 
+        String dbFile = extractArgument("db", args, null);
+        assert dbFile == null;
         // Load word database
-        if (!loadDatabase("wordsDB.csv"))
+        if (!loadDatabase(dbFile))
             return;
 
         // Enable/Disable precise search in database
-        DatabaseHandler.PRECISE_SEARCH = hasArgument("precise", args);
+        DatabaseHandler.PRECISE_SEARCH = hasArgument("p", args);
 
         // Load article
         StringBuffer buffer = new StringBuffer();
@@ -38,7 +53,7 @@ public class Main {
         // Analyse article
         TextAnalyser analyser = new TextAnalyser(buffer.toString());
         long endTime = System.currentTimeMillis();
-        System.out.println("Analyzed \""+args[0]+"\" in " + (endTime - startTime) + "ms");
+        System.out.println("Analyzed \"" + args[0] + "\" in " + (endTime - startTime) + "ms");
 
         // Generate music
         startTime = System.currentTimeMillis();
@@ -49,7 +64,7 @@ public class Main {
         Sequence sequence = composer.getSequence();
 
         // Output music
-        String outputType = extractArgument("output", args, "mp3");
+        String outputType = extractArgument("o", args, "mp3");
         outputMusic(outputType, args[1], sequence);
     }
 
@@ -69,7 +84,7 @@ public class Main {
                 break;
             case MusicWriter.MIDI:
                 try {
-                    System.out.println("Writing MIDI file to \""+fileName+"\"");
+                    System.out.println("Writing MIDI file to \"" + fileName + "\"");
                     MusicWriter.writeMidi(sequence, fileName);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -77,7 +92,7 @@ public class Main {
                 break;
             case MusicWriter.WAV:
                 try {
-                    System.out.println("Writing WAV file to \""+fileName+"\"");
+                    System.out.println("Writing WAV file to \"" + fileName + "\"");
                     MusicWriter.writeWav(sequence, fileName);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -86,7 +101,7 @@ public class Main {
             case MusicWriter.MP3:
             default: // mp3 is default
                 try {
-                    System.out.println("Writing MP3 file to \""+fileName+"\"");
+                    System.out.println("Writing MP3 file to \"" + fileName + "\"");
                     MusicWriter.writeMP3(sequence, fileName);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -103,13 +118,11 @@ public class Main {
      */
     public static boolean loadDatabase(String file) {
         try {
-            LOGGER.info("Loading words database file \"" + file + "\"");
             DatabaseHandler.LoadDB(file);
             return true;
         } catch (IOException e) {
-            System.err.println("An Error occurred while loading the words database \"" + file + "\"");
-            LOGGER.severe("Error loading database  \"" + file + "\"");
-            LOGGER.severe(e.getMessage());
+            System.err.println("Error loading database  \"" + file + "\"");
+            System.err.println(e.getMessage());
             return false;
         }
     }
@@ -123,13 +136,10 @@ public class Main {
      */
     private static boolean checkArguments(String[] args) {
         try {
-            LOGGER.info("Arguments: " + String.join(" ", args));
             validateArguments(args);
             return true;
         } catch (IllegalArgumentException e) {
-            System.out.flush();
             System.err.println(e.getMessage());
-            LOGGER.severe(e.getMessage());
             return false;
         }
 
@@ -142,33 +152,17 @@ public class Main {
      * @param file   The path of the file to read
      * @param buffer The buffer to which the file content is written to.
      * @return True if no exception occurred during reading.
-     * @see FileReader#ReadPlainFile(String)
+     * @see FileUtils#ReadPlainFile(String)
      */
     public static boolean loadTextFile(String file, StringBuffer buffer) {
         try {
-            buffer.append(FileReader.ReadPlainFile(file));
-            LOGGER.info("Loading file \"" + file + "\"");
+            buffer.append(FileUtils.ReadPlainFile(file));
             return true;
-        } catch (FileNotFoundException e) {
-            System.out.flush();
-            System.err.println(e.getMessage());
-            LOGGER.severe(e.getMessage());
-            return false;
         } catch (IOException e) {
-            System.out.flush();
-            System.err.println("Error reading file \"" + file + "\"");
-            LOGGER.severe(e.getMessage());
+            System.err.println(e.getMessage());
             return false;
         }
     }
-
-    private static final String CLI_USAGE = "Usage: articleFile outputFile -db databaseFile -[output] ["
-            + MusicWriter.MP3 + " "
-            + MusicWriter.WAV + " "
-            + MusicWriter.MIDI + " "
-            + MusicWriter.PLAY + " "
-            + "] -[precise] -db databaseFile";
-
     /**
      * This methods validates the input arguments and makes sure the syntax is right <br>
      *
@@ -179,12 +173,9 @@ public class Main {
         // Check if enough arguments were provided. input and output file is required
         if (args.length < 2)
             throw new IllegalArgumentException(CLI_USAGE);
-        // Ensure all filenames a valid
-        for (int i = 0; i < 2; i++)
-            if (!isFilenameValid(args[i]))
-                throw new IllegalArgumentException("Argument " + (i + 1) + " is not a valid file name");
-
-        //TODO Validate parameters
+        if (extractArgument("db", args, null) == null) {
+            throw new IllegalArgumentException("Missing words database" + "\n" + CLI_USAGE);
+        }
     }
 
     /**

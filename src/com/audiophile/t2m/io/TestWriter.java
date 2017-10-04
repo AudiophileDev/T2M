@@ -1,4 +1,4 @@
-package com.audiophile.t2m.writer;
+package com.audiophile.t2m.io;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
@@ -34,13 +34,13 @@ public class TestWriter {
         }
         track.add(new MidiEvent(sm, 0));
 
-        char[] notes = "C D E F G A H+ A+ G+ F> E >D >C D <E F< G< A H A G F- E- D- C".toCharArray();
+        char[] notes = "C D E F G A H H H H ".toCharArray();
 
         int n = 0; // current character in notes[] array
         int t = 0; // time in ticks for the composition
 
         // These values persist and apply to all notes 'till changed
-        int notelength = 16; // default to quarter notes
+        int notelength = 64; // default to quarter notes
         int velocity = 64; // default to middle volume
         int basekey = 60; // 60 is middle C. Adjusted up and down by octave
         boolean sustain = false; // is the sustain pedal depressed?
