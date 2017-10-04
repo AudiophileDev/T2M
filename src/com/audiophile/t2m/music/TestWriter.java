@@ -1,4 +1,4 @@
-package com.audiophile.t2m.io;
+package com.audiophile.t2m.music;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
