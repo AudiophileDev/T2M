@@ -1,5 +1,7 @@
 package com.audiophile.t2m.io;
 
+import it.sauronsoftware.jave.*;
+
 import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +24,37 @@ public class MusicWriter {
     }
 
     public static void writeMP3(Sequence sequence, String fileName) throws IOException {
-        //TODO wav to java
+        String file = fileNameWithoutEnding(fileName);
+        File wav = new File(file + ".wav");
+        File mp3 = new File(file + ".mp3");
+        if (!mp3.createNewFile())
+            return;
+        writeWav(sequence, wav.getPath());
+
+        //Convert wav to mp3
+        AudioAttributes audio = new AudioAttributes();
+        audio.setCodec("libmp3lame");
+        audio.setBitRate(64000);
+        audio.setChannels(1);
+        audio.setSamplingRate(22050);
+        EncodingAttributes attrs = new EncodingAttributes();
+        attrs.setFormat("mp3");
+        attrs.setAudioAttributes(audio);
+        Encoder encoder = new Encoder();
+        try {
+            encoder.encode(wav, mp3, attrs);
+            if (!wav.delete())
+                System.err.println("Could not delete temporary wav file");
+        } catch (EncoderException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String fileNameWithoutEnding(String fileName) {
+        int index = fileName.lastIndexOf(".");
+        if (index > 0 && index + 1 < fileName.length())
+            return fileName.substring(0, index);
+        else return fileName;
     }
 
     public static void writeWav(Sequence sequence, String fileName) throws IOException {
@@ -46,7 +78,7 @@ public class MusicWriter {
 
             // Specify the sequence to play, and the tempo to play it at
             sequencer.setSequence(sequence);
-           // sequencer.setTempoInBPM(120);
+            // sequencer.setTempoInBPM(120);
 
             // Use Semaphore to block thread while playing
             Semaphore s = new Semaphore(0);
