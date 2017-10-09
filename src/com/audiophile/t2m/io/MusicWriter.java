@@ -25,7 +25,7 @@ public class MusicWriter {
 
     public static void writeMP3(Sequence sequence, String fileName) throws IOException {
         String file = fileNameWithoutEnding(fileName);
-        File wav = new File(file + ".wav");
+        File wav = new File(file + System.currentTimeMillis() + ".wav");
         File mp3 = new File(file + ".mp3");
         if (!mp3.createNewFile())
             return;
@@ -43,10 +43,11 @@ public class MusicWriter {
         Encoder encoder = new Encoder();
         try {
             encoder.encode(wav, mp3, attrs);
-            if (!wav.delete())
-                System.err.println("Could not delete temporary wav file");
         } catch (EncoderException e) {
             e.printStackTrace();
+        }finally {
+            if (!wav.delete())
+                System.err.println("Could not delete temporary wav file");
         }
     }
 

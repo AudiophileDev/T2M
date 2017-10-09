@@ -6,7 +6,6 @@ import java.io.*;
  * A class that holds a collection of methods for file reading.
  *
  * @author Simon Niedermayr
- * Created on 11.09.2017
  */
 public class FileUtils {
     /**

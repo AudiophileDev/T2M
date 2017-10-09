@@ -6,7 +6,6 @@ import java.util.List;
 
 /**
  * @author Simon Niedermayr
- * Created on 12.09.2017
  */
 public class CSVTools {
 

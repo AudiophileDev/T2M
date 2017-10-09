@@ -7,7 +7,6 @@ import javax.sound.midi.Track;
 
 /**
  * @author Simon
- * Created on 03.10.2017.
  */
 public class TestWriter {
 
