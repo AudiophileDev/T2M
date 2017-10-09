@@ -33,7 +33,7 @@ public class TestWriter {
         }
         track.add(new MidiEvent(sm, 0));
 
-        char[] notes = "C D E F G A H H H H ".toCharArray();
+        char[] notes = " CEG FAC GHD C D E F G G A A A G F F E E D D C ".toCharArray();
 
         int n = 0; // current character in notes[] array
         int t = 0; // time in ticks for the composition
