@@ -9,7 +9,6 @@ import java.util.Locale;
  * A class that represents a sentence in a text and holds it meta data and analytics values.
  *
  * @author Simon
- * Created on 05.09.2017.
  */
 public class Sentence {
 

@@ -3,7 +3,6 @@ package com.audiophile.t2m.text;
 /**
  * Represents a word in the text and holds its name, tendency and effect from the database.
  * @author Simon Niedermayr
- * Created on 01.10.2017.
  */
 public class Word {
     private String name;

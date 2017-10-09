@@ -2,7 +2,6 @@ package com.audiophile.t2m.text;
 
 /**
  * @author Simon
- * Created on 24.09.2017.
  */
 public class Utils {
 
