@@ -4,7 +4,6 @@ import com.audiophile.t2m.text.TextAnalyser;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Sequence;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Composer {
@@ -12,8 +11,9 @@ public class Composer {
     private Tempo tempo;
     private String dynamic;
     private Harmony key;
-    private TextAnalyser analysedText;
+    private MusicData musicData;
 
+    private TextAnalyser analysedText;
 
     /**
      * This class merges the different MIDI channels of rhythm, melody and sound effects
@@ -24,6 +24,10 @@ public class Composer {
         this.key = new Harmony(analysedText.getSentences()[0].getWords()[0].getName());
         this.dynamic = dynamic; //forte, piano, cresc, decresc
         this.tempo = new Tempo(analysedText.getAvgWordLength());
+
+        this.musicData = new MusicData(new Tempo(analysedText.getAvgWordLength()),
+                "anyDynamic", /*forte, piano, cresc, decresc*/
+                new Harmony(analysedText.getSentences()[0].getWords()[0].getName().substring(0, 1)));
 
         this.trackGenerators = new ArrayList<>(2);
         this.trackGenerators.add(new MelodyTrack(key, analysedText.getSentences()));
