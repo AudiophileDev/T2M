@@ -6,5 +6,5 @@ import javax.sound.midi.Track;
  * @author Simon
  */
 public interface TrackGenerator {
-    void writeToTrack(Track track);
+    void writeToTrack(Track track, int channel);
 }

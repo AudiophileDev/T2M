@@ -7,7 +7,7 @@ import javax.sound.midi.Sequence;
 import java.util.ArrayList;
 
 public class Composer {
-    private ArrayList<TrackGenerator> trackGenerators;
+    private TrackGenerator[] trackGenerators;
     private Tempo tempo;
     private String dynamic;
     private Harmony key;
@@ -29,24 +29,20 @@ public class Composer {
                 "anyDynamic", /*forte, piano, cresc, decresc*/
                 new Harmony(analysedText.getSentences()[0].getWords()[0].getName().substring(0, 1)));
 
-        this.trackGenerators = new ArrayList<>(2);
-        this.trackGenerators.add(new MelodyTrack(key, analysedText.getSentences()));
-        this.trackGenerators.add(new RhythmTrack(analysedText));
+        this.trackGenerators = new TrackGenerator[2];
+        this.trackGenerators[0] = new MelodyTrack(key, analysedText.getSentences());
+        this.trackGenerators[1] = new RhythmTrack(analysedText);
     }
 
     public Sequence getSequence() {
         Sequence sequence = null;
         try {
             sequence = new Sequence(Sequence.PPQ, 144);
-            for (TrackGenerator t : trackGenerators)
-                t.writeToTrack(sequence.createTrack());
+            for (int i=0;i<trackGenerators.length;i++)
+                    trackGenerators[i].writeToTrack(sequence.createTrack(),i);
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }
         return sequence;
-    }
-
-    public int calcTemp() {
-        return new Tempo(this.analysedText.getAvgWordLength()).averageBpm;
     }
 }

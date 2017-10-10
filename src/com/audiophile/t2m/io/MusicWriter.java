@@ -77,6 +77,9 @@ public class MusicWriter {
             synthesizer.open();
             sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
 
+            Soundbank soundbank = synthesizer.getDefaultSoundbank();
+            Instrument[] instr = soundbank.getInstruments();
+
             // Specify the sequence to play, and the tempo to play it at
             sequencer.setSequence(sequence);
             // sequencer.setTempoInBPM(120);

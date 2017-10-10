@@ -2,11 +2,9 @@ package com.audiophile.t2m.music;
 
 import com.audiophile.t2m.text.TextAnalyser;
 
-import javax.sound.midi.MidiChannel;
-import javax.sound.midi.Sequence;
-import javax.sound.midi.Track;
+import javax.sound.midi.*;
 
-public class RhythmTrack implements TrackGenerator{
+public class RhythmTrack implements TrackGenerator {
     private MidiChannel midiChannel;
     private Sequence sequence;
 
@@ -15,7 +13,15 @@ public class RhythmTrack implements TrackGenerator{
 
 
     @Override
-    public void writeToTrack(Track track) {
-
+    public void writeToTrack(Track track, int channel) {
+        try {
+            for(int j=0;j<128;j++) {
+                MidiUtils.ChangeInstrument(j, track, channel, 0);
+                for (int i = 30; i < 50; i++)
+                    MidiUtils.addNote(track, i * 64, 64, i, 64, channel);
+            }
+        } catch (InvalidMidiDataException e) {
+            e.printStackTrace();
+        }
     }
 }
