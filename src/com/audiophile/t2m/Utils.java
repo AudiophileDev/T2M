@@ -1,4 +1,4 @@
-package com.audiophile.t2m.text;
+package com.audiophile.t2m;
 
 /**
  * @author Simon
@@ -8,7 +8,8 @@ public class Utils {
     /**
      * Applies a one-dimensional gaussian blur to the array, to remove jumps between values.
      * The original array is not changed.
-     * @param data The source data, which is blurred.
+     *
+     * @param data   The source data, which is blurred.
      * @param radius The radius of the blur. Maximum is the half of the data array length
      * @return A new array with the blur applied to the source data.
      */
@@ -20,7 +21,7 @@ public class Utils {
         if (length < 2)
             return new float[]{data[0]};
         // Assertion for bug finding
-        assert radius>length/2;
+        assert radius > length / 2;
 
         if (radius > length / 2)
             radius = length / 2;
@@ -35,20 +36,29 @@ public class Utils {
         return result;
     }
 
+    public static String normalizeText(String text) {
+        text = text.toLowerCase()
+                .replaceAll("ä", "ae")
+                .replaceAll("ö", "oe")
+                .replaceAll("ü", "ue");
+        return text;
+    }
+
     /**
      * Clamps a value to a certain range.
      * <p>
-     *     Examples:
-     *     <ul>
-     *         <li>clamp(4,0,5) => 4</li>
-     *         <li>clamp(-2,-1,3) => -1</li>
-     *         <li>clamp(100,10,50) => 50</li>
-     *     </ul>
-     *
+     * Examples:
+     * <ul>
+     * <li>clamp(4,0,5) => 4</li>
+     * <li>clamp(-2,-1,3) => -1</li>
+     * <li>clamp(100,10,50) => 50</li>
+     * </ul>
+     * <p>
      * </p>
+     *
      * @param value The value to clamp
-     * @param min The minimum value of the result.
-     * @param max The maximum value of the result.
+     * @param min   The minimum value of the result.
+     * @param max   The maximum value of the result.
      * @return The value if it is within the given range. Else the bounds are returned.
      */
     public static int clamp(int value, int min, int max) {

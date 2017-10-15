@@ -30,14 +30,18 @@ public class Composer {
                 new Harmony(analysedText.getSentences()[0].getWords()[0].getName().substring(0, 1)));
 
         this.trackGenerators = new TrackGenerator[2];
-        this.trackGenerators[0] = new MelodyTrack(key, analysedText.getSentences());
+        this.trackGenerators[0] = new MelodyTrack(key, analysedText.getSentences(),"noteMapping.csv");
         this.trackGenerators[1] = new RhythmTrack(analysedText);
     }
 
+    /**
+     * Merges the tracks of all music generators into one sequence
+     * @return A Sequence with all tracks
+     */
     public Sequence getSequence() {
         Sequence sequence = null;
         try {
-            sequence = new Sequence(Sequence.PPQ, 144);
+            sequence = new Sequence(Sequence.PPQ, 128);
             for (int i=0;i<trackGenerators.length;i++)
                     trackGenerators[i].writeToTrack(sequence.createTrack(),i);
         } catch (InvalidMidiDataException e) {

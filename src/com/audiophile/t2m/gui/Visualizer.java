@@ -1,6 +1,7 @@
 package com.audiophile.t2m.gui;
 
 import com.audiophile.t2m.Main;
+import com.audiophile.t2m.Utils;
 import com.audiophile.t2m.text.*;
 import javafx.application.Application;
 import javafx.application.Platform;

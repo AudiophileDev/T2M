@@ -82,7 +82,7 @@ public class MusicWriter {
 
             // Specify the sequence to play, and the tempo to play it at
             sequencer.setSequence(sequence);
-            // sequencer.setTempoInBPM(120);
+             sequencer.setTempoInBPM(128);
 
             // Use Semaphore to block thread while playing
             Semaphore s = new Semaphore(0);
@@ -97,7 +97,6 @@ public class MusicWriter {
                         Thread.sleep(500);
                     } catch (InterruptedException ignored) {
                     }
-
                     sequencer.stop();
                     sequencer.close();
                     synthesizer.close();

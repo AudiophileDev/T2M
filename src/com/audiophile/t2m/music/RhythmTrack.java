@@ -14,14 +14,15 @@ public class RhythmTrack implements TrackGenerator {
 
     @Override
     public void writeToTrack(Track track, int channel) {
-        try {
+        /*try {
+            int n=0;
             for(int j=0;j<128;j++) {
-                MidiUtils.ChangeInstrument(j, track, channel, 0);
-                for (int i = 30; i < 50; i++)
-                    MidiUtils.addNote(track, i * 64, 64, i, 64, channel);
+                MidiUtils.ChangeInstrument(j, track, channel, n);
+                for (int i = 40; i < 50; i++)
+                    MidiUtils.addNote(track, n+=64, 64, i, 64, channel);
             }
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 }
