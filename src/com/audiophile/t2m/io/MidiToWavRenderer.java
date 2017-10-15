@@ -25,10 +25,12 @@ import java.util.Map;
  * @author Karl Helgason
  * @author David Koelle
  * @author Joren Six
+ *
+ * @author Simon Niedermayr
  */
 class MidiToWavRenderer {
     /**
-     * The synth used to render the audio.
+     * The synthesizer used to render the audio.
      */
     private final transient AudioSynthesizer synth;
 
@@ -45,11 +47,11 @@ class MidiToWavRenderer {
     /**
      * Creates a WAV file based on the Sequence, using the default soundbank.
      *
-     * @param sequence
-     * @param outputFile
-     * @throws MidiUnavailableException
-     * @throws InvalidMidiDataException
-     * @throws IOException
+     * @param sequence The sequence to write to the file
+     * @param outputFile The file to write to
+     * @throws MidiUnavailableException No Midi system available
+     * @throws InvalidMidiDataException Invalid data
+     * @throws IOException Could not write to file
      */
     public void createWavFile(final Sequence sequence, final File outputFile)
             throws MidiUnavailableException, InvalidMidiDataException, IOException {

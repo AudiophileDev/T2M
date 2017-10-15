@@ -30,6 +30,15 @@ public class FileUtils {
         return new String(data, "UTF-8");
     }
 
+    /**
+     * Writes the given <code>content</code> to the given file.
+     * If <code>append</code> is true, the content is added to the end of the file.
+     * Else the file is overridden.
+     * @param fileName The file to write to
+     * @param content The content to write to the file
+     * @param append Append content to end of file
+     * @throws IOException Thrown if writing to file was not possible
+     */
     public static void WriteFile(String fileName, String content, boolean append) throws IOException {
         File file = new File(fileName);
         if (!file.exists())

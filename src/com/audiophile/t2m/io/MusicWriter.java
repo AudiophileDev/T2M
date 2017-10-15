@@ -12,8 +12,18 @@ import java.util.concurrent.Semaphore;
  */
 public class MusicWriter {
 
+    /**
+     * All available output methods
+     */
     public static final String MP3 = "mp3", WAV = "wav", PLAY = "play", MIDI = "midi";
 
+    /**
+     * Writes a given sequence to a midi file.
+     *
+     * @param sequence The sequence to write to the file
+     * @param fileName The file to write to
+     * @throws IOException Thrown if writing to file was not possible
+     */
     public static void writeMidi(Sequence sequence, String fileName) throws IOException {
         int[] allowedTypes = MidiSystem.getMidiFileTypes(sequence);
         if (allowedTypes.length == 0) {
@@ -23,6 +33,14 @@ public class MusicWriter {
         }
     }
 
+    /**
+     * Converts the given <code>sequence</code> to a wav file and then to a mp3 file.
+     * The temporary wav file is deleted afterwards.
+     * @see MusicWriter#writeWav(Sequence, String)
+     * @param sequence The sequence to write to the file
+     * @param fileName The file to write to
+     * @throws IOException Thrown if writing to file was not possible
+     */
     public static void writeMP3(Sequence sequence, String fileName) throws IOException {
         String file = fileNameWithoutEnding(fileName);
         File wav = new File(file + System.currentTimeMillis() + ".wav");
@@ -43,14 +61,21 @@ public class MusicWriter {
         Encoder encoder = new Encoder();
         try {
             encoder.encode(wav, mp3, attrs);
+            if (!fileName.equals(mp3.getName()))
+                System.out.println("Wrote mp3 to \"" + mp3.getPath() + "\"");
         } catch (EncoderException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             if (!wav.delete())
                 System.err.println("Could not delete temporary wav file");
         }
     }
 
+    /**
+     * Removes the extension from a filename
+     * @param fileName The filename with extension
+     * @return The filename without extension
+     */
     private static String fileNameWithoutEnding(String fileName) {
         int index = fileName.lastIndexOf(".");
         if (index > 0 && index + 1 < fileName.length())
@@ -58,6 +83,14 @@ public class MusicWriter {
         else return fileName;
     }
 
+
+    /**
+     * Saves the given <code>sequence</code> to a wav file.
+     * @param sequence The sequence to write to the file
+     * @param fileName The file to write to
+     * @throws IOException Thrown if writing to file was not possible
+     * @see MidiToWavRenderer
+     */
     public static void writeWav(Sequence sequence, String fileName) throws IOException {
         try {
             MidiToWavRenderer renderer = new MidiToWavRenderer();
@@ -69,6 +102,11 @@ public class MusicWriter {
 
     private static final int END_OF_TRACK = 47;
 
+    /**
+     * Plays given sequence direct from the console. For testing only.
+     * Blocks thread while playing.
+     * @param sequence The sequence to play
+     */
     public synchronized static void play(Sequence sequence) {
         try {
             Sequencer sequencer = MidiSystem.getSequencer();
@@ -77,12 +115,9 @@ public class MusicWriter {
             synthesizer.open();
             sequencer.getTransmitter().setReceiver(synthesizer.getReceiver());
 
-            Soundbank soundbank = synthesizer.getDefaultSoundbank();
-            Instrument[] instr = soundbank.getInstruments();
-
             // Specify the sequence to play, and the tempo to play it at
             sequencer.setSequence(sequence);
-             sequencer.setTempoInBPM(128);
+            sequencer.setTempoInBPM(128);
 
             // Use Semaphore to block thread while playing
             Semaphore s = new Semaphore(0);

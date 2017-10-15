@@ -154,7 +154,7 @@ public class CSVTools {
      *
      * @param fileName The path of the file to be written
      * @param content  The content which is written to the file
-     * @throws IOException
+     * @throws IOException Thrown if file could not be written
      */
     public static void WriteFile(String fileName, String[][] content) throws IOException {
         StringBuilder builder = new StringBuilder();
