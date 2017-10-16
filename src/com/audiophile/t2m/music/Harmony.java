@@ -1,70 +1,133 @@
 package com.audiophile.t2m.music;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Objects;
 
-/**
- * creates chords
- * stores array of notesName and the modus of the chords
- */
+
 public class Harmony {
-    String[] notesName;
-    int[] notesNumber;
-    int modus;
+    private ArrayList<String> notesName;
+    private ArrayList<Integer> notesNumber;
+    private String chord;
+    private char baseNoteChar;
+
+    private int baseNoteMidi;
+
+    private boolean sept;
+
+    private String mode;
 
     /**
-     * Create a harmony by chord name
+     * Create a harmony by chord name and modus
+     * <p>
+     * sets if sept chord or if its the base of a piece
      *
-     * @param chordName
+     * @param baseNote tonic of the chord
+     * @param mode     mode of the harmony: either "maj" for a major chord or "min" for a minor chord
+     * @param sept     sets if it is a sept chord or not
+     * @param base     sets if it is the base key of the piece
      */
-    public Harmony(String chordName) {
-        this.notesName = new String[5];
-        this.notesNumber = new int[3];
-        this.notesName[0] = chordName.substring(0, 1);
-        this.notesNumber[0] = (int) this.notesName[0].toCharArray()[0];
+    public Harmony(char baseNote, String mode, boolean sept, boolean base) {
+        this.sept = sept;
+        this.mode = mode;
+        this.notesName = new ArrayList<String>();
+        this.notesNumber = new ArrayList<Integer>();
+        //if (base)
+        this.baseNoteChar = maskNote(baseNote);
+        //TODO add masking for base chords
+        //else this.baseNoteChar = baseNote;
+        this.baseNoteMidi = this.baseNoteChar - 7; // annotation: -7 only works for c
+        //TODO prove compatibility with noteMapping.csv
+        this.chord = "";
+        buildChord();
+        //System.out.println(this.chord);
+    }
+
+    /**
+     * builds a chord in numbers ready for direct usage in midi
+     */
+
+    //TODO: clear if unnecessary
+    public void buildChord() {
+        this.notesNumber.add(0, (int) baseNoteMidi);
+        this.notesName.add(0, String.valueOf(baseNoteChar));
+        chord = lookUpChord();
         for (int i = 1; i < 3; i++) {
             try {
-                this.notesName[i] = Character.toString((char) (notesNumber[0] + 2));
-                this.notesNumber[i] = notesNumber[i - 1] + 2;
+                this.notesNumber.add(i, notesNumber.get(i - 1) + 2);
             } catch (StringIndexOutOfBoundsException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println(chordName + "" + Arrays.toString(this.notesName));
     }
 
     /**
-     * create harmony by single notesName
+     * builds the chord in a string which could be used for the track writer
      *
-     * @param notesName
+     * @return the chord in the form of: basenote concatenated with its third and fifth and optional seventh
      */
-    public Harmony(String[] notesName) {
-        this.notesName = notesName;
+    public String lookUpChord() {
+        String chord = String.valueOf(baseNoteChar);
+        String threaAndFive = "";
+        switch (baseNoteChar) {
+            case 'C':
+                threaAndFive = (Objects.equals(this.mode, "maj") ? "E" : "Eb") + "G";
+                if (this.sept) threaAndFive = threaAndFive.concat("Hb");
+                break;
+            case 'F':
+                threaAndFive = (Objects.equals(this.mode, "maj") ? "A" : "Ab") + "C";
+                if (this.sept) threaAndFive = threaAndFive.concat("Eb");
+                break;
+            case 'G':
+                threaAndFive = (Objects.equals(this.mode, "maj") ? "H" : "Hb") + "D";
+                if (this.sept) threaAndFive = threaAndFive.concat("F");
+                break;
+            case 'D':
+                threaAndFive = (Objects.equals(this.mode, "maj") ? "F" : "F#") + "A";
+                if (this.sept) threaAndFive = threaAndFive.concat("C");
+                break;
+            case 'H':
+                threaAndFive = (Objects.equals(this.mode, "maj") ? "D" : "D#") + "F#";
+                if (this.sept) threaAndFive = threaAndFive.concat("A");
+                break;
+            default:
+                break;
+
+        }
+        return chord.concat(threaAndFive);
     }
 
-    public void intervall(String baseNote, String intervall) {
+    /**
+     * masks any letter to a basenote
+     * basenote is either c, f or g for simplicity reasons
+     * this limits the music output to three different base keys
+     *
+     * @param baseNote tonic of the chord
+     * @return the masked basenote
+     */
+    public char maskNote(char baseNote) {
+        String note = "CFG";
+        if (!note.contains(String.valueOf(baseNote)))
+            baseNote = (note.toCharArray()[baseNote % note.length()]);
+        return (char) (baseNote);
     }
 
-    public String[] getNotesName() {
-        return notesName;
+    public String getChord() {
+        return chord;
     }
 
-    public void setNotesName(String[] notesName) {
-        this.notesName = notesName;
+    public char getBaseNoteChar() {
+        return baseNoteChar;
     }
 
-    public int[] getNotesNumber() {
-        return notesNumber;
+    public String getMode() {
+        return mode;
     }
 
-    public void setNotesNumber(int[] notesNumber) {
-        this.notesNumber = notesNumber;
+    public boolean getSept() {
+        return sept;
     }
 
-    public int getModus() {
-        return modus;
-    }
-
-    public void setModus(int modus) {
-        this.modus = modus;
+    public int getBaseNoteMidi() {
+        return baseNoteMidi;
     }
 }

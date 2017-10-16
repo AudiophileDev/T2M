@@ -5,18 +5,24 @@ import com.audiophile.t2m.io.CSVTools;
 import com.audiophile.t2m.text.Sentence;
 import com.audiophile.t2m.text.Word;
 
-import javax.sound.midi.*;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.Track;
 import java.io.IOException;
+import java.util.Objects;
 
 public class MelodyTrack implements TrackGenerator {
     private int[] toneMapping;
     private Sentence[] sentences;
+    private Harmony baseKey;
+    private Harmony currentKey;
 
     private static final int numOfChars = 255, numOfNotes = 128;
 
-    public MelodyTrack(Harmony tone, Sentence[] text, String noteMappingFile) {
+    public MelodyTrack(Harmony baseKey, Sentence[] text, String noteMappingFile) {
         this.sentences = text;
         this.loadToneMapping(noteMappingFile);
+        this.baseKey = baseKey;
+        this.currentKey = baseKey;
     }
 
     @Override
@@ -29,18 +35,24 @@ public class MelodyTrack implements TrackGenerator {
         int n = 0; // Marks position an track
         int len = 64; // Length of the notes
         int vel = 64; // Loudness
+        int wordCount = 1;
         try {
             for (Sentence s : sentences) {
                 // Increase loudness for exclamation sentences
                 if (s.getSentenceType() == Sentence.SentenceType.Exclamation)
-                    vel = 100;
+                    vel = 128;
                 else vel = 64;
                 for (Word w : s.getWords())
                     for (char c : Utils.normalizeText(w.getName()).toCharArray()) {
                         int tone = c >= toneMapping.length ? getClosestTone(c) : c;
-                        MidiUtils.addNote(track, n, len, toneMapping[tone], vel, channel);
+                        int playable = toneMapping[tone];
+                        playable = inScale(playable);
+                        playable = catchOutliers(playable);
+                        MidiUtils.addNote(track, n, len, playable, vel, channel);
                         if (c % 3 == 0)
-                            MidiUtils.addNote(track, n, len * 2, toneMapping[tone / 2], vel, channel);
+                            MidiUtils.addNote(track, n, len * 2, playable + (currentKey.getMode().equals("maj") ? 4 : 3), vel, channel);
+                        if (c % 8 == 0)
+                            MidiUtils.addNote(track, n, len * 2, playable + 7, vel, channel);
                         n += len;
                         // Make next note longer if character is vocal
                         if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')
@@ -50,12 +62,61 @@ public class MelodyTrack implements TrackGenerator {
                         //TODO Only input as much text as needed (remove filler words)
                         if (n > (128 * 30)) // Sets fixed track length of 15sec
                             return;
+                        //TODO Make sensible chord switches
+                       /* if (wordCount % 15 == 0) changeChord(4);
+                        else if (wordCount % 10 == 0) changeChord(5);
+                        else if (wordCount % 5 == 0) {
+                            changeChord(0);
+                        }
+                        wordCount++;*/
                     }
-
             }
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * changes the current chord to either the fourth or the fifth pitch in the scale
+     *
+     * @param pitch sets the pitch in the scale
+     */
+    public void changeChord(int pitch) {
+        currentKey = new Harmony((char) (baseKey.getBaseNoteChar() + (pitch == 4 ? 5 : pitch == 5 ? 7 : 0)), currentKey.getMode(), currentKey.getSept(), false);
+
+    }
+
+    /**
+     * First the method checks if a tone is in the current scale
+     * Secont it adjusts the tone upwards to fit in the scale
+     *
+     * @param tone the tone which should be adjusted
+     * @return the adjusted tone as an integer value
+     */
+    public int inScale(int tone) {
+        String mode = currentKey.getMode();
+        int baseNote = currentKey.getBaseNoteMidi();
+        int toneToCalc = (tone - baseNote) % 12; // get tone to one octave
+        int[] compNotes = {0, 2, (Objects.equals(mode, "min") ? 3 : 4), 5, 7, (Objects.equals(mode, "min") ? 8 : 9), (Objects.equals(mode, "min") ? 10 : 11)}; // min: 0,2,3,5,7,8,10,12 ; maj : 0,2,4,5,7,9,11,12
+        for (int i : compNotes)
+            if (i == toneToCalc) { //tone is in the scale
+                return tone;
+            }
+        return ++tone;
+    }
+
+    /**
+     * If a tone differs from the basenote by two ocatves (equal to 24 half-tone steps) it is rescaled to the cotave above or below the basenote
+     *
+     * @param tone the tone which should be adjusted
+     * @return the adjusted tone
+     */
+    public int catchOutliers(int tone) {
+        int baseNote = baseKey.getBaseNoteMidi();
+        if (Math.abs(tone - baseNote) >= 24)
+            if (tone > baseNote) tone = +baseNote + (tone % 12);
+            else tone = baseNote - (tone % 12);
+        return tone;
     }
 
     /**

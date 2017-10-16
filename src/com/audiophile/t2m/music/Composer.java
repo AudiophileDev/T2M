@@ -21,29 +21,31 @@ public class Composer {
      */
     public Composer(TextAnalyser analysedText) {
         this.analysedText = analysedText;
-        this.key = new Harmony(analysedText.getSentences()[0].getWords()[0].getName());
+        //TODO get key from tendencies
+        this.key = new Harmony(analysedText.getSentences()[0].getWords()[0].getName().toCharArray()[0], "maj", false, true);
         this.dynamic = dynamic; //forte, piano, cresc, decresc
         this.tempo = new Tempo(analysedText.getAvgWordLength());
 
-        this.musicData = new MusicData(new Tempo(analysedText.getAvgWordLength()),
+        this.musicData = new MusicData(tempo,
                 "anyDynamic", /*forte, piano, cresc, decresc*/
-                new Harmony(analysedText.getSentences()[0].getWords()[0].getName().substring(0, 1)));
+                key);
 
         this.trackGenerators = new TrackGenerator[2];
-        this.trackGenerators[0] = new MelodyTrack(key, analysedText.getSentences(),"noteMapping.csv");
+        this.trackGenerators[0] = new MelodyTrack(key, analysedText.getSentences(), "noteMapping.csv");
         this.trackGenerators[1] = new RhythmTrack(analysedText);
     }
 
     /**
      * Merges the tracks of all music generators into one sequence
+     *
      * @return A Sequence with all tracks
      */
     public Sequence getSequence() {
         Sequence sequence = null;
         try {
             sequence = new Sequence(Sequence.PPQ, 128);
-            for (int i=0;i<trackGenerators.length;i++)
-                    trackGenerators[i].writeToTrack(sequence.createTrack(),i);
+            for (int i = 0; i < trackGenerators.length; i++)
+                trackGenerators[i].writeToTrack(sequence.createTrack(), i);
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }
