@@ -1,10 +1,10 @@
 package com.audiophile.t2m;
 
-import com.audiophile.t2m.music.Composer;
 import com.audiophile.t2m.io.FileUtils;
+import com.audiophile.t2m.io.MusicWriter;
+import com.audiophile.t2m.music.Composer;
 import com.audiophile.t2m.text.DatabaseHandler;
 import com.audiophile.t2m.text.TextAnalyser;
-import com.audiophile.t2m.io.MusicWriter;
 
 import javax.sound.midi.Sequence;
 import java.io.File;
@@ -21,12 +21,12 @@ public class Main {
             + MusicWriter.MIDI + " | "
             + MusicWriter.PLAY
             + "}] [-p]\n"
-            +"Args:\n"
-            +"\t articlefile: The article saved as file\n"
-            +"\t outputfile: The file to write the music to\n"
-            +"\t databasefile: The words database file\n"
-            +"\t -o: The output type\n"
-            +"\t -p: Enables precise search\n";
+            + "Args:\n"
+            + "\t articlefile: The article saved as file\n"
+            + "\t outputfile: The file to write the music to\n"
+            + "\t databasefile: The words database file\n"
+            + "\t -o: The output type\n"
+            + "\t -p: Enables precise search\n";
 
 
     public static void main(String[] args) {
@@ -53,14 +53,12 @@ public class Main {
         TextAnalyser analyser = new TextAnalyser(buffer.toString());
         long endTime = System.currentTimeMillis();
         System.out.println("Analyzed \"" + args[0] + "\" in " + (endTime - startTime) + "ms");
-
+        Composer composer = new Composer(analyser);
         // Generate music
         startTime = System.currentTimeMillis();
-        Composer composer = new Composer(analyser);
+        Sequence sequence = composer.getSequence();
         endTime = System.currentTimeMillis();
         System.out.println("Generated music in " + (endTime - startTime) + "ms");
-
-        Sequence sequence = composer.getSequence();
 
         // Output music
         String outputType = extractArgument("o", args, "mp3");
@@ -162,6 +160,7 @@ public class Main {
             return false;
         }
     }
+
     /**
      * This methods validates the input arguments and makes sure the syntax is right <br>
      *

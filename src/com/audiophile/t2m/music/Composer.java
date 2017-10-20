@@ -4,7 +4,6 @@ import com.audiophile.t2m.text.TextAnalyser;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Sequence;
-import java.util.ArrayList;
 
 public class Composer {
     private TrackGenerator[] trackGenerators;
@@ -22,7 +21,7 @@ public class Composer {
     public Composer(TextAnalyser analysedText) {
         this.analysedText = analysedText;
         //TODO get key from tendencies
-        this.key = new Harmony(analysedText.getSentences()[0].getWords()[0].getName().toCharArray()[0], "maj", false, true);
+        this.key = new Harmony(analysedText.getSentences()[0].getWords()[0].getName().substring(0, 1), Modes.major, false);
         this.dynamic = dynamic; //forte, piano, cresc, decresc
         this.tempo = new Tempo(analysedText.getAvgWordLength());
 
@@ -31,7 +30,7 @@ public class Composer {
                 key);
 
         this.trackGenerators = new TrackGenerator[2];
-        this.trackGenerators[0] = new MelodyTrack(key, analysedText.getSentences(), "noteMapping.csv");
+        this.trackGenerators[0] = new MelodyTrack(musicData, analysedText.getSentences(), "noteMapping.csv");
         this.trackGenerators[1] = new RhythmTrack(analysedText);
     }
 
@@ -43,7 +42,8 @@ public class Composer {
     public Sequence getSequence() {
         Sequence sequence = null;
         try {
-            sequence = new Sequence(Sequence.PPQ, 128);
+            //TODO find PPQ factor for setting Tempo
+            sequence = new Sequence(Sequence.PPQ, tempo.getAverageBpm());
             for (int i = 0; i < trackGenerators.length; i++)
                 trackGenerators[i].writeToTrack(sequence.createTrack(), i);
         } catch (InvalidMidiDataException e) {

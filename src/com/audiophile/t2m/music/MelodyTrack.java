@@ -8,21 +8,26 @@ import com.audiophile.t2m.text.Word;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Track;
 import java.io.IOException;
-import java.util.Objects;
 
 public class MelodyTrack implements TrackGenerator {
     private int[] toneMapping;
     private Sentence[] sentences;
     private Harmony baseKey;
     private Harmony currentKey;
+    private Tempo tempo;
+    private int dramaLevel;
 
     private static final int numOfChars = 255, numOfNotes = 128;
 
-    public MelodyTrack(Harmony baseKey, Sentence[] text, String noteMappingFile) {
+    private static final int WHOLE = 512, HALF = 256, QUARTER = 128, QUAVER = 64, SEMIQUAVER = 32, DREISEMQUAVER = 16;
+
+    public MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile) {
         this.sentences = text;
         this.loadToneMapping(noteMappingFile);
-        this.baseKey = baseKey;
-        this.currentKey = baseKey;
+        this.baseKey = musicData.getKey();
+        this.tempo = musicData.getTempo();
+        this.currentKey = new Harmony(baseKey, 0);
+        this.dramaLevel =  text[0].getWordCount() % 3;
     }
 
     @Override
@@ -33,9 +38,11 @@ public class MelodyTrack implements TrackGenerator {
             e.printStackTrace();
         }
         int n = 0; // Marks position an track
-        int len = 64; // Length of the notes
+        int len = QUARTER, oldLen = len; // Length of the notes in 128th per beat
         int vel = 64; // Loudness
-        int wordCount = 1;
+        int part = 0;
+        int playable, previous = baseKey.getBaseNoteMidi();
+
         try {
             for (Sentence s : sentences) {
                 // Increase loudness for exclamation sentences
@@ -45,44 +52,104 @@ public class MelodyTrack implements TrackGenerator {
                 for (Word w : s.getWords())
                     for (char c : Utils.normalizeText(w.getName()).toCharArray()) {
                         int tone = c >= toneMapping.length ? getClosestTone(c) : c;
-                        int playable = toneMapping[tone];
-                        playable = inScale(playable);
-                        playable = catchOutliers(playable);
-                        MidiUtils.addNote(track, n, len, playable, vel, channel);
-                        if (c % 3 == 0)
-                            MidiUtils.addNote(track, n, len * 2, playable + (currentKey.getMode().equals("maj") ? 4 : 3), vel, channel);
-                        if (c % 8 == 0)
-                            MidiUtils.addNote(track, n, len * 2, playable + 7, vel, channel);
-                        n += len;
-                        // Make next note longer if character is vocal
-                        if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')
-                            len = 128;
-                        else
-                            len = 64;
-                        //TODO Only input as much text as needed (remove filler words)
-                        if (n > (128 * 30)) // Sets fixed track length of 15sec
-                            return;
-                        //TODO Make sensible chord switches
-                       /* if (wordCount % 15 == 0) changeChord(4);
-                        else if (wordCount % 10 == 0) changeChord(5);
-                        else if (wordCount % 5 == 0) {
-                            changeChord(0);
+                        if (n % (4 * WHOLE) == 0) {
+                            currentKey = new Harmony(baseKey, 7);
+                        } else if (n % (2 * WHOLE) == 0) {
+                            currentKey = new Harmony(baseKey, 5);
                         }
-                        wordCount++;*/
+                        playable = toneMapping[tone];
+                        playable = catchOutliers(playable, previous);
+                        playable = inScale(playable);
+                        if (oldLen == SEMIQUAVER + QUAVER || oldLen == QUARTER + QUAVER) {
+                            len = oldLen / 3;
+                        } else len = setRhythm(c, part + 1);
+                        //chord on one
+                        oldLen = len;
+                        if (n % WHOLE == 0) {
+                            len = QUARTER;
+                            MidiUtils.addNote(track, n, len + 64 * ((playable % 4) + 1), playable, vel, channel);
+                            MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(0) - 24, vel, channel);
+                            MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(2) - 24, vel, channel);
+                            MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(0) - 12, vel, channel);
+                            MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(1) - 12, vel, channel);
+                            MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(2) - 12, vel, channel);
+                            System.out.print(currentKey.getNotesNumber() + " ->( " + playable + ", " + (len + 64 * ((playable % 4) + 1)) + ") ");
+                            len = oldLen;
+                        } else {
+                            MidiUtils.addNote(track, n, len, playable, vel, channel);
+                            System.out.print(playable % 12);
+                        }
+                        System.out.println(", " + len);
+                        n += len;
+                        previous = playable;
+
+                        //TODO Only input as much text as needed (remove filler words)
+
+                        if (n > ((128 * tempo.getAverageBpm()) / 4)) {
+                            part++;
+                            if (part == dramaLevel - 1) {
+                                n = 0;
+                                this.baseKey.setBaseNoteMidi(this.baseKey.getBaseNoteMidi() + 12);
+                            } else if (part == dramaLevel) {
+                                n = 0;
+                                this.baseKey.setBaseNoteMidi(this.baseKey.getBaseNoteMidi() - 24);
+                            }
+                            if (part > dramaLevel) // Sets fixed track length of 15sec
+                            {
+                                //Gaudi ende
+                                n += QUARTER;
+                                len = QUAVER;
+                                Harmony cadenceKey = new Harmony(baseKey, 7);
+                                MidiUtils.addNote(track, n, len, cadenceKey.getBaseNoteMidi() - 12, vel, channel);
+                                MidiUtils.addNote(track, n, len, cadenceKey.getNotesNumber().get(1) - 12, vel, channel);
+                                MidiUtils.addNote(track, n, len, cadenceKey.getNotesNumber().get(2) - 12, vel, channel);
+                                MidiUtils.addNote(track, n + QUAVER, len, baseKey.getBaseNoteMidi(), vel, channel);
+                                MidiUtils.addNote(track, n + QUAVER, len, baseKey.getNotesNumber().get(1), vel, channel);
+                                MidiUtils.addNote(track, n + QUAVER, len, baseKey.getNotesNumber().get(2), vel, channel);
+                                return;
+                            }
+                        }
                     }
             }
+            //TODO add end phrase
+
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * changes the current chord to either the fourth or the fifth pitch in the scale
-     *
-     * @param pitch sets the pitch in the scale
-     */
-    public void changeChord(int pitch) {
-        currentKey = new Harmony((char) (baseKey.getBaseNoteChar() + (pitch == 4 ? 5 : pitch == 5 ? 7 : 0)), currentKey.getMode(), currentKey.getSept(), false);
+    public int setRhythm(int c, int inTwoVoices) {
+        int len;
+        switch (c % (6 / inTwoVoices)) {
+            case 0:
+                len = HALF;
+                break;
+            case 1:
+                len = QUARTER + QUAVER;
+                break;
+            case 2:
+                len = QUARTER;
+                break;
+            case 3:
+                len = QUAVER;
+                break;
+            case 4:
+                len = QUAVER + SEMIQUAVER;
+                break;
+            case 5:
+                len = SEMIQUAVER;
+                break;
+            case 6:
+                len = QUAVER;
+                break;
+            default:
+                len = QUARTER;
+        }
+        return len;
+    }
+
+    public void parseRhythm(String rhythm) {
+        char[] singeValues = rhythm.toCharArray();
 
     }
 
@@ -94,10 +161,11 @@ public class MelodyTrack implements TrackGenerator {
      * @return the adjusted tone as an integer value
      */
     public int inScale(int tone) {
-        String mode = currentKey.getMode();
+        int mode = currentKey.getMode();
         int baseNote = currentKey.getBaseNoteMidi();
-        int toneToCalc = (tone - baseNote) % 12; // get tone to one octave
-        int[] compNotes = {0, 2, (Objects.equals(mode, "min") ? 3 : 4), 5, 7, (Objects.equals(mode, "min") ? 8 : 9), (Objects.equals(mode, "min") ? 10 : 11)}; // min: 0,2,3,5,7,8,10,12 ; maj : 0,2,4,5,7,9,11,12
+        int toneToCalc = tone % 12; // get tone to one octave
+        int[] compNotes = {0, 2, mode, 5, 7, (mode == 3 ? 8 : 9), (mode == 3 ? 10 : 11)};
+        // min: 0,2,3,5,7,8,10,12 ; maj : 0,2,4,5,7,9,11,12
         for (int i : compNotes)
             if (i == toneToCalc) { //tone is in the scale
                 return tone;
@@ -111,11 +179,17 @@ public class MelodyTrack implements TrackGenerator {
      * @param tone the tone which should be adjusted
      * @return the adjusted tone
      */
-    public int catchOutliers(int tone) {
-        int baseNote = baseKey.getBaseNoteMidi();
-        if (Math.abs(tone - baseNote) >= 24)
-            if (tone > baseNote) tone = +baseNote + (tone % 12);
-            else tone = baseNote - (tone % 12);
+    public int catchOutliers(int tone, int previous) {
+        int range;
+        if (tone > 12 + previous)
+            tone = previous + (tone % 12);
+        else if (tone < previous - 12)
+            tone = previous - (tone % 12);
+        range = tone - this.baseKey.getBaseNoteMidi();
+        if (range >= 24) {
+            tone = previous - (tone % 12);
+        } else if (range <= -24)
+            tone = previous + (tone % 12);
         return tone;
     }
 
@@ -191,4 +265,5 @@ public class MelodyTrack implements TrackGenerator {
                     toneMapping[i] = i; // Use char mapping as fallback
         }
     }
+
 }
