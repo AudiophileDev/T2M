@@ -4,9 +4,10 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
+import java.util.ArrayList;
+import java.util.Objects;
 
 public class MidiUtils {
-
 
 
     private static final int DAMPER_PEDAL = 64;
@@ -18,8 +19,9 @@ public class MidiUtils {
     private static final int[] offsets = { // add these amounts to the base value
             // A B C D E F G
             -4, -2, 0, 1, 3, 5, 7};
+
     //TODO remove before deploy
-    public static void writeTestMusic(Track track, int channel, String music){
+    public static void writeTestMusic(Track track, int channel, String music) {
 
         char[] notes = music.toCharArray();
 
@@ -29,7 +31,7 @@ public class MidiUtils {
         // These values persist and apply to all notes 'till changed
         int notelength = 64; // default to quarter notes
         int velocity = 64; // default to middle volume
-        int basekey = 60-(channel*5); // 60 is middle C. Adjusted up and down by octave
+        int basekey = 60 - (channel * 5); // 60 is middle C. Adjusted up and down by octave
         boolean sustain = false; // is the sustain pedal depressed?
         int numnotes = 0; // How many notes in current chord?
 
@@ -86,7 +88,7 @@ public class MidiUtils {
                 }
 
                 try {
-                    addNote(track, t, notelength, key, velocity,channel);
+                    addNote(new Note(track, t, notelength, key, velocity, channel));
                 } catch (InvalidMidiDataException e) {
                     e.printStackTrace();
                 }
@@ -113,8 +115,13 @@ public class MidiUtils {
     }
 
     // A convenience method to add a note to the track on channel 0
-    public static void addNote(Track track, int startTick, int tickLength, int key, int velocity,int channel)
-            throws InvalidMidiDataException {
+    public static void addNote(Note note) throws InvalidMidiDataException {
+        Track track = note.getTrack();
+        int startTick = note.getStartTick();
+        int tickLength = note.getLength();
+        int key = note.getKey();
+        int velocity = note.getVel();
+        int channel = note.getChannel();
         ShortMessage on = new ShortMessage();
         on.setMessage(ShortMessage.NOTE_ON, channel, key, velocity);
         ShortMessage off = new ShortMessage();
@@ -123,8 +130,33 @@ public class MidiUtils {
         track.add(new MidiEvent(off, startTick + tickLength));
     }
 
+    // A convenience method to add a note to the track on channel 0
+    public static void addNote(Track track, int startTick, int tickLength, int key, int velocity, int channel) throws InvalidMidiDataException {
+        ShortMessage on = new ShortMessage();
 
-    public static void ChangeInstrument(int instrument, Track track,int channel,int tick) throws InvalidMidiDataException {
+        on.setMessage(ShortMessage.NOTE_ON, channel, key, velocity);
+        ShortMessage off = new ShortMessage();
+        off.setMessage(ShortMessage.NOTE_OFF, channel, key, velocity);
+        track.add(new MidiEvent(on, startTick));
+        track.add(new MidiEvent(off, startTick + tickLength));
+    }
+
+    public static void addChord(Track track, int startTick, int tickLength, ArrayList<Integer> chordNotes, int octave, int velocity, int channel, boolean arpeggio) throws InvalidMidiDataException {
+        for (Integer note : chordNotes) {
+            if (arpeggio)
+                startTick += 32;
+            addNote(track, startTick, tickLength, note + octave * 12, velocity, channel);
+        }
+    }
+
+    public static void addPowerChord(Track track, int startTick, int tickLength, ArrayList<Integer> chordNotes, int octave, int velocity, int channel) throws InvalidMidiDataException {
+        for (Integer note : chordNotes) {
+            if (!Objects.equals(note, chordNotes.get(2)) || Objects.equals(note, chordNotes.get(0)))
+                addNote(track, startTick, tickLength, note + octave * 12, velocity, channel);
+        }
+    }
+
+    public static void ChangeInstrument(int instrument, Track track, int channel, int tick) throws InvalidMidiDataException {
 
         ShortMessage sm = new ShortMessage();
         sm.setMessage(ShortMessage.PROGRAM_CHANGE, channel, instrument, 0); //9 ==> is the channel 10.

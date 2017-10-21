@@ -8,18 +8,18 @@ import com.audiophile.t2m.text.Word;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Track;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MelodyTrack implements TrackGenerator {
+    private static final int numOfChars = 255, numOfNotes = 128;
+    private static final int WHOLE = 512, HALF = 256, QUARTER = 128, QUAVER = 64, SEMIQUAVER = 32, DREISEMQUAVER = 16;
+    private final Harmony baseKey;
     private int[] toneMapping;
     private Sentence[] sentences;
-    private Harmony baseKey;
     private Harmony currentKey;
     private Tempo tempo;
     private int dramaLevel;
-
-    private static final int numOfChars = 255, numOfNotes = 128;
-
-    private static final int WHOLE = 512, HALF = 256, QUARTER = 128, QUAVER = 64, SEMIQUAVER = 32, DREISEMQUAVER = 16;
+    private boolean[][] notes; // initialize in multiples of 64
 
     public MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile) {
         this.sentences = text;
@@ -28,12 +28,13 @@ public class MelodyTrack implements TrackGenerator {
         this.tempo = musicData.getTempo();
         this.currentKey = new Harmony(baseKey, 0);
         this.dramaLevel = text[baseKey.getBaseNoteMidi() % text.length].getWordCount() % 3;
+        this.notes = new boolean[127][12];
     }
 
     @Override
     public void writeToTrack(Track track, int channel) {
         try {
-            MidiUtils.ChangeInstrument(0, track, channel, 0);
+            MidiUtils.ChangeInstrument(1, track, channel, 0);
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }
@@ -42,12 +43,13 @@ public class MelodyTrack implements TrackGenerator {
         int vel = 64; // Loudness
         int part = 0;
         int playable, previous = baseKey.getBaseNoteMidi();
+        int compTone;
 
         try {
             for (Sentence s : sentences) {
                 // Increase loudness for exclamation sentences
                 if (s.getSentenceType() == Sentence.SentenceType.Exclamation)
-                    vel = 128;
+                    vel = 127;
                 else vel = 64;
                 for (Word w : s.getWords())
                     for (char c : Utils.normalizeText(w.getName()).toCharArray()) {
@@ -67,17 +69,23 @@ public class MelodyTrack implements TrackGenerator {
                         oldLen = len;
                         if (n % WHOLE == 0) {
                             len = QUARTER;
-                            MidiUtils.addNote(track, n, len + 64 * ((playable % 4) + 1), playable, vel, channel);
-                            MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(0) - 24, vel, channel);
-                            MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(2) - 24, vel, channel);
-                            MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(0) - 12, vel, channel);
-                            MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(1) - 12, vel, channel);
-                            MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(2) - 12, vel, channel);
+                            //TODO save notes to array
+                            //TODO check if consonant
+
+                            MidiUtils.addNote(track, n + 64 * ((playable % 4) + 1), len, playable, vel / 4 * 3, channel);
+                            notes[(n + 64 * ((playable % 4) + 1)) / 64][playable % 12] = true;
+
+                            MidiUtils.addChord(track, n, len, currentKey.getNotesNumber(), -1, vel / 2, channel, false);
+                            MidiUtils.addPowerChord(track, n, len, currentKey.getNotesNumber(), -2, vel / 2, channel);
+                            notes[n / 64][currentKey.getNotesNumber().get(0) % 12] = true;
+                            notes[n / 64][currentKey.getNotesNumber().get(1) % 12] = true;
+                            notes[n / 64][currentKey.getNotesNumber().get(2) % 12] = true;
                             //System.out.print(currentKey.getNotesNumber() + " ->( " + playable + ", " + (len + 64 * ((playable % 4) + 1)) + ") ");
                             len = oldLen;
+
                         } else {
-                            MidiUtils.addNote(track, n, len, playable, vel, channel);
-                            // System.out.print(playable % 12);
+                            MidiUtils.addNote(track, n, len, isConsonant(playable, n), vel, channel);
+                            notes[n / 64][playable % 12] = true;
                         }
                         // System.out.println(", " + len);
                         n += len;
@@ -89,10 +97,12 @@ public class MelodyTrack implements TrackGenerator {
                             part++;
                             if (part == dramaLevel - 1) {
                                 n = 0;
-                                this.baseKey.setBaseNoteMidi(this.baseKey.getBaseNoteMidi() + 12);
+                                this.currentKey = new Harmony(this.baseKey, -12);
+
                             } else if (part == dramaLevel) {
                                 n = 0;
-                                this.baseKey.setBaseNoteMidi(this.baseKey.getBaseNoteMidi() - 24);
+                                this.currentKey = new Harmony(this.baseKey, +12);
+                                // MidiUtils.ChangeInstrument(44, track, channel, 0);
                             }
                             if (part > dramaLevel) // Sets fixed track length of 15sec
                             {
@@ -106,6 +116,7 @@ public class MelodyTrack implements TrackGenerator {
                                 MidiUtils.addNote(track, n + QUAVER, len, baseKey.getBaseNoteMidi(), vel, channel);
                                 MidiUtils.addNote(track, n + QUAVER, len, baseKey.getNotesNumber().get(1), vel, channel);
                                 MidiUtils.addNote(track, n + QUAVER, len, baseKey.getNotesNumber().get(2), vel, channel);
+                                System.out.println("in " + part + " parts");
                                 return;
                             }
                         }
@@ -117,6 +128,69 @@ public class MelodyTrack implements TrackGenerator {
             e.printStackTrace();
         }
     }
+
+    public int isConsonant(int note, int startTick) {
+        int newNote = note % 12;
+        startTick /= 64;
+        int difference = 0;
+        int min = 11;
+        ArrayList<Integer> filled = new ArrayList<>();
+        for (int i = 0; i < notes[startTick].length/*12*/; i++)
+            if (notes[startTick][i]) {
+                filled.add(i);
+                if (i == newNote) {
+                    // System.out.println("note was already used");
+                    return note;
+                }
+
+            }
+
+        int size = filled.size();
+        if (size == 0) {
+            //System.out.println("no note used");
+
+            return note;
+        } else if (size == 1) {
+            while (!"3457".contains(String.valueOf(Math.abs(newNote - filled.get(0))))) {
+                newNote = ++note % 12;
+            }
+            //System.out.println("notes played:" + newNote + "," + filled.get(0));
+
+            return note;
+        } else {
+            switch (filled.get(1) - filled.get(0)) {
+                case 3:
+                    if (currentKey.getMode() == 3) //minor key
+                        //8
+                        return note + 7 - newNote;
+                    else
+                        return note + 8 - newNote;
+                case 4:
+                    if (currentKey.getMode() == 3) //minor key
+                        //8
+                        return note + 9 - newNote;
+                    else
+                        return note + 7 - newNote;
+                case 5:
+                    if (currentKey.getMode() == 3) //minor key
+                        //8
+                        return note + 8 - newNote;
+                    else
+                        return note + 9 - newNote;
+
+                case 7:
+                    if (currentKey.getMode() == 3) //minor key
+                        //8
+                        return note + 3 - newNote;
+                    else
+                        return note + 4 - newNote;
+                default:
+                    return note; //should not happen
+            }
+        }
+        //return note;
+    }
+
 
     public int setRhythm(int c, int inTwoVoices) {
         int len;

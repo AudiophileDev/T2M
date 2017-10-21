@@ -29,6 +29,7 @@ public class Composer {
                 "anyDynamic", /*forte, piano, cresc, decresc*/
                 key);
 
+
         this.trackGenerators = new TrackGenerator[2];
         this.trackGenerators[0] = new MelodyTrack(musicData, analysedText.getSentences(), "noteMapping.csv");
         this.trackGenerators[1] = new RhythmTrack(analysedText);
@@ -42,7 +43,6 @@ public class Composer {
     public Sequence getSequence() {
         Sequence sequence = null;
         try {
-            //TODO find PPQ factor for setting Tempo
             sequence = new Sequence(Sequence.PPQ, tempo.getAverageBpm());
             for (int i = 0; i < trackGenerators.length; i++)
                 trackGenerators[i].writeToTrack(sequence.createTrack(), i);

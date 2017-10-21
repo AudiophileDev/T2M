@@ -12,8 +12,6 @@ public class Tempo {
     private float minLength, maxLength;
 
 
-
-
     /**
      * Sets span of BPMs
      * Generates different tempos out of the average word length
@@ -23,7 +21,7 @@ public class Tempo {
      */
     public Tempo(float[] avgWordLengths) {
         getBounds(avgWordLengths);
-        float ratio = (76 / minLength + 200 / maxLength) / 2; //75 = lower bpm bound, 200=higher bpm bound
+        float ratio = (76 / this.getMinLength() + 200 /  this.maxLength) / 2; //75 = lower bpm bound, 200=higher bpm bound
         for (Float f : avgWordLengths) {
             bpm = Math.round(f * ratio);
             tempo.put(f, bpm);
@@ -62,6 +60,7 @@ public class Tempo {
     public void setMaxLength(Float maxLength) {
         this.maxLength = maxLength;
     }
+
     public Integer getAverageBpm() {
         return averageBpm;
     }
