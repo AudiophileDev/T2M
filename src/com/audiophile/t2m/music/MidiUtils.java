@@ -144,7 +144,7 @@ public class MidiUtils {
     public static void addChord(Track track, int startTick, int tickLength, ArrayList<Integer> chordNotes, int octave, int velocity, int channel, boolean arpeggio) throws InvalidMidiDataException {
         for (Integer note : chordNotes) {
             if (arpeggio)
-                startTick += 32;
+                startTick += 16;
             addNote(track, startTick, tickLength, note + octave * 12, velocity, channel);
         }
     }

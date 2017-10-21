@@ -24,11 +24,12 @@ public class Composer {
         this.key = new Harmony(analysedText.getSentences()[0].getWords()[0].getName().substring(0, 1), Modes.major, false);
         this.dynamic = dynamic; //forte, piano, cresc, decresc
         this.tempo = new Tempo(analysedText.getAvgWordLength());
-
+        int i = (this.key.getMode() == 3 ? 2 : 1);
+        this.tempo.setAverageBpm(this.tempo.getAverageBpm() / i);
         this.musicData = new MusicData(tempo,
                 "anyDynamic", /*forte, piano, cresc, decresc*/
                 key);
-
+        System.out.println("Average Tempo:" + this.tempo.getAverageBpm());
 
         this.trackGenerators = new TrackGenerator[2];
         this.trackGenerators[0] = new MelodyTrack(musicData, analysedText.getSentences(), "noteMapping.csv");

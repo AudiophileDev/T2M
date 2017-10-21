@@ -39,11 +39,10 @@ public class MelodyTrack implements TrackGenerator {
             e.printStackTrace();
         }
         int n = 0; // Marks position an track
-        int len = QUARTER, oldLen = len; // Length of the notes in 128th per beat
+        int len = QUARTER, prevLen = len; // Length of the notes in 128th per beat
         int vel = 64; // Loudness
         int part = 0;
         int playable, previous = baseKey.getBaseNoteMidi();
-        int compTone;
 
         try {
             for (Sentence s : sentences) {
@@ -60,18 +59,19 @@ public class MelodyTrack implements TrackGenerator {
                             currentKey = new Harmony(baseKey, 5);
                         }
                         playable = toneMapping[tone];
-                        playable = catchOutliers(playable, previous);
-                        playable = inScale(playable);
-                        if (oldLen == SEMIQUAVER + QUAVER || oldLen == QUARTER + QUAVER) {
-                            len = oldLen / 3;
-                        } else len = setRhythm(c, part + 1);
-                        //chord on one
-                        oldLen = len;
-                        if (n % WHOLE == 0) {
-                            len = QUARTER;
-                            //TODO save notes to array
-                            //TODO check if consonant
+                        playable = catchOutliers(playable, previous); // prevents notes jumping around or going too high or low
+                        //TODO add notes off the scale for special effects
+                        playable = inScale(playable); //ensures note is in scale
 
+                        if (prevLen == SEMIQUAVER + QUAVER || prevLen == QUARTER + QUAVER) { //handling punctuated notes
+                            len = prevLen / 3;
+                        } else len = setRhythm(c, part + 1);
+                        prevLen = len;
+
+                        //chord on the first beat of every bar
+                        if (n % WHOLE == 0) { //beginning of every bar
+                            //len = QUARTER;
+                            //TODO check if consonant
                             MidiUtils.addNote(track, n + 64 * ((playable % 4) + 1), len, playable, vel / 4 * 3, channel);
                             notes[(n + 64 * ((playable % 4) + 1)) / 64][playable % 12] = true;
 
@@ -80,25 +80,20 @@ public class MelodyTrack implements TrackGenerator {
                             notes[n / 64][currentKey.getNotesNumber().get(0) % 12] = true;
                             notes[n / 64][currentKey.getNotesNumber().get(1) % 12] = true;
                             notes[n / 64][currentKey.getNotesNumber().get(2) % 12] = true;
-                            //System.out.print(currentKey.getNotesNumber() + " ->( " + playable + ", " + (len + 64 * ((playable % 4) + 1)) + ") ");
-                            len = oldLen;
-
+                            //len = prevLen;
                         } else {
                             MidiUtils.addNote(track, n, len, isConsonant(playable, n), vel, channel);
                             notes[n / 64][playable % 12] = true;
                         }
-                        // System.out.println(", " + len);
                         n += len;
-                        previous = playable;
+                        previous = playable; //save previous to prevent going of the scale
 
                         //TODO Only input as much text as needed (remove filler words)
-
-                        if (n > ((128 * tempo.getAverageBpm()) / 4)) {
+                        if (n > ((128 * tempo.getAverageBpm()) / 4)) {                        //finishing part
                             part++;
                             if (part == dramaLevel - 1) {
                                 n = 0;
                                 this.currentKey = new Harmony(this.baseKey, -12);
-
                             } else if (part == dramaLevel) {
                                 n = 0;
                                 this.currentKey = new Harmony(this.baseKey, +12);
@@ -110,13 +105,8 @@ public class MelodyTrack implements TrackGenerator {
                                 n += QUARTER;
                                 len = QUAVER;
                                 Harmony cadenceKey = new Harmony(baseKey, 7);
-                                MidiUtils.addNote(track, n, len, cadenceKey.getBaseNoteMidi() - 12, vel, channel);
-                                MidiUtils.addNote(track, n, len, cadenceKey.getNotesNumber().get(1) - 12, vel, channel);
-                                MidiUtils.addNote(track, n, len, cadenceKey.getNotesNumber().get(2) - 12, vel, channel);
-                                MidiUtils.addNote(track, n + QUAVER, len, baseKey.getBaseNoteMidi(), vel, channel);
-                                MidiUtils.addNote(track, n + QUAVER, len, baseKey.getNotesNumber().get(1), vel, channel);
-                                MidiUtils.addNote(track, n + QUAVER, len, baseKey.getNotesNumber().get(2), vel, channel);
-                                System.out.println("in " + part + " parts");
+                                MidiUtils.addChord(track, n, len, cadenceKey.getNotesNumber(), -1, vel, channel, false);
+                                MidiUtils.addChord(track, n + QUAVER, len, baseKey.getNotesNumber(), 0, vel, channel, true);
                                 return;
                             }
                         }
@@ -129,12 +119,18 @@ public class MelodyTrack implements TrackGenerator {
         }
     }
 
+    /**
+     * adjusts a note that it yields a consonant sound
+     *
+     * @param note      the note which is played
+     * @param startTick the point in time when the note is play
+     * @return returns the adjusted note
+     */
+
     public int isConsonant(int note, int startTick) {
-        int newNote = note % 12;
-        startTick /= 64;
-        int difference = 0;
-        int min = 11;
+        int size, newNote = note % 12;
         ArrayList<Integer> filled = new ArrayList<>();
+        startTick /= 64;
         for (int i = 0; i < notes[startTick].length/*12*/; i++)
             if (notes[startTick][i]) {
                 filled.add(i);
@@ -142,45 +138,35 @@ public class MelodyTrack implements TrackGenerator {
                     // System.out.println("note was already used");
                     return note;
                 }
-
             }
 
-        int size = filled.size();
+        size = filled.size();
         if (size == 0) {
-            //System.out.println("no note used");
-
             return note;
-        } else if (size == 1) {
-            while (!"3457".contains(String.valueOf(Math.abs(newNote - filled.get(0))))) {
+        } else if (size == 1) { //one note existing; add note for consonant interval
+            while (!"3457".contains(String.valueOf(Math.abs(newNote - filled.get(0))))) { //check if already good
                 newNote = ++note % 12;
             }
-            //System.out.println("notes played:" + newNote + "," + filled.get(0));
-
             return note;
-        } else {
-            switch (filled.get(1) - filled.get(0)) {
-                case 3:
+        } else { //chord should be completed
+            switch (filled.get(1) - filled.get(0)) { //existing interval
+                case 3: //small third
                     if (currentKey.getMode() == 3) //minor key
-                        //8
                         return note + 7 - newNote;
                     else
                         return note + 8 - newNote;
-                case 4:
+                case 4: //big third
                     if (currentKey.getMode() == 3) //minor key
-                        //8
                         return note + 9 - newNote;
                     else
                         return note + 7 - newNote;
-                case 5:
+                case 5: // clean fourth
                     if (currentKey.getMode() == 3) //minor key
-                        //8
                         return note + 8 - newNote;
                     else
                         return note + 9 - newNote;
-
-                case 7:
+                case 7: //clean fifth
                     if (currentKey.getMode() == 3) //minor key
-                        //8
                         return note + 3 - newNote;
                     else
                         return note + 4 - newNote;
@@ -188,10 +174,15 @@ public class MelodyTrack implements TrackGenerator {
                     return note; //should not happen
             }
         }
-        //return note;
     }
 
-
+    /**
+     * calculates note length based on the character value of the character in the text
+     *
+     * @param c           character value
+     * @param inTwoVoices indicates for which voice the rhythm should be
+     * @return calculated length of the note
+     */
     public int setRhythm(int c, int inTwoVoices) {
         int len;
         switch (c % (6 / inTwoVoices)) {
@@ -222,21 +213,15 @@ public class MelodyTrack implements TrackGenerator {
         return len;
     }
 
-    public void parseRhythm(String rhythm) {
-        char[] singeValues = rhythm.toCharArray();
-
-    }
-
     /**
      * First the method checks if a tone is in the current scale
-     * Secont it adjusts the tone upwards to fit in the scale
+     * Second it adjusts the tone upwards to fit in the scale
      *
      * @param tone the tone which should be adjusted
      * @return the adjusted tone as an integer value
      */
     public int inScale(int tone) {
         int mode = currentKey.getMode();
-        int baseNote = currentKey.getBaseNoteMidi();
         int toneToCalc = tone % 12; // get tone to one octave
         int[] compNotes = {0, 2, mode, 5, 7, (mode == 3 ? 8 : 9), (mode == 3 ? 10 : 11)};
         // min: 0,2,3,5,7,8,10,12 ; maj : 0,2,4,5,7,9,11,12
@@ -248,7 +233,8 @@ public class MelodyTrack implements TrackGenerator {
     }
 
     /**
-     * If a tone differs from the basenote by two ocatves (equal to 24 half-tone steps) it is rescaled to the cotave above or below the basenote
+     * <p>If a tone differs from the {@Link Harmony#baseNote}  by two octaves (equal to 24 half-tone steps) it is rescaled to the octave above or below the basenote
+     * </p>
      *
      * @param tone the tone which should be adjusted
      * @return the adjusted tone

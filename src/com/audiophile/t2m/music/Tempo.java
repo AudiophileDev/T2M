@@ -21,14 +21,14 @@ public class Tempo {
      */
     public Tempo(float[] avgWordLengths) {
         getBounds(avgWordLengths);
-        float ratio = (76 / this.getMinLength() + 200 /  this.maxLength) / 2; //75 = lower bpm bound, 200=higher bpm bound
+        float ratio = (76 / this.getMinLength() + 200 / this.maxLength) / 2; //75 = lower bpm bound, 200=higher bpm bound
         for (Float f : avgWordLengths) {
             bpm = Math.round(f * ratio);
             tempo.put(f, bpm);
             averageBpm += bpm;
             //System.out.println(String.format("%.2f -> %d", f, tempo.get(f)));
         }
-        System.out.println("Average Tempo:" + (averageBpm /= avgWordLengths.length));
+        this.averageBpm /= avgWordLengths.length;
     }
 
     /**
@@ -64,5 +64,10 @@ public class Tempo {
     public Integer getAverageBpm() {
         return averageBpm;
     }
+
+    public void setAverageBpm(Integer averageBpm) {
+        this.averageBpm = averageBpm;
+    }
+
 
 }
