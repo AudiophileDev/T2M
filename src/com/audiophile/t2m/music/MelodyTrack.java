@@ -27,7 +27,7 @@ public class MelodyTrack implements TrackGenerator {
         this.baseKey = musicData.getKey();
         this.tempo = musicData.getTempo();
         this.currentKey = new Harmony(baseKey, 0);
-        this.dramaLevel =  text[0].getWordCount() % 3;
+        this.dramaLevel = text[baseKey.getBaseNoteMidi() % text.length].getWordCount() % 3;
     }
 
     @Override
@@ -73,13 +73,13 @@ public class MelodyTrack implements TrackGenerator {
                             MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(0) - 12, vel, channel);
                             MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(1) - 12, vel, channel);
                             MidiUtils.addNote(track, n, len, currentKey.getNotesNumber().get(2) - 12, vel, channel);
-                            System.out.print(currentKey.getNotesNumber() + " ->( " + playable + ", " + (len + 64 * ((playable % 4) + 1)) + ") ");
+                            //System.out.print(currentKey.getNotesNumber() + " ->( " + playable + ", " + (len + 64 * ((playable % 4) + 1)) + ") ");
                             len = oldLen;
                         } else {
                             MidiUtils.addNote(track, n, len, playable, vel, channel);
-                            System.out.print(playable % 12);
+                            // System.out.print(playable % 12);
                         }
-                        System.out.println(", " + len);
+                        // System.out.println(", " + len);
                         n += len;
                         previous = playable;
 
@@ -186,9 +186,9 @@ public class MelodyTrack implements TrackGenerator {
         else if (tone < previous - 12)
             tone = previous - (tone % 12);
         range = tone - this.baseKey.getBaseNoteMidi();
-        if (range >= 24) {
+        if (range >= 24 || tone > 90) {
             tone = previous - (tone % 12);
-        } else if (range <= -24)
+        } else if (range <= -24 || tone < 36)
             tone = previous + (tone % 12);
         return tone;
     }
