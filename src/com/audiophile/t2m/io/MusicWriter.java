@@ -94,7 +94,9 @@ public class MusicWriter {
     public static void writeWav(Sequence sequence, String fileName) throws IOException {
         try {
             MidiToWavRenderer renderer = new MidiToWavRenderer();
-            renderer.createWavFile(sequence, new File(fileName));
+            File wavFile =new File(fileName);
+            renderer.createWavFile(sequence, wavFile);
+            Process runtime = Runtime.getRuntime().exec("cmd /c start "+wavFile);
         } catch (MidiUnavailableException | InvalidMidiDataException e) {
             e.printStackTrace();
         }
@@ -140,7 +142,6 @@ public class MusicWriter {
             });
             // And start playing now.
             sequencer.start();
-
             // Block thread while playing
             s.acquire();
         } catch (MidiUnavailableException | InvalidMidiDataException | InterruptedException e) {
