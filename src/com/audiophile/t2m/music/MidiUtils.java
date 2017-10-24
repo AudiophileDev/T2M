@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class MidiUtils {
+    public static final int WHOLE = 512, HALF = 256, QUARTER = 128, QUAVER = 64, SEMIQUAVER = 32, DREISEMQUAVER = 16;
 
 
     private static final int DAMPER_PEDAL = 64;
@@ -87,11 +88,6 @@ public class MidiUtils {
                     }
                 }
 
-                try {
-                    addNote(new Note(track, t, notelength, key, velocity, channel));
-                } catch (InvalidMidiDataException e) {
-                    e.printStackTrace();
-                }
                 numnotes++;
             } else if (c == ' ') {
                 // Spaces separate groups of notes played at the same time.
@@ -112,22 +108,6 @@ public class MidiUtils {
             }
 
         }
-    }
-
-    // A convenience method to add a note to the track on channel 0
-    public static void addNote(Note note) throws InvalidMidiDataException {
-        Track track = note.getTrack();
-        int startTick = note.getStartTick();
-        int tickLength = note.getLength();
-        int key = note.getKey();
-        int velocity = note.getVel();
-        int channel = note.getChannel();
-        ShortMessage on = new ShortMessage();
-        on.setMessage(ShortMessage.NOTE_ON, channel, key, velocity);
-        ShortMessage off = new ShortMessage();
-        off.setMessage(ShortMessage.NOTE_OFF, channel, key, velocity);
-        track.add(new MidiEvent(on, startTick));
-        track.add(new MidiEvent(off, startTick + tickLength));
     }
 
     // A convenience method to add a note to the track on channel 0
