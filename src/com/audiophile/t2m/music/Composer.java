@@ -33,7 +33,7 @@ public class Composer {
 
         this.trackGenerators = new TrackGenerator[2];
         this.trackGenerators[0] = new MelodyTrack(musicData, analysedText.getSentences(), "noteMapping.csv");
-        this.trackGenerators[1] = new RhythmTrack(analysedText);
+        this.trackGenerators[1] = new RhythmTrack(musicData,analysedText);
     }
 
     /**
@@ -46,7 +46,8 @@ public class Composer {
         try {
             sequence = new Sequence(Sequence.PPQ, tempo.getAverageBpm());
             for (int i = 0; i < trackGenerators.length; i++)
-                trackGenerators[i].writeToTrack(sequence.createTrack(), i);
+                if (trackGenerators[i] != null)
+                    trackGenerators[i].writeToTrack(sequence.createTrack(), i);
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }

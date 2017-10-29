@@ -73,7 +73,7 @@ public class Visualizer extends Application {
                 textArea.insertText(cursor, "\n");
                 cursor++;
             }
-            Platform.runLater(() -> textArea.setEstimatedScrollY(scrollOffset));
+            Platform.runLater(() -> textArea.scrollYToPixel(scrollOffset));
         } catch (IOException e) {
             e.printStackTrace();
         }

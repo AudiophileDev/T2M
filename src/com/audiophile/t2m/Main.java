@@ -9,6 +9,7 @@ import com.audiophile.t2m.text.TextAnalyser;
 import javax.sound.midi.Sequence;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class Main {
 
@@ -63,6 +64,8 @@ public class Main {
         // Output music
         String outputType = extractArgument("o", args, "mp3");
         outputMusic(outputType, args[1], sequence);
+
+        HashMap<String,Object> test = new HashMap<>();
     }
 
     /**
