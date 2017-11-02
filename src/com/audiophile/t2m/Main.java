@@ -6,10 +6,12 @@ import com.audiophile.t2m.music.Composer;
 import com.audiophile.t2m.text.DatabaseHandler;
 import com.audiophile.t2m.text.Sentence;
 import com.audiophile.t2m.text.TextAnalyser;
+import com.audiophile.t2m.text.Word;
 
 import javax.sound.midi.Sequence;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class Main {
 
@@ -50,14 +52,12 @@ public class Main {
         if (!loadTextFile(args[0], buffer))
             return;
 
-        // Analyse article
-        String article = buffer.toString();
-        Sentence[] sentences = TextAnalyser.analyseSentences(article);
-        float[] avgWordLen = TextAnalyser.getAvgWordLength(sentences);
         long endTime = System.currentTimeMillis();
         System.out.println("Analyzed \"" + args[0] + "\" in " + (endTime - startTime) + "ms");
         startTime = System.currentTimeMillis();
-        Composer composer = new Composer(sentences, avgWordLen);
+
+        String article = buffer.toString();
+        Composer composer = new Composer(article);
         // Generate music
         Sequence sequence = composer.getSequence();
         endTime = System.currentTimeMillis();
