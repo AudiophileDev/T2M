@@ -60,7 +60,8 @@ class MidiToWavRenderer {
 		 * using Sinc interpolation for highest quality. With 1024 as max
 		 * polyphony.
 		 */
-        final AudioFormat format = new AudioFormat(96000, 24, 2, true, false);
+        long start = System.currentTimeMillis();
+        final AudioFormat format = new AudioFormat(44000, 24, 2, true, false);
         final Map<String, Object> map = new HashMap<>();
         map.put("interpolation", "sinc");
         map.put("max polyphony", "1024");
@@ -76,6 +77,8 @@ class MidiToWavRenderer {
         // Write WAVE file to disk.
         AudioSystem.write(stream, AudioFileFormat.Type.WAVE, outputFile);
         this.synth.close();
+        long end = System.currentTimeMillis();
+        System.out.println("Writing wav file took: "+(end-start)+"ms");
     }
 
     /**

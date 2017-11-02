@@ -9,42 +9,24 @@ import java.util.stream.Stream;
  * @author Simon Niedermayr
  */
 public class TextAnalyser {
-    private Sentence[] sentences;
-    private float[] avgWordLength;
 
-    /**
-     * Creates a new <code>TextAnalyser</code>, which starts splitting the text into sentences and words.<br>
-     * Furthermore the average word length is calculated and each sentence is analysed individually.
-     *
-     * @param text text to be analysed as string
-     * @see com.audiophile.t2m.text.Sentence
-     */
-    public TextAnalyser(String text) {
+    public static Sentence[] analyseSentences(String text) {
         String[] sentencesList = splitSentences(text);
-        sentences = new Sentence[sentencesList.length];
-        avgWordLength = new float[sentencesList.length];
+        Sentence[] sentences = new Sentence[sentencesList.length];
         for (int i = 0; i < sentences.length; i++) {
-            this.sentences[i] = new Sentence(sentencesList[i]);
-            float avg = sentences[i].getAvgWordLength();
-            this.avgWordLength[i] = Float.isFinite(avg) ? avg : 0;
+            sentences[i] = new Sentence(sentencesList[i]);
         }
-    }
-
-    /**
-     * Returns sentences as array
-     *
-     * @return Sentences as array
-     */
-    public Sentence[] getSentences() {
+        WordFilter filter = new WordFilter("fillwords.csv");
+        filter.markFillers(sentences);
         return sentences;
     }
 
-    /**
-     * Returns average word length for further generation processes
-     *
-     * @return average word length as array
-     */
-    public float[] getAvgWordLength() {
+    public static float[] getAvgWordLength(Sentence[] sentences) {
+        float[] avgWordLength = new float[sentences.length];
+        for (int i = 0; i < sentences.length; i++) {
+            float avg = sentences[i].getAvgWordLength();
+            avgWordLength[i] = Float.isFinite(avg) ? avg : 0;
+        }
         return avgWordLength;
     }
 
@@ -55,7 +37,7 @@ public class TextAnalyser {
      * @return Sentences as string array
      * @see java.text.BreakIterator#getSentenceInstance(Locale)
      */
-    private String[] splitSentences(String text) {
+    private static String[] splitSentences(String text) {
         BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.GERMAN);
         iterator.setText(text);
         ArrayList<String> sentenceList = new ArrayList<>(text.length() / 6); // Avg word length in german is 5.7

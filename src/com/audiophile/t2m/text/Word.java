@@ -2,10 +2,21 @@ package com.audiophile.t2m.text;
 
 /**
  * Represents a word in the text and holds its name, tendency and effect from the database.
+ *
  * @author Simon Niedermayr
  */
 public class Word {
+    /**
+     * The word as plain text
+     */
     private String name;
+
+    /**
+     * Marks if the word is a filler word
+     *
+     * @see WordFilter#markFillers(Sentence[])
+     */
+    private boolean isFiller;
 
     /**
      * Reference to the word database.
@@ -15,16 +26,26 @@ public class Word {
 
     /**
      * Creates a new word
-     * @param name The word as string
+     *
+     * @param name  The word as string
      * @param entry The entry in the database
      */
-    public Word(String name, DatabaseHandler.Entry entry){
+    public Word(String name, DatabaseHandler.Entry entry) {
         this.name = name;
         this.entry = entry;
     }
 
+    public boolean isFiller() {
+        return isFiller;
+    }
+
+    public void setFiller(boolean filler) {
+        isFiller = filler;
+    }
+
     /**
      * Returns the words name
+     *
      * @return Name
      */
     public String getName() {

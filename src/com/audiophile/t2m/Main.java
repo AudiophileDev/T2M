@@ -4,12 +4,12 @@ import com.audiophile.t2m.io.FileUtils;
 import com.audiophile.t2m.io.MusicWriter;
 import com.audiophile.t2m.music.Composer;
 import com.audiophile.t2m.text.DatabaseHandler;
+import com.audiophile.t2m.text.Sentence;
 import com.audiophile.t2m.text.TextAnalyser;
 
 import javax.sound.midi.Sequence;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 
 public class Main {
 
@@ -51,12 +51,14 @@ public class Main {
             return;
 
         // Analyse article
-        TextAnalyser analyser = new TextAnalyser(buffer.toString());
+        String article = buffer.toString();
+        Sentence[] sentences = TextAnalyser.analyseSentences(article);
+        float[] avgWordLen = TextAnalyser.getAvgWordLength(sentences);
         long endTime = System.currentTimeMillis();
         System.out.println("Analyzed \"" + args[0] + "\" in " + (endTime - startTime) + "ms");
-        Composer composer = new Composer(analyser);
-        // Generate music
         startTime = System.currentTimeMillis();
+        Composer composer = new Composer(sentences, avgWordLen);
+        // Generate music
         Sequence sequence = composer.getSequence();
         endTime = System.currentTimeMillis();
         System.out.println("Generated music in " + (endTime - startTime) + "ms");
@@ -64,8 +66,6 @@ public class Main {
         // Output music
         String outputType = extractArgument("o", args, "mp3");
         outputMusic(outputType, args[1], sequence);
-
-        HashMap<String,Object> test = new HashMap<>();
     }
 
     /**
@@ -209,22 +209,5 @@ public class Main {
             if (arg.equals("-" + param))
                 return true;
         return false;
-    }
-
-    /**
-     * Checks weather a file name is valid or not. <br>
-     *
-     * @param file Name of the file
-     * @return Validity of the file name
-     * @see File#getCanonicalPath()
-     */
-    private static boolean isFilenameValid(String file) {
-        File f = new File(file);
-        try {
-            f.getCanonicalPath();
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
     }
 }

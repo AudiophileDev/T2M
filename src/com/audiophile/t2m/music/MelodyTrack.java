@@ -4,11 +4,13 @@ import com.audiophile.t2m.Utils;
 import com.audiophile.t2m.io.CSVTools;
 import com.audiophile.t2m.text.Sentence;
 import com.audiophile.t2m.text.Word;
+import com.audiophile.t2m.text.WordFilter;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Track;
 import java.io.IOException;
 import java.util.ArrayList;
+
 import static com.audiophile.t2m.music.MidiUtils.WHOLE;
 import static com.audiophile.t2m.music.MidiUtils.HALF;
 import static com.audiophile.t2m.music.MidiUtils.QUARTER;
@@ -25,9 +27,9 @@ public class MelodyTrack implements TrackGenerator {
     private int dramaLevel;
     private boolean[][] notes; // initialize in multiples of 64
 
-    public static final int numOfChars = 255, numOfNotes = 128;
+    private static final int numOfChars = 255, numOfNotes = 128;
 
-    public MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile) {
+    MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile) {
         this.sentences = text;
         this.loadToneMapping(noteMappingFile);
         this.baseKey = musicData.getKey();
@@ -39,25 +41,26 @@ public class MelodyTrack implements TrackGenerator {
 
     @Override
     public void writeToTrack(Track track, int channel) {
-        try {
-            MidiUtils.ChangeInstrument(1, track, channel, 0);
-        } catch (InvalidMidiDataException e) {
-            e.printStackTrace();
-        }
         int n = 0; // Marks position an track
         int len = QUARTER, prevLen = len; // Length of the notes in 128th per beat
         int vel = 64; // Loudness
         int part = 0;
         int playable, previous = baseKey.getBaseNoteMidi();
-
+        int chars = 0, words = 0, sen = 0;
         try {
+            MidiUtils.ChangeInstrument(1, track, channel, 0);
             for (Sentence s : sentences) {
+                sen++;
                 // Increase loudness for exclamation sentences
                 if (s.getSentenceType() == Sentence.SentenceType.Exclamation)
                     vel = 127;
                 else vel = 64;
-                for (Word w : s.getWords())
+                for (Word w : s.getWords()) {
+                    if (w.isFiller()) // Skip filler words
+                        continue;
+                    words++;
                     for (char c : Utils.normalizeText(w.getName()).toCharArray()) {
+                        chars++;
                         int tone = c >= toneMapping.length ? getClosestTone(c) : c;
                         if (n % (4 * WHOLE) == 0) {
                             currentKey = new Harmony(baseKey, 7);
@@ -96,9 +99,11 @@ public class MelodyTrack implements TrackGenerator {
 
                         //TODO Only input as much text as needed (remove filler words)
                         if (n > ((128 * tempo.getAverageBpm()) / 4)) {                        //finishing part
+                            System.out.println("Used chars: " + chars + ", words:" + words + ", sen: " + sen);
                             return;
                         }
                     }
+                }
             }
             //TODO add end phrase
 
@@ -115,7 +120,7 @@ public class MelodyTrack implements TrackGenerator {
      * @return returns the adjusted note
      */
 
-    public int isConsonant(int note, int startTick) {
+    private int isConsonant(int note, int startTick) {
         int size, newNote = note % 12;
         ArrayList<Integer> filled = new ArrayList<>();
         startTick /= 64;
@@ -171,7 +176,7 @@ public class MelodyTrack implements TrackGenerator {
      * @param inTwoVoices indicates for which voice the rhythm should be
      * @return calculated length of the note
      */
-    public int setRhythm(int c, int inTwoVoices) {
+    private int setRhythm(int c, int inTwoVoices) {
         int len;
         switch (c % (6 / inTwoVoices)) {
             case 0:
@@ -208,7 +213,7 @@ public class MelodyTrack implements TrackGenerator {
      * @param tone the tone which should be adjusted
      * @return the adjusted tone as an integer value
      */
-    public int inScale(int tone) {
+    private int inScale(int tone) {
         int mode = currentKey.getMode();
         int toneToCalc = tone % 12; // get tone to one octave
         int[] compNotes = {0, 2, mode, 5, 7, (mode == 3 ? 8 : 9), (mode == 3 ? 10 : 11)};
@@ -221,13 +226,13 @@ public class MelodyTrack implements TrackGenerator {
     }
 
     /**
-     * <p>If a tone differs from the {@Link Harmony#baseNote}  by two octaves (equal to 24 half-tone steps) it is rescaled to the octave above or below the basenote
+     * <p>If a tone differs from the {@link Harmony#baseNoteMidi}  by two octaves (equal to 24 half-tone steps) it is rescaled to the octave above or below the basenote
      * </p>
      *
      * @param tone the tone which should be adjusted
      * @return the adjusted tone
      */
-    public int catchOutliers(int tone, int previous) {
+    private int catchOutliers(int tone, int previous) {
         int range;
         if (tone > 12 + previous)
             tone = previous + (tone % 12);

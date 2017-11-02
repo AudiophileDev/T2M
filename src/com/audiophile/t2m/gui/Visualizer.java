@@ -37,7 +37,8 @@ import java.util.function.BiConsumer;
 
 public class Visualizer extends Application {
 
-    private static TextAnalyser analyser;
+    private static Sentence[] sentences;
+    private static float[] avgWordLen;
     private HashMap<Integer, Word> wordIndex = new HashMap<>(100);
 
     public static void main(String[] args) {
@@ -51,7 +52,7 @@ public class Visualizer extends Application {
         textArea.clear();
         try {
             int cursor = 0;
-            for (Sentence s : analyser.getSentences()) {
+            for (Sentence s : sentences) {
                 Word[] words = s.getWords();
                 for (int i = 0; i < words.length; i++) {
                     String w = words[i].getName();
@@ -159,8 +160,8 @@ public class Visualizer extends Application {
         XYChart.Series<String, Number> smooth = chart.getData().stream().filter((v) -> v.getName().equals("smooth")).findFirst().orElse(null);
         boolean sn = smooth == null,
                 rn = raw == null;
-        raw = arrayToSeries(raw, analyser.getAvgWordLength(), "raw");
-        smooth = arrayToSeries(smooth, Utils.BlurData(analyser.getAvgWordLength(), radius), "smooth");
+        raw = arrayToSeries(raw, avgWordLen, "raw");
+        smooth = arrayToSeries(smooth, Utils.BlurData(avgWordLen, radius), "smooth");
         if (rn) {
             chart.getData().add(raw);
         }
@@ -170,7 +171,6 @@ public class Visualizer extends Application {
     }
 
     private void loadWordsPerSentence(LineChart<String, Number> chart, int radius) {
-        Sentence[] sentences = analyser.getSentences();
         float[] wps = new float[sentences.length];
         for (int i = 0; i < sentences.length; i++) {
             wps[i] = sentences[i].getWordCount();
@@ -248,7 +248,8 @@ public class Visualizer extends Application {
         if (!Main.loadTextFile(articleFile.getPath(), buffer))
             return;
         String text = buffer.toString();
-        analyser = new TextAnalyser(text);
+        sentences = TextAnalyser.analyseSentences(text);
+        avgWordLen = TextAnalyser.getAvgWordLength(sentences);
 
 
         // Get all components

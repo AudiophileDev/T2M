@@ -5,64 +5,70 @@ import com.audiophile.t2m.text.TextAnalyser;
 
 import javax.sound.midi.*;
 import java.util.Arrays;
-import java.util.Random;
 
 public class RhythmTrack implements TrackGenerator {
-    private MidiChannel midiChannel;
-    private Sequence sequence;
     private Tempo tempo;
-    private float[] test;
+    private float[] avgWordLen;
 
-    public RhythmTrack(MusicData musicData, TextAnalyser analaysedText) {
+    RhythmTrack(MusicData musicData, float[] avgWordLen) {
         this.tempo = musicData.getTempo();
-        test = analaysedText.getAvgWordLength();
-        Utils.BlurData(test, 3);
+        this.avgWordLen = Arrays.copyOf(avgWordLen, avgWordLen.length); // Copy array to avoid changing the original
+        Utils.BlurData(avgWordLen, 3);
+
+        // Find min and max avg word length in the text
         float max = 0,
                 min = 100;
-        for (int i = 0; i < test.length; i++) {
-            if (test[i] > max)
-                max = test[i];
-            if (test[i] < min)
-                min = test[i];
+        for (float anAvgWordLen : avgWordLen) {
+            if (anAvgWordLen > max)
+                max = anAvgWordLen;
+            if (anAvgWordLen < min)
+                min = anAvgWordLen;
         }
+        // Decrease all values by minimum and normalize them between 0 and 3
         max -= min;
-        System.out.println(min + " " + max);
         if (max > 0)
-            for (int i = 0; i < test.length; i++) {
-                test[i] -= min;
-                test[i] = 3 * test[i] / max;
-
+            for (int i = 0; i < avgWordLen.length; i++) {
+                avgWordLen[i] -= min; // Decrease
+                avgWordLen[i] = 3 * avgWordLen[i] / max; // Normalize
             }
     }
 
+    /**
+     * Rounds the given value to a full quaver
+     *
+     * @param val The value to round
+     * @return A multiple of {@link MidiUtils#QUAVER}
+     */
     private int roundToQuaver(float val) {
-        int res = (((int) val) / MidiUtils.QUAVER) * MidiUtils.QUAVER;
-        System.out.println(res);
-        return res;
+        return (((int) val) / MidiUtils.QUAVER) * MidiUtils.QUAVER;
     }
 
 
     @Override
     public void writeToTrack(Track track, int channel) {
         int length = ((128 * tempo.getAverageBpm()) / 4);
-        Random ran = new Random();
         int bass, snare, hiHat;
         int vel = 32;
         try {
+            // Add bass
             int i = 0;
             for (int n = 0; n < length; n += bass) {
                 MidiUtils.addNote(track, n, MidiUtils.QUARTER, 36, vel, channel);
-                bass = roundToQuaver(MidiUtils.QUARTER * test[(i += 3) % test.length]);
+                bass = roundToQuaver(MidiUtils.QUARTER * avgWordLen[(i += 3) % avgWordLen.length]);
             }
+
+            //Add snare
             i = 0;
             for (int n = 0; n < length; n += snare) {
                 MidiUtils.addNote(track, n, MidiUtils.QUARTER, 38, vel, channel);
-                snare = roundToQuaver(MidiUtils.QUARTER * test[(i += 3 + 1) % test.length]);
+                snare = roundToQuaver(MidiUtils.QUARTER * avgWordLen[(i += 3 + 1) % avgWordLen.length]);
             }
+
+            //Add hi-hat
             i = 0;
             for (int n = 0; n < length; n += hiHat) {
                 MidiUtils.addNote(track, n, MidiUtils.QUAVER, 42, vel, channel);
-                hiHat = roundToQuaver(MidiUtils.QUARTER * test[(i += 3 + 2) % test.length]);
+                hiHat = roundToQuaver(MidiUtils.QUARTER * avgWordLen[(i += 3 + 2) % avgWordLen.length]);
             }
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
