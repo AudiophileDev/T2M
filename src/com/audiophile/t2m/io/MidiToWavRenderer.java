@@ -25,7 +25,6 @@ import java.util.Map;
  * @author Karl Helgason
  * @author David Koelle
  * @author Joren Six
- *
  * @author Simon Niedermayr
  */
 class MidiToWavRenderer {
@@ -34,7 +33,7 @@ class MidiToWavRenderer {
      */
     private final transient AudioSynthesizer synth;
 
-    public MidiToWavRenderer() throws MidiUnavailableException, InvalidMidiDataException, IOException {
+    MidiToWavRenderer() throws MidiUnavailableException, InvalidMidiDataException, IOException {
         try {
             synth = (AudioSynthesizer) MidiSystem.getSynthesizer();
         } catch (ClassCastException e) {
@@ -47,13 +46,13 @@ class MidiToWavRenderer {
     /**
      * Creates a WAV file based on the Sequence, using the default soundbank.
      *
-     * @param sequence The sequence to write to the file
+     * @param sequence   The sequence to write to the file
      * @param outputFile The file to write to
      * @throws MidiUnavailableException No Midi system available
      * @throws InvalidMidiDataException Invalid data
-     * @throws IOException Could not write to file
+     * @throws IOException              Could not write to file
      */
-    public void createWavFile(final Sequence sequence, final File outputFile)
+    void createWavFile(final Sequence sequence, final File outputFile)
             throws MidiUnavailableException, InvalidMidiDataException, IOException {
         /*
          * Open synthesizer in pull mode in the format 96000hz 24 bit stereo
@@ -71,14 +70,14 @@ class MidiToWavRenderer {
         final double total = send(sequence, synth.getReceiver());
 
         // Calculate how long the WAVE file needs to be.
-        final long len = (long) (stream.getFormat().getFrameRate() * (total+1)); // Add extra second for smooth ending
+        final long len = (long) (stream.getFormat().getFrameRate() * (total + 1)); // Add extra second for smooth ending
         stream = new AudioInputStream(stream, stream.getFormat(), len);
 
         // Write WAVE file to disk.
         AudioSystem.write(stream, AudioFileFormat.Type.WAVE, outputFile);
         this.synth.close();
         long end = System.currentTimeMillis();
-        System.out.println("Writing wav file took: "+(end-start)+"ms");
+        System.out.println("Writing wav file took: " + (end - start) + "ms");
     }
 
     /**

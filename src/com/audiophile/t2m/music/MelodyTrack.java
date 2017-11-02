@@ -100,7 +100,8 @@ public class MelodyTrack implements TrackGenerator {
                         previous = playable; //save previous to prevent going of the scale
 
                         //TODO Only input as much text as needed (remove filler words)
-                        if (n > ((128 * tempo.getAverageBpm()) / 4)) {                        //finishing part
+                        if (n+len >= (QUARTER * tempo.getAverageBpm())/60*15) {                        //finishing part
+                            System.out.println(60*(float)n/(QUARTER * tempo.getAverageBpm()));
                             System.out.println("Used chars: " + chars + ", words:" + words + ", sen: " + sen);
                             return;
                         }
