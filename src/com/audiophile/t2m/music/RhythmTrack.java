@@ -1,9 +1,9 @@
 package com.audiophile.t2m.music;
 
 import com.audiophile.t2m.Utils;
-import com.audiophile.t2m.text.TextAnalyser;
 
-import javax.sound.midi.*;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.Track;
 import java.util.Arrays;
 
 public class RhythmTrack implements TrackGenerator {
@@ -45,7 +45,7 @@ public class RhythmTrack implements TrackGenerator {
 
 
     @Override
-    public void writeToTrack(Track track, int channel) {
+    public void writeToTrack(Track track, int channel, MyInstrument instrument) {
         int length = ((128 * tempo.getAverageBpm()) / 4);
         int bass, snare, hiHat;
         int vel = 32;

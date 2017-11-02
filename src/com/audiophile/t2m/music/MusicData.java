@@ -2,10 +2,10 @@ package com.audiophile.t2m.music;
 
 public class MusicData {
     private Tempo tempo;
-    private String dynamic;
+    private int dynamic;
     private Harmony key;
 
-    public MusicData(Tempo tempo, String dynamic, Harmony key) {
+    public MusicData(Tempo tempo, int dynamic, Harmony key) {
         this.tempo = tempo;
         this.dynamic = dynamic;
         this.key = key;
@@ -19,11 +19,11 @@ public class MusicData {
         this.tempo = tempo;
     }
 
-    public String getDynamic() {
+    public int getDynamic() {
         return dynamic;
     }
 
-    public void setDynamic(String dynamic) {
+    public void setDynamic(int dynamic) {
         this.dynamic = dynamic;
     }
 

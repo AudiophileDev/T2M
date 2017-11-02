@@ -11,6 +11,5 @@
     <orderEntry type="library" name="jave-1.0.2" level="project" />
     <orderEntry type="library" name="org.fxmisc.richtext:richtextfx:Latest" level="project" />
     <orderEntry type="library" name="R User Library" level="project" />
-    <orderEntry type="library" name="R Skeletons" level="application" />
   </component>
 </module>

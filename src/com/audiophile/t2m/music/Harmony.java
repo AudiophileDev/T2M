@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.audiophile.t2m.music.Modes.major;
-
 
 public class Harmony {
     /**
@@ -24,7 +22,7 @@ public class Harmony {
     /**
      * a value of 3 or 4 indicating the mode
      */
-    private int mode;
+    private Mode mode;
 
     private static final Map<String, Integer> chords = Collections.unmodifiableMap(
             new HashMap<String, Integer>() {{
@@ -62,9 +60,9 @@ public class Harmony {
      * @param mode     mode of the harmony: either "maj" for a major chord or "min" for a minor chord
      * @param sept     sets if it is a sept chord or not
      */
-    public Harmony(String baseNote, Modes mode, boolean sept) {
+    public Harmony(String baseNote, Mode mode, boolean sept) {
         this.sept = sept;
-        this.mode = mode == major ? 4 : 3;
+        this.mode = mode;
         this.notesNumber = new ArrayList<>();
         this.baseNoteMidi = maskNote(baseNote);
         buildChord();
@@ -88,7 +86,7 @@ public class Harmony {
         for (int i = 1; i < n; i++) {
             switch (i) {
                 case 1:
-                    this.notesNumber.add(i, this.baseNoteMidi + this.mode);
+                    this.notesNumber.add(i, this.baseNoteMidi + this.mode.third);
                     break;
                 case 2:
                     this.notesNumber.add(i, this.baseNoteMidi + 7);
@@ -114,7 +112,7 @@ public class Harmony {
         return chords.get(baseNote);
     }
 
-    public int getMode() {
+    public Mode getMode() {
         return mode;
     }
 
