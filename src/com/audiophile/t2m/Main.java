@@ -66,6 +66,7 @@ public class Main {
         // Output music
         String outputType = extractArgument("o", args, "mp3");
         outputMusic(outputType, args[1], sequence);
+
     }
 
     /**

@@ -39,7 +39,7 @@ public class Word {
         return isFiller;
     }
 
-    public void setFiller(boolean filler) {
+    void setFiller(boolean filler) {
         isFiller = filler;
     }
 

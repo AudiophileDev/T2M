@@ -14,7 +14,7 @@ public class WordFilter {
 
     private String[] fillWords;
 
-    public WordFilter(String file) {
+    WordFilter(String file) {
         try {
             String content[][] = CSVTools.ReadFile(file);
             if (content.length > 0)
@@ -32,7 +32,7 @@ public class WordFilter {
         return Arrays.stream(fillWords).anyMatch(s1::equals);
     }
 
-    public void markFillers(Sentence[] sentences) {
+    void markFillers(Sentence[] sentences) {
         int words = 0, filler = 0;
         for (Sentence s : sentences)
             for (Word w : s.getWords()) {

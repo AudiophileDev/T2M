@@ -24,7 +24,7 @@ public class Sentence {
      * @param text sentence as text
      * @see #analyse(String, double)
      */
-    public Sentence(String text) {
+    Sentence(String text) {
         analyse(text, DatabaseHandler.DEFAULT_IN_SIMILARITY);
     }
 
@@ -120,7 +120,7 @@ public class Sentence {
         return wordCount;
     }
 
-    public float getAvgWordLength() {
+    float getAvgWordLength() {
         return avgWordLength;
     }
 

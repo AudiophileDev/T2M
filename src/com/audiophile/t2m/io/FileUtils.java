@@ -17,13 +17,9 @@ public class FileUtils {
      * @see java.io.FileInputStream#FileInputStream(File)
      */
     public static String ReadPlainFile(String fileName) throws IOException {
-        File file = new File(fileName);
-        if (!file.exists())
-            throw new FileNotFoundException("The file \"" + file.getAbsolutePath() + "\" does not exist");
-
         // Read bytes in file
-        FileInputStream stream = new FileInputStream(file);
-        byte[] data = new byte[(int) file.length()];
+        FileInputStream stream = new FileInputStream(fileName);
+        byte[] data = new byte[stream.available()];
         stream.read(data);
         stream.close();
 

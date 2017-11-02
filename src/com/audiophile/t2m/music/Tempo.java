@@ -4,26 +4,22 @@ import java.util.HashMap;
 
 
 public class Tempo {
-    private HashMap<Float, Integer> tempo = new HashMap<>();
-    private Integer bpm;
-
-
     private Integer averageBpm = 0;
     private float minLength, maxLength;
-
 
     /**
      * Sets span of BPMs
      * Generates different tempos out of the average word length
      * creates HashMap with word length to BPM mapping
      *
-     * @param avgWordLengths
+     * @param avgWordLengths The average word length in the article for every sentence
      */
-    public Tempo(float[] avgWordLengths) {
+    Tempo(float[] avgWordLengths) {
         getBounds(avgWordLengths);
         float ratio = (76 / this.getMinLength() + 200 / this.maxLength) / 2; //75 = lower bpm bound, 200=higher bpm bound
         for (Float f : avgWordLengths) {
-            bpm = Math.round(f * ratio);
+            Integer bpm = Math.round(f * ratio);
+            HashMap<Float, Integer> tempo = new HashMap<>();
             tempo.put(f, bpm);
             averageBpm += bpm;
             //System.out.println(String.format("%.2f -> %d", f, tempo.get(f)));
@@ -36,7 +32,7 @@ public class Tempo {
      *
      * @param avgWordLengths sets minimal and maximal average word length
      */
-    public void getBounds(float[] avgWordLengths) {
+    private void getBounds(float[] avgWordLengths) {
         this.maxLength = avgWordLengths[0];
         this.minLength = avgWordLengths[0];
         for (float f : avgWordLengths) {
@@ -45,7 +41,8 @@ public class Tempo {
         }
     }
 
-    public Float getMinLength() {
+    // TODO documentation
+    private Float getMinLength() {
         return minLength;
     }
 
@@ -61,11 +58,11 @@ public class Tempo {
         this.maxLength = maxLength;
     }
 
-    public Integer getAverageBpm() {
+    Integer getAverageBpm() {
         return averageBpm;
     }
 
-    public void setAverageBpm(Integer averageBpm) {
+    void setAverageBpm(Integer averageBpm) {
         this.averageBpm = averageBpm;
     }
 
