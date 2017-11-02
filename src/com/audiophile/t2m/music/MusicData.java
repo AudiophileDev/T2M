@@ -1,5 +1,6 @@
 package com.audiophile.t2m.music;
 
+//TODO documentation
 public class MusicData {
     private Tempo tempo;
     private int dynamic;

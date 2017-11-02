@@ -24,7 +24,6 @@ public class MelodyTrack implements TrackGenerator {
     private Sentence[] sentences;
     private Harmony currentKey;
     private Tempo tempo;
-    private int dramaLevel;
     private boolean[][] notes; // initialize in multiples of 64
     private int dynamic;
     private MyInstrument instrument;
@@ -37,7 +36,7 @@ public class MelodyTrack implements TrackGenerator {
         this.baseKey = musicData.getKey();
         this.tempo = musicData.getTempo();
         this.currentKey = new Harmony(baseKey, 0);
-        this.dramaLevel = text[baseKey.getBaseNoteMidi() % text.length].getWordCount() % 3;
+        //int dramaLevel = text[baseKey.getBaseNoteMidi() % text.length].getWordCount() % 3;
         this.notes = new boolean[127][12];
         this.dynamic = musicData.getDynamic();
         this.instrument = instrument;

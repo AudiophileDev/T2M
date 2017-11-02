@@ -45,7 +45,6 @@ public class Visualizer extends Application {
         launch(args);
     }
 
-    //TODO do calculation in own thread and updated document when finished
     private void updateText(InlineCssTextArea textArea, double minSimilarity, HashMap<String, Color> colorMapping) {
         double scrollOffset = textArea.getEstimatedScrollY(); // make sure the user scroll stays in position
         char[] punctuationMarks = new char[]{'.', '?', ',', '!', ';', '"', '\'',};

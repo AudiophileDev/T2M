@@ -60,7 +60,7 @@ public class Harmony {
      * @param mode     mode of the harmony: either "maj" for a major chord or "min" for a minor chord
      * @param sept     sets if it is a sept chord or not
      */
-    public Harmony(String baseNote, Mode mode, boolean sept) {
+    Harmony(String baseNote, Mode mode, boolean sept) {
         this.sept = sept;
         this.mode = mode;
         this.notesNumber = new ArrayList<>();
@@ -68,7 +68,7 @@ public class Harmony {
         buildChord();
     }
 
-    public Harmony(Harmony harmony, int pitch) {
+    Harmony(Harmony harmony, int pitch) {
         this.sept = harmony.sept;
         this.mode = harmony.mode;
         this.notesNumber = new ArrayList<>();
@@ -80,7 +80,7 @@ public class Harmony {
      * builds a chord in numbers ready for direct usage in midi
      */
 
-    public void buildChord() {
+    private void buildChord() {
         this.notesNumber.add(0, baseNoteMidi);
         int n = this.sept ? 4 : 3;
         for (int i = 1; i < n; i++) {
@@ -105,14 +105,14 @@ public class Harmony {
      * @param baseNote tonic of the chord
      * @return the masked basenote
      */
-    public int maskNote(String baseNote) {
+    private int maskNote(String baseNote) {
         String note = "CDEFGAHBC";
         if (!note.contains(baseNote))
             baseNote = String.valueOf(note.toCharArray()[baseNote.toCharArray()[0] % note.length()]);
         return chords.get(baseNote);
     }
 
-    public Mode getMode() {
+    Mode getMode() {
         return mode;
     }
 
@@ -120,11 +120,11 @@ public class Harmony {
         return sept;
     }
 
-    public int getBaseNoteMidi() {
+    int getBaseNoteMidi() {
         return baseNoteMidi;
     }
 
-    public ArrayList<Integer> getNotesNumber() {
+    ArrayList<Integer> getNotesNumber() {
         return notesNumber;
     }
 

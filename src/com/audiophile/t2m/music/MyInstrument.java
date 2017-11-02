@@ -1,5 +1,6 @@
 package com.audiophile.t2m.music;
 
+//TODO documentation
 public enum MyInstrument {
     Piano("p"), Trumpet("trp"), AltSax("aSax"), TenorSax("tSax"), SopranSax("sSax"), BaritoneSax("bSax"), Trombone("trb"), Drums("dr");
 

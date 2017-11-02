@@ -112,6 +112,7 @@ public class Sentence {
         }
     }
 
+    //TODO documentation
     public SentenceType getSentenceType() {
         return sentenceType;
     }

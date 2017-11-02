@@ -36,6 +36,7 @@ public class Utils {
         return result;
     }
 
+    // TODO documentation
     public static String normalizeText(String text) {
         text = text.toLowerCase()
                 .replaceAll("ä", "ae")

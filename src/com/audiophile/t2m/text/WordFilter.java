@@ -14,6 +14,7 @@ public class WordFilter {
 
     private String[] fillWords;
 
+    //TODO documentation
     WordFilter(String file) {
         try {
             String content[][] = CSVTools.ReadFile(file);

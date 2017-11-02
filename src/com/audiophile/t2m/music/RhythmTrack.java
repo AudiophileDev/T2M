@@ -6,6 +6,7 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Track;
 import java.util.Arrays;
 
+//TODO documentation
 public class RhythmTrack implements TrackGenerator {
     private Tempo tempo;
     private float[] avgWordLen;

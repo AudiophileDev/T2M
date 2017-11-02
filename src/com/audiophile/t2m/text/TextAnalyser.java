@@ -10,6 +10,7 @@ import java.util.stream.Stream;
  */
 public class TextAnalyser {
 
+    //TODO documentation
     public static Sentence[] analyseSentences(String text) {
         String[] sentencesList = splitSentences(text);
         Sentence[] sentences = new Sentence[sentencesList.length];
@@ -21,6 +22,7 @@ public class TextAnalyser {
         return sentences;
     }
 
+    //TODO documentation
     public static float[] getAvgWordLength(Sentence[] sentences) {
         float[] avgWordLength = new float[sentences.length];
         for (int i = 0; i < sentences.length; i++) {
@@ -30,6 +32,7 @@ public class TextAnalyser {
         return avgWordLength;
     }
 
+    //TODO documentation
     public static Word.Tendency getAvgWordTendency(Sentence[] sentences) {
         int count = 0, sum = 0;
         for (Sentence s : sentences)
