@@ -87,7 +87,17 @@ public class Word {
             } catch (NumberFormatException nfe) {
                 v = 2;
             }
-            switch (v) {
+            return map(v);
+        }
+
+        /**
+         * Converts a string of a number to a <code>Tendency</code>
+         *
+         * @param id number
+         * @return corresponding <code>Tendency</code> with Neutral(2) as default
+         */
+        public static Tendency map(int id) {
+            switch (id) {
                 case 0:
                     return Bad;
                 case 1:

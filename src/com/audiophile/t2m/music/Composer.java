@@ -2,6 +2,7 @@ package com.audiophile.t2m.music;
 
 import com.audiophile.t2m.text.Sentence;
 import com.audiophile.t2m.text.TextAnalyser;
+import com.audiophile.t2m.text.Word;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Sequence;
@@ -17,8 +18,13 @@ public class Composer {
      * This class merges the different MIDI channels of rhythm, melody and sound effects
      * it also calculates the meta data of the music (dynamic, tempo, key)
      */
-    public Composer(Sentence[] sentences, float[] avgWordLen) {
-        //TODO get key from tendencies
+    public Composer(String text) {
+
+        // Analyse article
+        Sentence[] sentences = TextAnalyser.analyseSentences(text);
+        float[] avgWordLen = TextAnalyser.getAvgWordLength(sentences);
+        Word.Tendency avgTendency = TextAnalyser.getAvgWordTendency(sentences);
+
         this.key = new Harmony(sentences[0].getWords()[0].getName().substring(0, 1), Modes.major, false);
         this.dynamic = dynamic; //forte, piano, cresc, decresc
         this.tempo = new Tempo(avgWordLen);

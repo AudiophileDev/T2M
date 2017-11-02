@@ -30,6 +30,19 @@ public class TextAnalyser {
         return avgWordLength;
     }
 
+    public static Word.Tendency getAvgWordTendency(Sentence[] sentences) {
+        int count = 0, sum = 0;
+        for (Sentence s : sentences)
+            for (Word w : s.getWords())
+                if (w.getEntry() != null) {
+                    count++;
+                    sum += w.getEntry().getTendency().value;
+                }
+        if (count < 1)
+            return Word.Tendency.Neutral;
+        return Word.Tendency.map((int) (sum / (float) count));
+    }
+
     /**
      * Splits string into sentences by line breaks and punctuation marks.
      *
