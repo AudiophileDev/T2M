@@ -9,10 +9,14 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Track;
 import java.io.IOException;
 import java.util.ArrayList;
+import static com.audiophile.t2m.music.MidiUtils.WHOLE;
+import static com.audiophile.t2m.music.MidiUtils.HALF;
+import static com.audiophile.t2m.music.MidiUtils.QUARTER;
+import static com.audiophile.t2m.music.MidiUtils.DREISEMQUAVER;
+import static com.audiophile.t2m.music.MidiUtils.SEMIQUAVER;
+import static com.audiophile.t2m.music.MidiUtils.QUAVER;
 
 public class MelodyTrack implements TrackGenerator {
-    private static final int numOfChars = 255, numOfNotes = 128;
-    private static final int WHOLE = 512, HALF = 256, QUARTER = 128, QUAVER = 64, SEMIQUAVER = 32, DREISEMQUAVER = 16;
     private final Harmony baseKey;
     private int[] toneMapping;
     private Sentence[] sentences;
@@ -20,6 +24,8 @@ public class MelodyTrack implements TrackGenerator {
     private Tempo tempo;
     private int dramaLevel;
     private boolean[][] notes; // initialize in multiples of 64
+
+    public static final int numOfChars = 255, numOfNotes = 128;
 
     public MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile) {
         this.sentences = text;
@@ -90,25 +96,7 @@ public class MelodyTrack implements TrackGenerator {
 
                         //TODO Only input as much text as needed (remove filler words)
                         if (n > ((128 * tempo.getAverageBpm()) / 4)) {                        //finishing part
-                            part++;
-                            if (part == dramaLevel - 1) {
-                                n = 0;
-                                this.currentKey = new Harmony(this.baseKey, -12);
-                            } else if (part == dramaLevel) {
-                                n = 0;
-                                this.currentKey = new Harmony(this.baseKey, +12);
-                                // MidiUtils.ChangeInstrument(44, track, channel, 0);
-                            }
-                            if (part > dramaLevel) // Sets fixed track length of 15sec
-                            {
-                                //Gaudi ende
-                                n += QUARTER;
-                                len = QUAVER;
-                                Harmony cadenceKey = new Harmony(baseKey, 7);
-                                MidiUtils.addChord(track, n, len, cadenceKey.getNotesNumber(), -1, vel, channel, false);
-                                MidiUtils.addChord(track, n + QUAVER, len, baseKey.getNotesNumber(), 0, vel, channel, true);
-                                return;
-                            }
+                            return;
                         }
                     }
             }

@@ -96,7 +96,7 @@ public class MusicWriter {
             MidiToWavRenderer renderer = new MidiToWavRenderer();
             File wavFile =new File(fileName);
             renderer.createWavFile(sequence, wavFile);
-            Process runtime = Runtime.getRuntime().exec("cmd /c start "+wavFile);
+            Process runtime = Runtime.getRuntime().exec("cmd /c start "+wavFile); //TODO remove
         } catch (MidiUnavailableException | InvalidMidiDataException e) {
             e.printStackTrace();
         }
