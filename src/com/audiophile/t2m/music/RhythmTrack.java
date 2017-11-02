@@ -9,8 +9,10 @@ import java.util.Arrays;
 public class RhythmTrack implements TrackGenerator {
     private Tempo tempo;
     private float[] avgWordLen;
+    private MyInstrument instrument;
 
-    RhythmTrack(MusicData musicData, float[] avgWordLen) {
+    RhythmTrack(MusicData musicData, float[] avgWordLen, MyInstrument instrument) {
+        this.instrument = instrument;
         this.tempo = musicData.getTempo();
         this.avgWordLen = Arrays.copyOf(avgWordLen, avgWordLen.length); // Copy array to avoid changing the original
         Utils.BlurData(avgWordLen, 3);
@@ -45,7 +47,7 @@ public class RhythmTrack implements TrackGenerator {
 
 
     @Override
-    public void writeToTrack(Track track, int channel, MyInstrument instrument) {
+    public void writeToTrack(Track track, int channel) {
         int length = ((128 * tempo.getAverageBpm()) / 4);
         int bass, snare, hiHat;
         int vel = 32;

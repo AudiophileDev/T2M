@@ -27,10 +27,11 @@ public class MelodyTrack implements TrackGenerator {
     private int dramaLevel;
     private boolean[][] notes; // initialize in multiples of 64
     private int dynamic;
+    private MyInstrument instrument;
 
     private static final int numOfChars = 255, numOfNotes = 128;
 
-    MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile) {
+    MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile, MyInstrument instrument) {
         this.sentences = text;
         loadToneMapping(noteMappingFile);
         this.baseKey = musicData.getKey();
@@ -39,10 +40,11 @@ public class MelodyTrack implements TrackGenerator {
         this.dramaLevel = text[baseKey.getBaseNoteMidi() % text.length].getWordCount() % 3;
         this.notes = new boolean[127][12];
         this.dynamic = musicData.getDynamic();
+        this.instrument = instrument;
     }
 
     @Override
-    public void writeToTrack(Track track, int channel, MyInstrument instrument) {
+    public void writeToTrack(Track track, int channel) {
         int n = 0; // Marks position an track
         int len = QUARTER, prevLen = len; // Length of the notes in 128th per beat
         int part = 0;
