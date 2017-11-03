@@ -29,7 +29,7 @@ public class Dynamic {
                 return extrema;
             }
         }
-        System.out.println(Arrays.toString(extrema));
+       // System.out.println(Arrays.toString(extrema));
         return extrema;
     }
 
