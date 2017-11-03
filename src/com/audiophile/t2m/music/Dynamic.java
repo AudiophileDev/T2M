@@ -10,7 +10,8 @@ public class Dynamic {
         this.dynamicGradient = makeMusicallyExpression(getExtrema(avgWordLength));
     }
 
-    /**The extremae of the average word length are calculated. They will be later used for getting the dynamic to change.
+    /**
+     * The extremae of the average word length are calculated. They will be later used for getting the dynamic to change.
      *
      * @param avgWordLength The average word length of the input text
      * @return Returns at maximum 5 extremae in the word length averages
@@ -28,9 +29,7 @@ public class Dynamic {
             if (((avgWordLength[i] <= pref && avgWordLength[i] < next) || (avgWordLength[i] >= pref && avgWordLength[i] > next))) {
                 extrema[j++] = avgWordLength[i];
             }
-            if (j > 4) {
-                return extrema;
-            }
+            if (j > extrema.length - 1) return extrema;
         }
         // System.out.println(Arrays.toString(extrema));
         return extrema;
@@ -49,7 +48,6 @@ public class Dynamic {
             dif = Math.round((extrema[i + 1] - extrema[i]) * 10);
             if (extrema[i + 1] == 0)
                 dif = 0;
-
             musicalGradient[j] = dif;
             j++;
         }
@@ -61,6 +59,7 @@ public class Dynamic {
 
     /**
      * checks if input dynamic is valid and properly heard (>20)
+     *
      * @param dynamic dynamic to check
      * @return boolean if dynamic is proper to use
      */
