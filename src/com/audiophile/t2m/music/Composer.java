@@ -40,9 +40,10 @@ public class Composer {
 
         MusicData musicData = new MusicData(tempo, dynamic, key);
 
-        this.trackGenerators = new TrackGenerator[2];
+        this.trackGenerators = new TrackGenerator[3];
         this.trackGenerators[0] = new MelodyTrack(musicData, sentences, "noteMapping.csv", MyInstrument.Piano);
         this.trackGenerators[1] = new RhythmTrack(musicData, avgWordLen, MyInstrument.Drums);
+        this.trackGenerators[2] = new EffectTrack(sentences,tempo);
     }
 
     /**
@@ -56,6 +57,7 @@ public class Composer {
             sequence = new Sequence(Sequence.PPQ, tempo.getAverageBpm());
             trackGenerators[0].writeToTrack(sequence.createTrack(), 0);
             trackGenerators[1].writeToTrack(sequence.createTrack(), 9); // Channel 10 are drums
+            trackGenerators[2].writeToTrack(sequence.createTrack(), 1);
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }

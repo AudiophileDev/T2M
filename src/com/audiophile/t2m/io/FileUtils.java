@@ -1,5 +1,8 @@
 package com.audiophile.t2m.io;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.Sequence;
 import java.io.*;
 
 /**
@@ -30,9 +33,10 @@ public class FileUtils {
      * Writes the given <code>content</code> to the given file.
      * If <code>append</code> is true, the content is added to the end of the file.
      * Else the file is overridden.
+     *
      * @param fileName The file to write to
-     * @param content The content to write to the file
-     * @param append Append content to end of file
+     * @param content  The content to write to the file
+     * @param append   Append content to end of file
      * @throws IOException Thrown if writing to file was not possible
      */
     static void WriteFile(String fileName, String content, boolean append) throws IOException {
@@ -46,6 +50,15 @@ public class FileUtils {
         else
             writer.write(content);
         writer.close();
+    }
+
+    public static Sequence LoadMidiFile(String file) {
+        try {
+            return MidiSystem.getSequence(new FileInputStream(file));
+        } catch (InvalidMidiDataException | IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }
