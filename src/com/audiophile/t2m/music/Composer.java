@@ -1,11 +1,13 @@
 package com.audiophile.t2m.music;
 
+import com.audiophile.t2m.Utils;
 import com.audiophile.t2m.text.Sentence;
 import com.audiophile.t2m.text.TextAnalyser;
 import com.audiophile.t2m.text.Word;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Sequence;
+import java.util.Arrays;
 
 /**
  * This class puts together all tracks and composes them to one sequence, which can be exported and played.
@@ -29,6 +31,9 @@ public class Composer {
         Sentence[] sentences = TextAnalyser.analyseSentences(text);
         float[] avgWordLen = TextAnalyser.getAvgWordLength(sentences);
         Word.Tendency avgTendency = TextAnalyser.getAvgWordTendency(sentences);
+        System.out.println(Arrays.toString(avgWordLen));
+        avgWordLen = Utils.BlurData(avgWordLen, 3);
+        System.out.println(Arrays.toString(avgWordLen));
         //TODO get key from tendencies
         Harmony key = new Harmony(sentences[0].getWords()[0].getName().substring(0, 1), avgTendency.ordinal() < Word.Tendency.Neutral.ordinal() ? Mode.Minor : Mode.Major, false);
         int dynamic = 64;
