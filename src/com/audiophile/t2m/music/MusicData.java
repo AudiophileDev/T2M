@@ -9,17 +9,17 @@ public class MusicData {
     /**
      * Constant value for the tempo of the track
      */
-    private Tempo tempo;
+    Tempo tempo;
     /**
-     * Value for the dynamic between 0-127
+     * Value for the dynamicGradient between 0-127
      */
-    private int dynamic;
+    Dynamic dynamic;
     /**
      * The basic baseKey of the whole track
      */
-    private Harmony baseKey;
+    Harmony baseKey;
 
-    public MusicData(Tempo tempo, int dynamic, Harmony baseKey) {
+    public MusicData(Tempo tempo, Dynamic dynamic, Harmony baseKey) {
         this.tempo = tempo;
         this.dynamic = dynamic;
         this.baseKey = baseKey;
@@ -33,12 +33,8 @@ public class MusicData {
         this.tempo = tempo;
     }
 
-    public int getDynamic() {
+    public Dynamic getDynamic() {
         return dynamic;
-    }
-
-    public void setDynamic(int dynamic) {
-        this.dynamic = dynamic;
     }
 
     public Harmony getBaseKey() {

@@ -15,18 +15,16 @@ public class Composer {
 
     /**
      * This class merges the different MIDI channels of rhythm, melody and sound effects
-     * it also calculates the meta data of the music (dynamic, tempo, key)
+     * it also calculates the meta data of the music (dynamicGradient, tempo, key)
      */
     public Composer(String text) {
         Sentence[] sentences = TextAnalyser.analyseSentences(text);
         float[] avgWordLen = TextAnalyser.getAvgWordLength(sentences);
         Word.Tendency avgTendency = TextAnalyser.getAvgWordTendency(sentences);
-        System.out.println(Arrays.toString(avgWordLen));
-        avgWordLen = Utils.BlurData(avgWordLen, 3);
-        System.out.println(Arrays.toString(avgWordLen));
+
         //TODO get key from tendencies
         Harmony key = new Harmony(sentences[0].getWords()[0].getName().substring(0, 1), avgTendency.ordinal() < Word.Tendency.Neutral.ordinal() ? Mode.Minor : Mode.Major, false);
-        int dynamic = 64;
+        Dynamic dynamic = new Dynamic(avgTendency.ordinal()*32, Utils.BlurData(avgWordLen, 10));
         this.tempo = new Tempo(avgWordLen);
         int i = (key.getMode() == Mode.Minor ? 2 : 1);
         this.tempo.setAverageBpm(this.tempo.getAverageBpm() / i);

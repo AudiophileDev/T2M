@@ -4,7 +4,6 @@ import com.audiophile.t2m.Utils;
 import com.audiophile.t2m.io.CSVTools;
 import com.audiophile.t2m.text.Sentence;
 import com.audiophile.t2m.text.Word;
-import com.audiophile.t2m.text.WordFilter;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Track;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import static com.audiophile.t2m.music.MidiUtils.WHOLE;
 import static com.audiophile.t2m.music.MidiUtils.HALF;
 import static com.audiophile.t2m.music.MidiUtils.QUARTER;
-import static com.audiophile.t2m.music.MidiUtils.DREISEMQUAVER;
 import static com.audiophile.t2m.music.MidiUtils.SEMIQUAVER;
 import static com.audiophile.t2m.music.MidiUtils.QUAVER;
 
@@ -25,7 +23,7 @@ public class MelodyTrack implements TrackGenerator {
     private Harmony currentKey;
     private Tempo tempo;
     private boolean[][] notes; // initialize in multiples of 64
-    private int dynamic;
+    private Dynamic dynamic;
     private MyInstrument instrument;
 
     private static final int numOfChars = 255, numOfNotes = 128;
@@ -38,12 +36,15 @@ public class MelodyTrack implements TrackGenerator {
         this.currentKey = new Harmony(baseKey, 0);
         //int dramaLevel = text[baseKey.getBaseNoteMidi() % text.length].getWordCount() % 3;
         this.notes = new boolean[127][12];
-        this.dynamic = musicData.getDynamic();
+        //Todo make depending on initial mood
+        this.dynamic = musicData.dynamic;
+        int[] dynamicGradient = musicData.dynamic.dynamicGradient;
         this.instrument = instrument;
     }
 
     @Override
     public void writeToTrack(Track track, int channel) {
+        int j = 0;
         int n = 0; // Marks position an track
         int len = QUARTER, prevLen = len; // Length of the notes in 128th per beat
         int part = 0;
@@ -55,8 +56,8 @@ public class MelodyTrack implements TrackGenerator {
                 sen++;
                 // Increase loudness for exclamation sentences
                 if (s.getSentenceType() == Sentence.SentenceType.Exclamation)
-                    dynamic = 127;
-                else dynamic = 64;
+                    dynamic.initDynamic = 127;
+                else dynamic.initDynamic = 64;
                 for (Word w : s.getWords()) {
                     if (w.isFiller()) // Skip filler words
                         continue;
@@ -80,26 +81,34 @@ public class MelodyTrack implements TrackGenerator {
                         prevLen = len;
 
                         //chord on the first beat of every bar
-                        if (n % WHOLE == 0) { //beginning of every bar
+                        if (n % WHOLE <= QUAVER) { //beginning of every bar
                             //len = QUARTER;
-                            MidiUtils.addNote(track, n + 64 * ((playable % 4) + 1), len, playable, dynamic / 4 * 3, channel);
+                            if (dynamic.dynamicGradient.length > j && n > QUARTER) {
+                                j++;
+                            }
+                            MidiUtils.addNote(track, n + 64 * ((playable % 4) + 1), len, playable, dynamic.initDynamic / 4 * 3, channel);
                             notes[(n + 64 * ((playable % 4) + 1)) / 64][playable % 12] = true;
 
-                            MidiUtils.addChord(track, n, len, currentKey.getNotesNumber(), -1, dynamic / 2, channel, false);
-                            MidiUtils.addPowerChord(track, n, len, currentKey.getNotesNumber(), -2, dynamic / 2, channel);
+                            MidiUtils.addChord(track, n, len, currentKey.getNotesNumber(), -1, dynamic.initDynamic / 2, channel, false);
+                            MidiUtils.addPowerChord(track, n, len, currentKey.getNotesNumber(), -2, dynamic.initDynamic / 2, channel);
                             notes[n / 64][currentKey.getNotesNumber().get(0) % 12] = true;
                             notes[n / 64][currentKey.getNotesNumber().get(1) % 12] = true;
                             notes[n / 64][currentKey.getNotesNumber().get(2) % 12] = true;
                             //len = prevLen;
                         } else {
-                            MidiUtils.addNote(track, n, len, isConsonant(playable, n), dynamic, channel);
+                            if (dynamic.dynamicGradient.length > j) {
+                                if (Dynamic.isValidDynamic(dynamic.initDynamic + dynamic.dynamicGradient[j]))
+                                    dynamic.initDynamic += dynamic.dynamicGradient[j];
+                                // System.out.print(dynamic.initDynamic + ", ");
+                            }
+                            MidiUtils.addNote(track, n, len, isConsonant(playable, n), dynamic.initDynamic, channel);
                             notes[n / 64][playable % 12] = true;
                         }
                         n += len;
                         previous = playable; //save previous to prevent going of the scale
-
                         //TODO Only input as much text as needed (remove filler words)
-                        if (60*(float)(n+len)/(QUARTER * tempo.getAverageBpm())>=15) {                        //finishing part
+                        if (60 * (float) (n + len) / (QUARTER * tempo.getAverageBpm()) >= 15) {                        //finishing part
+
                             System.out.println("Used chars: " + chars + ", words:" + words + ", sen: " + sen);
                             return;
                         }
