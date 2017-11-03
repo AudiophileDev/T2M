@@ -10,11 +10,7 @@ import javax.sound.midi.Track;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.audiophile.t2m.music.MidiUtils.WHOLE;
-import static com.audiophile.t2m.music.MidiUtils.HALF;
-import static com.audiophile.t2m.music.MidiUtils.QUARTER;
-import static com.audiophile.t2m.music.MidiUtils.SEMIQUAVER;
-import static com.audiophile.t2m.music.MidiUtils.QUAVER;
+import static com.audiophile.t2m.music.MidiUtils.*;
 
 public class MelodyTrack implements TrackGenerator {
     private final Harmony baseKey;
@@ -25,7 +21,7 @@ public class MelodyTrack implements TrackGenerator {
     private boolean[][] notes; // initialize in multiples of 64
     private Dynamic dynamic;
     private MyInstrument instrument;
-
+    private int dramaLevel;
     private static final int numOfChars = 255, numOfNotes = 128;
 
     MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile, MyInstrument instrument) {
@@ -34,11 +30,10 @@ public class MelodyTrack implements TrackGenerator {
         this.baseKey = musicData.getBaseKey();
         this.tempo = musicData.getTempo();
         this.currentKey = new Harmony(baseKey, 0);
-        //int dramaLevel = text[baseKey.getBaseNoteMidi() % text.length].getWordCount() % 3;
+        this.dramaLevel = text[baseKey.getBaseNoteMidi() % text.length].getWordCount() % 3;
         this.notes = new boolean[127][12];
         //Todo make depending on initial mood
         this.dynamic = musicData.dynamic;
-        int[] dynamicGradient = musicData.dynamic.dynamicGradient;
         this.instrument = instrument;
     }
 
@@ -108,9 +103,21 @@ public class MelodyTrack implements TrackGenerator {
                         previous = playable; //save previous to prevent going of the scale
                         //TODO Only input as much text as needed (remove filler words)
                         if (60 * (float) (n + len) / (QUARTER * tempo.getAverageBpm()) >= 15) {                        //finishing part
+                            part++;
+                            if (part == dramaLevel - 1) {
+                                n = 0;
+                                this.currentKey = new Harmony(this.baseKey, -12);
 
-                            System.out.println("Used chars: " + chars + ", words:" + words + ", sen: " + sen);
-                            return;
+                            } else if (part == dramaLevel) {
+                                n = 0;
+                                this.currentKey = new Harmony(this.baseKey, +12);
+                                // MidiUtils.ChangeInstrument(44, track, channel, 0);
+                            }
+                            if (part > dramaLevel) // Sets fixed track length of 15sec
+                            {
+                                System.out.println("Used chars: " + chars + ", words:" + words + ", sen: " + sen);
+                                return;
+                            }
                         }
                     }
                 }
