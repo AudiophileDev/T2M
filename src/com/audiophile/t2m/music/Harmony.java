@@ -100,7 +100,7 @@ public class Harmony {
 
     /**
      * masks any letter to a basenote between a and h
-     * this limits the music output to three different base keys
+     * this limits thnotee music output to three different base keys
      *
      * @param baseNote tonic of the chord
      * @return the masked basenote
