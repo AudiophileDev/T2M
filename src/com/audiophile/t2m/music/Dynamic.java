@@ -29,9 +29,7 @@ class Dynamic {
             if (((avgWordLength[i] <= pref && avgWordLength[i] < next) || (avgWordLength[i] >= pref && avgWordLength[i] > next))) {
                 extrema[j++] = avgWordLength[i];
             }
-            if (j > 4) {
-                return extrema;
-            }
+            if (j > extrema.length - 1) return extrema;
         }
         // System.out.println(Arrays.toString(extrema));
         return extrema;
@@ -50,7 +48,6 @@ class Dynamic {
             dif = Math.round((extrema[i + 1] - extrema[i]) * 10);
             if (extrema[i + 1] == 0)
                 dif = 0;
-
             musicalGradient[j] = dif;
             j++;
         }

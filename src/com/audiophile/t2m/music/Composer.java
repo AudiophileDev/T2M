@@ -54,7 +54,10 @@ public class Composer {
     public Sequence getSequence() {
         Sequence sequence = null;
         try {
-            sequence = new Sequence(Sequence.PPQ, tempo.getAverageBpm());
+            sequence = new Sequence(Sequence.PPQ, (int) Math.round((144 * 10) / (tempo.getAverageBpm() * 10.0) * 144));
+            System.out.println(
+                    Math.round((144 * 10) / (tempo.getAverageBpm() * 10.0) * 144)
+            );
             trackGenerators[0].writeToTrack(sequence.createTrack(), 0);
             trackGenerators[1].writeToTrack(sequence.createTrack(), 9); // Channel 10 are drums
             trackGenerators[2].writeToTrack(sequence.createTrack(), 1);

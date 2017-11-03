@@ -4,7 +4,6 @@ import com.audiophile.t2m.Utils;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Track;
-import java.util.Arrays;
 
 //TODO documentation
 public class RhythmTrack implements TrackGenerator {
@@ -44,7 +43,6 @@ public class RhythmTrack implements TrackGenerator {
     private int roundToQuaver(float val) {
         return (((int) val) / MidiUtils.QUAVER) * MidiUtils.QUAVER;
     }
-
 
     @Override
     public void writeToTrack(Track track, int channel) {
