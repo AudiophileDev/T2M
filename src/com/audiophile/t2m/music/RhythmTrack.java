@@ -15,8 +15,7 @@ public class RhythmTrack implements TrackGenerator {
     RhythmTrack(MusicData musicData, float[] avgWordLen, MyInstrument instrument) {
         this.instrument = instrument;
         this.tempo = musicData.getTempo();
-        this.avgWordLen = Arrays.copyOf(avgWordLen, avgWordLen.length); // Copy array to avoid changing the original
-        Utils.BlurData(avgWordLen, 3);
+        this.avgWordLen = Utils.BlurData(avgWordLen, 3);
 
         // Find min and max avg word length in the text
         float max = 0,
@@ -49,7 +48,7 @@ public class RhythmTrack implements TrackGenerator {
 
     @Override
     public void writeToTrack(Track track, int channel) {
-        int length = ((MidiUtils.QUARTER * tempo.getAverageBpm()) / 60*15);
+        int length = ((MidiUtils.QUARTER * tempo.getAverageBpm()) / 60 * 15);
         int bass, snare, hiHat;
         int vel = 64;
         try {
