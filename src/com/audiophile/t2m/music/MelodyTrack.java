@@ -33,7 +33,7 @@ public class MelodyTrack implements TrackGenerator {
     MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile, MyInstrument instrument) {
         this.sentences = text;
         loadToneMapping(noteMappingFile);
-        this.baseKey = musicData.getKey();
+        this.baseKey = musicData.getBaseKey();
         this.tempo = musicData.getTempo();
         this.currentKey = new Harmony(baseKey, 0);
         //int dramaLevel = text[baseKey.getBaseNoteMidi() % text.length].getWordCount() % 3;
@@ -82,7 +82,6 @@ public class MelodyTrack implements TrackGenerator {
                         //chord on the first beat of every bar
                         if (n % WHOLE == 0) { //beginning of every bar
                             //len = QUARTER;
-                            //TODO check if consonant
                             MidiUtils.addNote(track, n + 64 * ((playable % 4) + 1), len, playable, dynamic / 4 * 3, channel);
                             notes[(n + 64 * ((playable % 4) + 1)) / 64][playable % 12] = true;
 

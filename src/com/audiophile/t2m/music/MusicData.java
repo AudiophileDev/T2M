@@ -1,15 +1,28 @@
 package com.audiophile.t2m.music;
 
 //TODO documentation
-public class MusicData {
-    private Tempo tempo;
-    private int dynamic;
-    private Harmony key;
 
-    public MusicData(Tempo tempo, int dynamic, Harmony key) {
+/**
+ * This class contains all of the important musical paramters
+ */
+public class MusicData {
+    /**
+     * Constant value for the tempo of the track
+     */
+    private Tempo tempo;
+    /**
+     * Value for the dynamic between 0-127
+     */
+    private int dynamic;
+    /**
+     * The basic baseKey of the whole track
+     */
+    private Harmony baseKey;
+
+    public MusicData(Tempo tempo, int dynamic, Harmony baseKey) {
         this.tempo = tempo;
         this.dynamic = dynamic;
-        this.key = key;
+        this.baseKey = baseKey;
     }
 
     public Tempo getTempo() {
@@ -28,11 +41,11 @@ public class MusicData {
         this.dynamic = dynamic;
     }
 
-    public Harmony getKey() {
-        return key;
+    public Harmony getBaseKey() {
+        return baseKey;
     }
 
-    public void setKey(Harmony key) {
-        this.key = key;
+    public void setBaseKey(Harmony baseKey) {
+        this.baseKey = baseKey;
     }
 }
