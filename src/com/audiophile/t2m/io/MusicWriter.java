@@ -36,10 +36,11 @@ public class MusicWriter {
     /**
      * Converts the given <code>sequence</code> to a wav file and then to a mp3 file.
      * The temporary wav file is deleted afterwards.
-     * @see MusicWriter#writeWav(Sequence, String)
+     *
      * @param sequence The sequence to write to the file
      * @param fileName The file to write to
      * @throws IOException Thrown if writing to file was not possible
+     * @see MusicWriter#writeWav(Sequence, String)
      */
     public static void writeMP3(Sequence sequence, String fileName) throws IOException {
         String file = fileNameWithoutEnding(fileName);
@@ -73,6 +74,7 @@ public class MusicWriter {
 
     /**
      * Removes the extension from a filename
+     *
      * @param fileName The filename with extension
      * @return The filename without extension
      */
@@ -86,6 +88,7 @@ public class MusicWriter {
 
     /**
      * Saves the given <code>sequence</code> to a wav file.
+     *
      * @param sequence The sequence to write to the file
      * @param fileName The file to write to
      * @throws IOException Thrown if writing to file was not possible
@@ -94,9 +97,12 @@ public class MusicWriter {
     public static void writeWav(Sequence sequence, String fileName) throws IOException {
         try {
             MidiToWavRenderer renderer = new MidiToWavRenderer();
-            File wavFile =new File(fileName);
+            File wavFile = new File(fileName);
             renderer.createWavFile(sequence, wavFile);
-            Process runtime = Runtime.getRuntime().exec("cmd /c start "+wavFile); //TODO remove
+            String run = "open";
+            if (System.getProperty("os.name").startsWith("Windows"))
+                run = "cmd /c start";
+            Runtime.getRuntime().exec(run +" "+ wavFile); //TODO remove
         } catch (MidiUnavailableException | InvalidMidiDataException e) {
             e.printStackTrace();
         }
@@ -107,6 +113,7 @@ public class MusicWriter {
     /**
      * Plays given sequence direct from the console. For testing only.
      * Blocks thread while playing.
+     *
      * @param sequence The sequence to play
      */
     public synchronized static void play(Sequence sequence) {

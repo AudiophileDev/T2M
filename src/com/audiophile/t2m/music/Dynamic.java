@@ -1,6 +1,6 @@
 package com.audiophile.t2m.music;
 
-public class Dynamic {
+class Dynamic {
 
     int[] dynamicGradient;
     int initDynamic;
@@ -11,7 +11,7 @@ public class Dynamic {
     }
 
     /**
-     * The extremae of the average word length are calculated. They will be later used for getting the dynamic to change.
+     * The extrema of the average word length are calculated. They will be later used for getting the dynamic to change.
      *
      * @param avgWordLength The average word length of the input text
      * @return Returns at maximum 5 extremae in the word length averages

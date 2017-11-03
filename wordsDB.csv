@@ -1,55 +1,69 @@
-"Sturm","0","storm"
-"abstrafen","1",
-"Schadsoftware","0",
-"Kämpfer","1",
-"solidarisch","3",
+"Sturm"            ,"0","storm"   
+"abstrafen"        ,"1",
+"Schadsoftware"    ,"0",
+"Kämpfer"          ,"1",
+"solidarisch"      ,"3",
 "Bedrohungszenario","1",
-"Ungerechtigkeit","1",
-"Abwehr","2","Negative"
-"Hackerangriffe","0",
-"Bedrohung","0",
-"erleichtern","3",
-"Tod","0",
-"verachten","1",
-"Nato","3",
-"Datendiebstahl","0",
-"angegriffen","1",
-"Konfrontation","1",
-"Dämonisierung","1","deamon"
-"Boykott","1",
-"glücklich","3",
-"Klimaschutz","3",
-"Bombe","0","bomb"
-"terroristisch","0",
-"schlecht","1",
-"Wut","1",
-"Respektlosigkeit","1",
-"minus","1",
-"lieben","4",
-"Desinformation","1",
-"Proteste","1",
-"gut","3",
-"schön","4",
-"Deutschland","4",
-"stark","3",
-"Fake","1",
-"respektlos","0",
-"verlieren","1",
-"sterben","0",
-"Kriegführung","0",
-"Übung","3",
-"Gefahr","1",
-"scheiße","0",
-"Hochzeit","4",
-"super","4",
-"Schuld","1",
-"Cyberangriff","0",
-"unterstützen","3",
-"Falschmeldung","1",
-"mies","1",
-"Angriff","1",
-"attakieren","1",
-"Cyberattacke","1",
-"Hurensohn","0",
-"Hackerattacke","1",
-"Sicherheit","4",
+"Ungerechtigkeit"  ,"1",
+"Abwehr"           ,"2","Negative"
+"Hackerangriffe"   ,"0",
+"Bedrohung"        ,"0",
+"erleichtern"      ,"3",
+"Tod"              ,"0",
+"könig"            ,"4","royal"
+"prinz"            ,"4","royal"
+"sieg"             ,"4","royal"
+"verachten"        ,"1",
+"Nato"             ,"3",
+"Datendiebstahl"   ,"0",
+"angegriffen"      ,"1",
+"Konfrontation"    ,"1",
+"Dämonisierung"    ,"1","deamon"
+"Boykott"          ,"1",
+"glücklich"        ,"3",
+"Klimaschutz"      ,"3",
+"Bombe"            ,"0","bomb"
+"terroristisch"    ,"0",
+"schlecht"         ,"1",
+"Wut"              ,"1",
+"Respektlosigkeit" ,"1",
+"minus"            ,"1",
+"lieben"           ,"4",
+"Desinformation"   ,"1",
+"Proteste"         ,"1",
+"gut"              ,"3",
+"schön"            ,"4",
+"Deutschland"      ,"4","germany"
+"stark"            ,"3",
+"Fake"             ,"1",
+"respektlos"       ,"0",
+"verlieren"        ,"1",
+"sterben"          ,"0",
+"Kriegführung"     ,"0",
+"Übung"            ,"3",
+"Gefahr"           ,"1",
+"scheiße"          ,"0",
+"Hochzeit"         ,"4","wedding"
+"Ehe"              ,"4","wedding"
+"super"            ,"4",
+"Schuld"           ,"1",
+"Cyberangriff"     ,"0",
+"unterstützen"     ,"3",
+"Falschmeldung"    ,"1",
+"mies"             ,"1",
+"Angriff"          ,"1",
+"attakieren"       ,"1",
+"Cyberattacke"     ,"1",
+"Hurensohn"        ,"0",
+"Hackerattacke"    ,"1",
+"Sicherheit"       ,"4",
+"merkel"           ,"3","germany"
+"schulz"           ,"3","germany"
+"trump"            ,"1","america"
+"usa"              ,"2","america"
+"FBI"              ,"2","america"
+"nsa"              ,"2","america"
+"liga"             ,"3","football"
+"fussball"         ,"3","football"
+"fc"               ,"3","football"
+"club"             ,"3","football"
