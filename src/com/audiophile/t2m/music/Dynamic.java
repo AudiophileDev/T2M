@@ -28,7 +28,7 @@ public class Dynamic {
             if (((avgWordLength[i] <= pref && avgWordLength[i] < next) || (avgWordLength[i] >= pref && avgWordLength[i] > next))) {
                 extrema[j++] = avgWordLength[i];
             }
-            if (j > 5) {
+            if (j > 4) {
                 return extrema;
             }
         }
