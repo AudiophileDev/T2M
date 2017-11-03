@@ -1,6 +1,7 @@
 package com.audiophile.t2m;
 
 /**
+ * Various functions for global usage
  * @author Simon
  */
 public class Utils {
@@ -21,7 +22,7 @@ public class Utils {
         if (length < 2)
             return new float[]{data[0]};
         // Assertion for bug finding
-        assert radius > length / 2;
+        assert radius < length / 2;
 
         if (radius > length / 2)
             radius = length / 2;
@@ -36,7 +37,16 @@ public class Utils {
         return result;
     }
 
-    // TODO documentation
+    /**
+     * Replaces all umlauts with roman letters
+     * <ul>
+     *     <li>ä = ae</li>
+     *     <li>ü = ue</li>
+     *     <li>ö = oe</li>
+     * </ul>
+     * @param text The text to replace the umlauts
+     * @return A text without umlauts
+     */
     public static String normalizeText(String text) {
         text = text.toLowerCase()
                 .replaceAll("ä", "ae")
@@ -50,12 +60,10 @@ public class Utils {
      * <p>
      * Examples:
      * <ul>
-     * <li>clamp(4,0,5) => 4</li>
-     * <li>clamp(-2,-1,3) => -1</li>
-     * <li>clamp(100,10,50) => 50</li>
+     * <li>clamp(4,0,5) = 4</li>
+     * <li>clamp(-2,-1,3) = -1</li>
+     * <li>clamp(100,10,50) = 50</li>
      * </ul>
-     * <p>
-     * </p>
      *
      * @param value The value to clamp
      * @param min   The minimum value of the result.

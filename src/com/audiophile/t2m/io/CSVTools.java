@@ -9,9 +9,13 @@ import java.util.List;
  */
 public class CSVTools {
 
-    // Default split characters for csv files
+    /**
+     * Default split characters for csv files
+     */
     private static final char DEFAULT_SEPARATOR = ',';
-    // Default quote characters for csv files
+    /**
+     * Default quote characters for csv files
+     */
     private static final char DEFAULT_QUOTE = '"';
 
     /**

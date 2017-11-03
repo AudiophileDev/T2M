@@ -35,7 +35,7 @@ public class FileUtils {
      * @param append Append content to end of file
      * @throws IOException Thrown if writing to file was not possible
      */
-    public static void WriteFile(String fileName, String content, boolean append) throws IOException {
+    static void WriteFile(String fileName, String content, boolean append) throws IOException {
         File file = new File(fileName);
         if (!file.exists())
             if (!file.createNewFile())

@@ -13,9 +13,15 @@ import java.util.Arrays;
  */
 public class WordFilter {
 
+    /**
+     * List of filler words
+     */
     private String[] fillWords;
 
-    //TODO documentation
+    /**
+     * Loads all fill words from the given CSV file and stores them in a array
+     * @param file The CSV file with the fill words
+     */
     WordFilter(String file) {
         try {
             String content[][] = CSVTools.ReadFile(file);
@@ -30,10 +36,20 @@ public class WordFilter {
         }
     }
 
+    /**
+     * Checks if the given word is in the list of filler words
+     * @param s1 The word to check
+     * @return True, if it is a filler word
+     */
     private boolean isFiller(String s1) {
         return Arrays.stream(fillWords).anyMatch(s1::equals);
     }
 
+    /**
+     * Marks all fill words in the given sentence.
+     * @see Word#setFiller(boolean)
+     * @param sentences The text split into sentences
+     */
     void markFillers(Sentence[] sentences) {
         for (Sentence s : sentences)
             for (Word w : s.getWords()) {
