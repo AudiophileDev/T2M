@@ -2,8 +2,8 @@
   <configuration default="false" name="Deploy &amp; Run" type="JarApplication" factoryName="JAR Application" singleton="true">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/t2m_jar/t2m.jar" />
-    <option name="PROGRAM_PARAMETERS" value="article_sport.txt music.wav wordsDB.csv -o wav" />
-    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="PROGRAM_PARAMETERS" value="article.txt music.wav wordsDB.csv -o wav" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/out/artifacts/t2m_jar/" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <envs />
     <method>

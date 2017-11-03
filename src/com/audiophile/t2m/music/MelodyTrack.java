@@ -51,7 +51,7 @@ public class MelodyTrack implements TrackGenerator {
         int playable, previous = baseKey.getBaseNoteMidi();
         int chars = 0, words = 0, sen = 0;
         try {
-            MidiUtils.ChangeInstrument(instrument.MidiValue, track, channel, 0);
+            MidiUtils.ChangeInstrument(instrument.getMidiValue(), track, channel, 0);
             for (Sentence s : sentences) {
                 sen++;
                 // Increase loudness for exclamation sentences

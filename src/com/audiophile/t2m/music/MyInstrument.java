@@ -2,38 +2,36 @@ package com.audiophile.t2m.music;
 
 //TODO documentation
 public enum MyInstrument {
-    Piano("p"), Trumpet("trp"), AltSax("aSax"), TenorSax("tSax"), SopranSax("sSax"), BaritoneSax("bSax"), Trombone("trb"), Drums("dr");
+    Piano(1, "p"),
+    Trumpet(57, "trp"),
+    AltSax(66, "aSax"),
+    TenorSax(67, "tSax"),
+    SopranSax(65, "sSax"),
+    BaritoneSax(68, "bSax"),
+    Trombone(58, "trb"),
+    Drums(1, "dr");
 
-    final int MidiValue;
+    final int midiValue;
+    final String instrumentClass;
 
-    MyInstrument(String instrumentClass) {
-        switch (instrumentClass) {
-            case "p":
-                MidiValue = 1;
-                break;
-            case "trp":
-                MidiValue = 57;
-                break;
-            case "trb":
-                MidiValue = 58;
-                break;
-            case "sSax":
-                MidiValue = 65;
-                break;
-            case "aSax":
-                MidiValue = 66;
-                break;
-            case "tSax":
-                MidiValue = 67;
-                break;
-            case "bSax":
-                MidiValue = 68;
-                break;
-            case "dr":
-                MidiValue = 1;
-                break;
-            default:
-                MidiValue = 1;
-        }
+    MyInstrument(int midiValue, String instrumentClass) {
+        this.midiValue = midiValue;
+        this.instrumentClass = instrumentClass;
+    }
+
+    public static String[] stringValues() {
+        MyInstrument[] instruments = MyInstrument.values();
+        String[] values = new String[instruments.length];
+        for(int i=0;i<values.length;i++)
+            values[i] = instruments[i].getInstrumentClass();
+        return values;
+    }
+
+    public int getMidiValue() {
+        return midiValue;
+    }
+
+    public String getInstrumentClass() {
+        return instrumentClass;
     }
 }

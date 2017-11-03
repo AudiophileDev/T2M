@@ -3,10 +3,12 @@ package com.audiophile.t2m;
 import com.audiophile.t2m.io.FileUtils;
 import com.audiophile.t2m.io.MusicWriter;
 import com.audiophile.t2m.music.Composer;
+import com.audiophile.t2m.music.MyInstrument;
 import com.audiophile.t2m.text.DatabaseHandler;
 import com.audiophile.t2m.text.Sentence;
 import com.audiophile.t2m.text.TextAnalyser;
 import com.audiophile.t2m.text.Word;
+import com.sun.deploy.util.ArrayUtil;
 
 import javax.sound.midi.Sequence;
 import java.io.File;
@@ -23,12 +25,17 @@ public class Main {
             + MusicWriter.WAV + " | "
             + MusicWriter.MIDI + " | "
             + MusicWriter.PLAY
-            + "}] [-p]\n"
+            + "}] "
+            + "[-i {"
+            + String.join(" | ", MyInstrument.stringValues())
+            + "} "
+            + "[-p]\n"
             + "Args:\n"
             + "\t articlefile: The article saved as file\n"
             + "\t outputfile: The file to write the music to\n"
             + "\t databasefile: The words database file\n"
             + "\t -o: The output type\n"
+            + "\t -i: The instrument\n"
             + "\t -p: Enables precise search\n";
 
 
