@@ -7,7 +7,6 @@ import com.audiophile.t2m.text.Word;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Sequence;
-import java.util.Arrays;
 
 /**
  * This class puts together all tracks and composes them to one sequence, which can be exported and played.

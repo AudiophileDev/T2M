@@ -1,7 +1,5 @@
 package com.audiophile.t2m.music;
 
-import java.util.Arrays;
-
 public class Dynamic {
 
     int[] dynamicGradient;
@@ -12,6 +10,11 @@ public class Dynamic {
         this.dynamicGradient = makeMusicallyExpression(getExtrema(avgWordLength));
     }
 
+    /**The extremae of the average word length are calculated. They will be later used for getting the dynamic to change.
+     *
+     * @param avgWordLength The average word length of the input text
+     * @return Returns at maximum 5 extremae in the word length averages
+     */
     private float[] getExtrema(float[] avgWordLength) {
         float[] extrema = new float[5];
         int j = 0;
@@ -29,18 +32,24 @@ public class Dynamic {
                 return extrema;
             }
         }
-       // System.out.println(Arrays.toString(extrema));
+        // System.out.println(Arrays.toString(extrema));
         return extrema;
     }
 
+    /**
+     * indicates how much the dynamic will in- or decrease
+     *
+     * @param extrema calculated extremae from above
+     * @return an array of values, which determine, if the music gets louder or more silent
+     */
     private int[] makeMusicallyExpression(float[] extrema) {
         int dif, j = 0;
         int[] musicalGradient = new int[extrema.length - 1];
         for (int i = 0; i < musicalGradient.length; i++) {
             dif = Math.round((extrema[i + 1] - extrema[i]) * 10);
-            if (extrema[i + 1] == 0) {
+            if (extrema[i + 1] == 0)
                 dif = 0;
-            }
+
             musicalGradient[j] = dif;
             j++;
         }
@@ -49,6 +58,12 @@ public class Dynamic {
         return musicalGradient;
     }
 
+
+    /**
+     * checks if input dynamic is valid and properly heard (>20)
+     * @param dynamic dynamic to check
+     * @return boolean if dynamic is proper to use
+     */
     static boolean isValidDynamic(int dynamic) {
         return dynamic < 127 && dynamic > 20;
     }
