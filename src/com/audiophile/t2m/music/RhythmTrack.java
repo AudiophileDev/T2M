@@ -49,9 +49,9 @@ public class RhythmTrack implements TrackGenerator {
 
     @Override
     public void writeToTrack(Track track, int channel) {
-        int length = ((128 * tempo.getAverageBpm()) / 4);
+        int length = ((MidiUtils.QUARTER * tempo.getAverageBpm()) / 60*15);
         int bass, snare, hiHat;
-        int vel = 32;
+        int vel = 64;
         try {
             // Add bass
             int i = 0;

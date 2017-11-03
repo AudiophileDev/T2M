@@ -2,6 +2,7 @@ package com.audiophile.t2m.music;
 
 import com.audiophile.t2m.text.Sentence;
 import com.audiophile.t2m.text.TextAnalyser;
+import com.audiophile.t2m.text.Word;
 
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Sequence;
@@ -17,8 +18,9 @@ public class Composer {
     public Composer(String text) {
         Sentence[] sentences = TextAnalyser.analyseSentences(text);
         float[] avgWordLen = TextAnalyser.getAvgWordLength(sentences);
+        Word.Tendency avgTendency = TextAnalyser.getAvgWordTendency(sentences);
         //TODO get key from tendencies
-        Harmony key = new Harmony(sentences[0].getWords()[0].getName().substring(0, 1), Mode.Major, false);
+        Harmony key = new Harmony(sentences[0].getWords()[0].getName().substring(0, 1), avgTendency.ordinal() < Word.Tendency.Neutral.ordinal() ? Mode.Minor : Mode.Major, false);
         int dynamic = 64;
         this.tempo = new Tempo(avgWordLen);
         int i = (key.getMode() == Mode.Minor ? 2 : 1);
