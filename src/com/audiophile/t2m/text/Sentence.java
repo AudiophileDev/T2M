@@ -12,11 +12,18 @@ import java.util.Locale;
  */
 public class Sentence {
 
-    private SentenceType sentenceType; // Type of the sentence
-    private int wordCount; // Number of words in sentence
-    private float avgWordLength; // Average characters per word
-    private int[] wordLength; // Length of every word
-    private Word[] words; // All words in the sentence as array
+    /**
+     * The type of the sentence
+     */
+    private SentenceType sentenceType;
+    /**
+     * The average word length in the sentence
+     */
+    private float avgWordLength;
+    /**
+     * The words in the sentence
+     */
+    private Word[] words;
 
     /**
      * Creates a <code>Sentence</code> and analyses it.
@@ -25,7 +32,7 @@ public class Sentence {
      * @see #analyse(String, double)
      */
     Sentence(String text) {
-        analyse(text, DatabaseHandler.DEFAULT_IN_SIMILARITY);
+        analyse(text, DatabaseHandler.DEFAULT_MIN_SIMILARITY);
     }
 
     /**
@@ -56,7 +63,6 @@ public class Sentence {
         }
         wordList.trimToSize(); // Remove unused indices if initialCapacity is bigger than the actual needed one
         this.words = new Word[wordList.size()];
-        this.wordLength = new int[wordList.size()];
 
         // Convert ArrayList to array an calculate word lengths
         this.avgWordLength = 0;
@@ -73,18 +79,16 @@ public class Sentence {
                     e.printStackTrace();
                 }
             this.words[i] = new Word(w, entry);
-            this.wordLength[i] = words[i].getName().length();
-            this.avgWordLength += this.wordLength[i];
+            this.avgWordLength += words[i].getName().length();
         }
-        this.wordCount = this.words.length; // Set number of words
-        this.avgWordLength /= (float) this.wordCount;
+        this.avgWordLength /= (float) this.words.length;
 
-        if (wordCount > 0) {
+        if (this.words.length > 0) {
             // Define the sentence type by last word/character
-            this.sentenceType = mapSentenceType(words[wordCount - 1].getName());
+            this.sentenceType = mapSentenceType(words[this.words.length - 1].getName());
             // If mapping failed, try second last word (last word might be a quotation mark)
-            if (sentenceType == null && wordCount > 1) {
-                this.sentenceType = mapSentenceType(words[wordCount - 2].getName());
+            if (sentenceType == null && this.words.length > 1) {
+                this.sentenceType = mapSentenceType(words[this.words.length - 2].getName());
                 if (sentenceType == null)
                     this.sentenceType = SentenceType.Statement;
             }
@@ -112,23 +116,30 @@ public class Sentence {
         }
     }
 
-    //TODO documentation
+    /**
+     * @return The {@link SentenceType}
+     */
     public SentenceType getSentenceType() {
         return sentenceType;
     }
 
+    /**
+     * @return The amount of words in the sentence
+     */
     public int getWordCount() {
-        return wordCount;
+        return words.length;
     }
 
+    /**
+     * @return The average word length in the sentence
+     */
     float getAvgWordLength() {
         return avgWordLength;
     }
 
-    public int[] getWordLength() {
-        return wordLength;
-    }
-
+    /**
+     * @return All words in the sentence in the right order
+     */
     public Word[] getWords() {
         return words;
     }

@@ -292,7 +292,7 @@ public class Visualizer extends Application {
             colorContainer.getChildren().add(box);
         });
 
-        similarityField.setText(String.valueOf(DatabaseHandler.DEFAULT_IN_SIMILARITY));
+        similarityField.setText(String.valueOf(DatabaseHandler.DEFAULT_MIN_SIMILARITY));
 
         InlineCssTextArea textArea = new InlineCssTextArea(text);
         VirtualizedScrollPane scrollPane1 = new VirtualizedScrollPane<>(textArea);

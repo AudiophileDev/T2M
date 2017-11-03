@@ -7,13 +7,23 @@ import com.audiophile.t2m.text.Word;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Sequence;
 
+/**
+ * This class puts together all tracks and composes them to one sequence, which can be exported and played.
+ */
 public class Composer {
+    /**
+     * List of music generators (e.g. melody,rhythm)
+     */
     private TrackGenerator[] trackGenerators;
+    /**
+     * The global temp for the music
+     */
     private Tempo tempo;
 
     /**
      * This class merges the different MIDI channels of rhythm, melody and sound effects
      * it also calculates the meta data of the music (dynamic, tempo, key)
+     * @param text The article as plain text
      */
     public Composer(String text) {
         Sentence[] sentences = TextAnalyser.analyseSentences(text);

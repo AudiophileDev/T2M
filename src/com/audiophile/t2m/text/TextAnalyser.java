@@ -6,11 +6,22 @@ import java.util.Locale;
 import java.util.stream.Stream;
 
 /**
+ * A group of functions that break a text apart and analyse it.
+ *
  * @author Simon Niedermayr
  */
 public class TextAnalyser {
 
-    //TODO documentation
+    /**
+     * This function splits the text into {@link Sentence}s and {@link Word}s.
+     * Then Every word is linked with its corresponding entry in the database.
+     * All fill words are marked with {@link WordFilter}
+     *
+     * @param text The plain text as {@link String}
+     * @return The text split into sentences
+     * @see DatabaseHandler#FindWord(String, double)
+     * @see TextAnalyser#splitSentences(String)
+     */
     public static Sentence[] analyseSentences(String text) {
         String[] sentencesList = splitSentences(text);
         Sentence[] sentences = new Sentence[sentencesList.length];
@@ -22,7 +33,12 @@ public class TextAnalyser {
         return sentences;
     }
 
-    //TODO documentation
+    /**
+     * Stores the average word length for every sentence in an array.
+     *
+     * @param sentences The text split into sentences
+     * @return Array with average word length per sentence
+     */
     public static float[] getAvgWordLength(Sentence[] sentences) {
         float[] avgWordLength = new float[sentences.length];
         for (int i = 0; i < sentences.length; i++) {
@@ -32,7 +48,12 @@ public class TextAnalyser {
         return avgWordLength;
     }
 
-    //TODO documentation
+    /**
+     * Calculates the average word tendency for the hole text.
+     *
+     * @param sentences The text split into sentences
+     * @return the average word tendency as {@link Word.Tendency}
+     */
     public static Word.Tendency getAvgWordTendency(Sentence[] sentences) {
         int count = 0, sum = 0;
         for (Sentence s : sentences)
