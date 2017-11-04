@@ -3,7 +3,13 @@ package com.audiophile.t2m.music;
 //TODO documentation
 public enum MyInstrument {
    // add instrument here first..
-    Piano(1, "p"),
+   Piano(1, "p"),
+    AcousticPiano(2, "acpn"),
+    Celesta(9, "clt"),
+    DrawbarOrgan(17, "drborg"),
+
+    Accordion(22,"acc"),
+    AcousticGuitar(25,"accgtr"),
 
     AltoSax(66, "aSax"),
     TenorSax(67, "tSax"),
@@ -15,7 +21,23 @@ public enum MyInstrument {
     Horn(61,"c"),
     Tuba(59,"tuba"),
 
-    Drums(1, "dr");
+    Violin(41, "vln"),
+    Viola(42, "vla"),
+    Cello (43, "cl"),
+    Contrabass(44, "ctbs"),
+    Harp (47, "hrp"),
+
+    Flute(74, "flt"),
+    EngHorn(70, "ehrn"),
+    Clarinet(72, "clrt"),
+    Basson(71, "bsn"),
+
+    Oboe (69, "ob"),
+
+    Timpani(48, "tmpn"),
+    Cymbals(120, "cmbl"),
+
+    Drums(117, "dr");
 
     final int midiValue;
     final String instrumentClass;
