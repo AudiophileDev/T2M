@@ -20,33 +20,33 @@ public class MelodyTrack implements TrackGenerator {
     private Tempo tempo;
     private boolean[][] notes; // initialize in multiples of 64
     private Dynamic dynamic;
-    private MyInstrument instrument;
-    private int dramaLevel;
+    private Ensemble ensemble;
+    private int voices;
     private static final int numOfChars = 255, numOfNotes = 128;
 
-    MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile, MyInstrument instrument) {
+    MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile, Ensemble ensemble) {
         this.sentences = text;
         loadToneMapping(noteMappingFile);
         this.baseKey = musicData.getBaseKey();
         this.tempo = musicData.getTempo();
         this.currentKey = new Harmony(baseKey, 0);
-        this.dramaLevel = text[baseKey.getBaseNoteMidi() % text.length].getWordCount() % 3;
+        this.voices = ensemble.instruments.length;
         this.notes = new boolean[127][12];
         //Todo make depending on initial mood
         this.dynamic = musicData.dynamic;
-        this.instrument = instrument;
+        this.ensemble = ensemble;
     }
 
     @Override
     public void writeToTrack(Track track, int channel) {
-        int j = 0;
-        int n = 0; // Marks position an track
+        int j = 0, n = 0, currentVoice = 0; // Marks position an track
+        int pitch = 0;
         int len = QUARTER, prevLen = len; // Length of the notes in 128th per beat
         int part = 0;
         int playable, previous = baseKey.getBaseNoteMidi();
         int chars = 0, words = 0, sen = 0;
         try {
-            MidiUtils.ChangeInstrument(instrument.getMidiValue(), track, channel, 0);
+            MidiUtils.ChangeInstrument(ensemble.instruments[currentVoice], track, channel, 0);
             for (Sentence s : sentences) {
                 sen++;
                 // Increase loudness for exclamation sentences
@@ -72,7 +72,7 @@ public class MelodyTrack implements TrackGenerator {
 
                         if (prevLen == SEMIQUAVER + QUAVER || prevLen == QUARTER + QUAVER) { //handling punctuated notes
                             len = prevLen / 3;
-                        } else len = setRhythm(c, part + 1);
+                        } else len = setRhythm(c, currentVoice + 1);
                         prevLen = len;
 
                         //chord on the first beat of every bar
@@ -81,15 +81,17 @@ public class MelodyTrack implements TrackGenerator {
                             if (dynamic.dynamicGradient.length > j && n > QUARTER) {
                                 j++;
                             }
-                            MidiUtils.addNote(track, n + 64 * ((playable % 4) + 1), len, playable, dynamic.initDynamic / 4 * 3, channel);
+                            MidiUtils.addNote(track, n + 64 * ((playable % 4) + 1), len, playable, dynamic.initDynamic, channel);
                             notes[(n + 64 * ((playable % 4) + 1)) / 64][playable % 12] = true;
 
-                            MidiUtils.addChord(track, n, len, currentKey.getNotesNumber(), -1, dynamic.initDynamic / 2, channel, false);
-                            MidiUtils.addPowerChord(track, n, len, currentKey.getNotesNumber(), -2, dynamic.initDynamic / 2, channel);
+                            /*MidiUtils.addChord(track, n, len, currentKey.getNotesNumber(), -1, dynamic.initDynamic, channel, false);
+                            MidiUtils.addPowerChord(track, n, len, currentKey.getNotesNumber(), -2, dynamic.initDynamic, channel);
                             notes[n / 64][currentKey.getNotesNumber().get(0) % 12] = true;
                             notes[n / 64][currentKey.getNotesNumber().get(1) % 12] = true;
-                            notes[n / 64][currentKey.getNotesNumber().get(2) % 12] = true;
+                            notes[n / 64][currentKey.getNotesNumber().get(2) % 12] = true;*/
                             //len = prevLen;
+                            MidiUtils.addNote(track, n, len, isConsonant(playable, n), dynamic.initDynamic, channel);
+                            notes[n / 64][playable % 12] = true;
                         } else {
                             if (dynamic.dynamicGradient.length > j) {
                                 if (Dynamic.isValidDynamic(dynamic.initDynamic + dynamic.dynamicGradient[j]))
@@ -102,22 +104,17 @@ public class MelodyTrack implements TrackGenerator {
                         n += len;
                         previous = playable; //save previous to prevent going of the scale
                         //TODO Only input as much text as needed (remove filler words)
-                        if (60 * (float) (n + len) / (QUARTER * tempo.getAverageBpm()) >= 15) {                        //finishing part
-                            part++;
-                            if (part == dramaLevel - 1) {
-                                n = 0;
-                                this.currentKey = new Harmony(this.baseKey, -12);
+                        if (TicksInSecs(n + len, tempo.resolution) >= 15) {                        //finishing part
+                            pitch = -12 * ((currentVoice <= 1) ? 0 : (currentVoice - 1));
+                            this.currentKey = new Harmony(this.baseKey, pitch);
+                            MidiUtils.ChangeInstrument(ensemble.instruments[currentVoice++], track, ++channel, 0);
 
-                            } else if (part == dramaLevel) {
-                                n = 0;
-                                this.currentKey = new Harmony(this.baseKey, +12);
-                                // MidiUtils.ChangeInstrument(44, track, channel, 0);
-                            }
-                            if (part > dramaLevel) // Sets fixed track length of 15sec
+                            if (currentVoice >= ensemble.instruments.length) // Sets fixed track length of 15sec
                             {
                                 System.out.println("Used chars: " + chars + ", words:" + words + ", sen: " + sen);
                                 return;
                             }
+                            n = 0;
                         }
                     }
                 }

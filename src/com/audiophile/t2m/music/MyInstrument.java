@@ -2,13 +2,19 @@ package com.audiophile.t2m.music;
 
 //TODO documentation
 public enum MyInstrument {
+   // add instrument here first..
     Piano(1, "p"),
-    Trumpet(57, "trp"),
-    AltSax(66, "aSax"),
+
+    AltoSax(66, "aSax"),
     TenorSax(67, "tSax"),
-    SopranSax(65, "sSax"),
+    SopranoSax(65, "sSax"),
     BaritoneSax(68, "bSax"),
+
+    Trumpet(57, "trp"),
     Trombone(58, "trb"),
+    Horn(61,"c"),
+    Tuba(59,"tuba"),
+
     Drums(1, "dr");
 
     final int midiValue;

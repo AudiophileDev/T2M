@@ -37,10 +37,26 @@ class MidiUtils {
         }
     }
 
-    static void ChangeInstrument(int instrument, Track track, int channel, int tick) throws InvalidMidiDataException {
+    static void ChangeInstrument(MyInstrument instrument, Track track, int channel, int tick) throws InvalidMidiDataException {
 
         ShortMessage sm = new ShortMessage();
-        sm.setMessage(ShortMessage.PROGRAM_CHANGE, channel, instrument, 0); //9 ==> is the channel 10.
+        sm.setMessage(ShortMessage.PROGRAM_CHANGE, channel, instrument.midiValue, 0); //9 ==> is the channel 10.
         track.add(new MidiEvent(sm, tick));
+    }
+
+    static int ResToBPM(int res) {
+        return (int) (res / 128.0) * 60;
+    }
+
+    static int BpmToRes(int bpm) {
+        return (int) (bpm / 60.0) * 128;
+    }
+
+    static double TicksInSecs(int ticks, int resolution) {
+        return (ticks * 60.0) / (resolution * ResToBPM(resolution));
+    }
+
+    static int SecsInTicks(double secs, int resolution) {
+        return (int) secs * resolution * ResToBPM(resolution) / 60;
     }
 }

@@ -109,7 +109,7 @@ public class Harmony {
         String note = "CDEFGAHBC";
         if (!note.contains(baseNote))
             baseNote = String.valueOf(note.toCharArray()[baseNote.toCharArray()[0] % note.length()]);
-        return chords.get(baseNote);
+        return chords.get(baseNote) + 12;
     }
 
     Mode getMode() {

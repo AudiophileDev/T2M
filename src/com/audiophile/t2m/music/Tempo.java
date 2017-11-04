@@ -1,11 +1,8 @@
 package com.audiophile.t2m.music;
 
-import java.util.HashMap;
-
-
 public class Tempo {
-    private Integer averageBpm = 0;
-    private float minLength, maxLength;
+    int averageBpm = 0, resolution;
+    float minLength, maxLength;
 
     /**
      * Sets span of BPMs
@@ -16,19 +13,17 @@ public class Tempo {
      */
     Tempo(float[] avgWordLengths) {
         getBounds(avgWordLengths);
-        float ratio = (76 / this.getMinLength() + 200 / this.maxLength) / 2; //75 = lower bpm bound, 200=higher bpm bound
-        for (Float f : avgWordLengths) {
-            Integer bpm = Math.round(f * ratio);
-            HashMap<Float, Integer> tempo = new HashMap<>();
-            tempo.put(f, bpm);
-            averageBpm += bpm;
-            //System.out.println(String.format("%.2f -> %d", f, tempo.get(f)));
+        double m = (60 - 200) / (this.maxLength - this.minLength);
+        double t = 60 - m * this.maxLength;
+        for (float x : avgWordLengths) {
+            averageBpm += m * x + t;
         }
         this.averageBpm /= avgWordLengths.length;
+        this.resolution = MidiUtils.BpmToRes(averageBpm);
     }
 
     /**
-     * returns minmal and maximal average word length in order to calculate a ratio
+     * returns minimal and maximal average word length in order to calculate a ratio
      *
      * @param avgWordLengths sets minimal and maximal average word length
      */
@@ -40,31 +35,4 @@ public class Tempo {
             if (f > maxLength) this.maxLength = f;
         }
     }
-
-    // TODO documentation
-    private Float getMinLength() {
-        return minLength;
-    }
-
-    public void setMinLength(Float minLength) {
-        this.minLength = minLength;
-    }
-
-    public Float getMaxLength() {
-        return maxLength;
-    }
-
-    public void setMaxLength(Float maxLength) {
-        this.maxLength = maxLength;
-    }
-
-    Integer getAverageBpm() {
-        return averageBpm;
-    }
-
-    void setAverageBpm(Integer averageBpm) {
-        this.averageBpm = averageBpm;
-    }
-
-
 }
