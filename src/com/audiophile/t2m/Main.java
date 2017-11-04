@@ -26,17 +26,17 @@ public class Main {
             + MusicWriter.MIDI + " | "
             + MusicWriter.PLAY
             + "}] "
-            + "[-i {"
-            + String.join(" | ", MyInstrument.stringValues())
-            + "} "
+            + "[-i {" + String.join(" | ", MyInstrument.stringValues()) + "} "
             + "[-p]\n"
+            + "[-noeffects]\n"
             + "Args:\n"
             + "\t articlefile: The article saved as file\n"
             + "\t outputfile: The file to write the music to\n"
             + "\t databasefile: The words database file\n"
             + "\t -o: The output type\n"
             + "\t -i: The instrument\n"
-            + "\t -p: Enables precise search\n";
+            + "\t -p: Enables precise search\n"
+            + "\t -noeffects: Disables all effects in the music\n";
 
 
     public static void main(String[] args) {
@@ -63,8 +63,10 @@ public class Main {
         System.out.println("Analyzed \"" + args[0] + "\" in " + (endTime - startTime) + "ms");
         startTime = System.currentTimeMillis();
 
+        boolean noEffects = hasArgument("noeffects",args);
+
         String article = buffer.toString();
-        Composer composer = new Composer(article);
+        Composer composer = new Composer(article,noEffects);
         // Generate music
         Sequence sequence = composer.getSequence();
         endTime = System.currentTimeMillis();

@@ -20,7 +20,8 @@ public class EffectTrack implements TrackGenerator {
 
     private HashMap<String, Float> effects;
     private Tempo tempo;
-//TODO stop effecting from overlaying each other
+
+    //TODO stop effecting from overlaying each other
     EffectTrack(Sentence[] sentences, Tempo tempo) {
         this.tempo = tempo;
         effects = new HashMap<>();
@@ -32,14 +33,13 @@ public class EffectTrack implements TrackGenerator {
                 }
                 index++;
             }
-        for (String s : effects.keySet()) {
-            effects.put(s, effects.get(s) / index);
-            System.out.println(s + ": " + effects.get(s));
-        }
+        final int i = index;
+        effects.forEach((k, v) -> effects.put(k, v / (float) i));
     }
 
     @Override
     public void writeToTrack(Track track, int channel) {
+        long lastEnd = 0;
         for (String name : effects.keySet()) {
             Sequence sequence = FileUtils.LoadMidiFile("effects\\" + name.trim() + ".mid");
             if (sequence != null) {
@@ -49,6 +49,8 @@ public class EffectTrack implements TrackGenerator {
                                 15 * //because 15 seconds
                                 effects.get(name)  //i-th word in text
                         );
+                if (start < lastEnd)
+                    start = (int) lastEnd;
                 if (sequence.getMicrosecondLength() / 1000000.0 + TicksInSecs(start, tempo.resolution) > 15.0) {
                     start -= SecsInTicks(TicksInSecs(start, tempo.resolution) + sequence.getMicrosecondLength() / 1000000.0 - 15, tempo.resolution);
                 }
@@ -58,14 +60,17 @@ public class EffectTrack implements TrackGenerator {
                     for (int i = 0; i < t.size(); i++) {
                         MidiEvent event = t.get(i);
                         byte[] data = event.getMessage().getMessage();//(command & 0xF0) | (channel & 0x0F)
-                        data[0] += 1; // Keep channel 1 free
+                        data[0] += 2; // Keep channel 1 and 2 free
+                        long tick = (long) (event.getTick() * scale) + start;
                         MidiEvent ev = new MidiEvent(new MidiMessage(data) {
                             @Override
                             public Object clone() {
                                 return null;
                             }
-                        }, (long) (event.getTick() * scale) + start);
+                        }, tick);
                         track.add(ev);
+                        if (tick > lastEnd)
+                            lastEnd = tick;
                     }
                 }
             }

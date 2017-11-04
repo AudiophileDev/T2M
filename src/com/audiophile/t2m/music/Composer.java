@@ -21,13 +21,16 @@ public class Composer {
      */
     private Tempo tempo;
 
+    private boolean noEffects;
+
     /**
      * This class merges the different MIDI channels of rhythm, melody and sound effects
      * it also calculates the meta data of the music (dynamic, tempo, key)
      *
      * @param text The article as plain text
      */
-    public Composer(String text) {
+    public Composer(String text, boolean noEffects) {
+        this.noEffects = noEffects;
         Sentence[] sentences = TextAnalyser.analyseSentences(text);
         float[] avgWordLen = TextAnalyser.getAvgWordLength(sentences);
         Word.Tendency avgTendency = TextAnalyser.getAvgWordTendency(sentences);
@@ -41,11 +44,11 @@ public class Composer {
 
         MusicData musicData = new MusicData(tempo, dynamic, key);
         System.out.println("Tempo: " + tempo.averageBpm + "BPM");
-        this.trackGenerators = new TrackGenerator[3];
+        this.trackGenerators = new TrackGenerator[noEffects ? 2 : 3];
         this.trackGenerators[0] = new MelodyTrack(musicData, sentences, "noteMapping.csv", Ensemble.Piano);
         this.trackGenerators[1] = new RhythmTrack(musicData, avgWordLen, MyInstrument.Drums);
-        this.trackGenerators[2] = new EffectTrack(sentences, tempo);
-
+        if (!noEffects)
+            this.trackGenerators[2] = new EffectTrack(sentences, tempo);
     }
 
     /**
@@ -59,7 +62,8 @@ public class Composer {
             sequence = new Sequence(Sequence.PPQ, tempo.resolution);
             trackGenerators[0].writeToTrack(sequence.createTrack(), 0);
             trackGenerators[1].writeToTrack(sequence.createTrack(), 9); // Channel 10 are drums
-            trackGenerators[2].writeToTrack(sequence.createTrack(), 8);
+            if (!noEffects)
+                trackGenerators[2].writeToTrack(sequence.createTrack(), 2);
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }
