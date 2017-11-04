@@ -7,12 +7,14 @@ public enum Ensemble {
     Piano("piano", MyInstrument.Piano,MyInstrument.Piano,MyInstrument.Piano,MyInstrument.Piano), //mehrstimmiges klavier
 
     Strings("strings", MyInstrument.Violin, MyInstrument.Violin, MyInstrument.Cello, MyInstrument.Contrabass, MyInstrument.Harp),
-    AcousticStrings("accStrings", MyInstrument.AcousticGuitar, MyInstrument.Violin, MyInstrument.Cello),
-    Woodwinds("woodwinds", MyInstrument.Flute, MyInstrument.EngHorn, MyInstrument.Clarinet, MyInstrument.Basson ),
-    ModernWoodwinds("mwoodwinds", MyInstrument.Oboe, MyInstrument.Flute, MyInstrument.Clarinet, MyInstrument.Basson),
+    AcousticStrings("accStrings",  MyInstrument.Cello, MyInstrument.AcousticGuitar,  MyInstrument.Violin),
+    Woodwinds("woodwinds", MyInstrument.Flute, MyInstrument.EngHorn, MyInstrument.Clarinet, MyInstrument.Basson),
+    ModernWoodwinds("mwoodwinds", MyInstrument.Flute,  MyInstrument.Basson ,MyInstrument.Oboe, MyInstrument.Clarinet),
     Percussion("percussion", MyInstrument.Timpani, MyInstrument.Timpani, MyInstrument.Cymbals),
-    Keyboards ("keyboards", MyInstrument.AcousticPiano, MyInstrument.AcousticPiano, MyInstrument.Celesta, MyInstrument.DrawbarOrgan);
-    //and so on...
+    Instrumentals("Instrumental",MyInstrument.AcousticGuitar, MyInstrument.Celesta, MyInstrument.AcousticPiano, MyInstrument.AcousticPiano),
+    Keyboards("keyboards", MyInstrument.ReedOrgan, MyInstrument.ReedOrgan, MyInstrument.DrawbarOrgan),
+    BirdTweet("birdtweet", MyInstrument.BirdTweet, MyInstrument.BirdTweet, MyInstrument.BirdTweet);
+   //and so on...
 
     String instrumentClass;
     MyInstrument[] instruments;

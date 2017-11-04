@@ -7,6 +7,7 @@ public enum MyInstrument {
     AcousticPiano(2, "acpn"),
     Celesta(9, "clt"),
     DrawbarOrgan(17, "drborg"),
+    ReedOrgan (20, "rorgn"),
 
     Accordion(22,"acc"),
     AcousticGuitar(25,"accgtr"),
@@ -37,7 +38,9 @@ public enum MyInstrument {
     Timpani(48, "tmpn"),
     Cymbals(120, "cmbl"),
 
-    Drums(117, "dr");
+    Drums(117, "dr"),
+    BirdTweet (123,"brt");
+
 
     final int midiValue;
     final String instrumentClass;
