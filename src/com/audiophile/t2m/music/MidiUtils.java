@@ -30,11 +30,11 @@ class MidiUtils {
     }
 
     static int ResToBPM(int res) {
-        return (int) (res / 128.0) * 60;
+        return (int) Math.sqrt(128 * res);
     }
 
     static int BpmToRes(int bpm) {
-        return (int) (bpm / 60.0) * 128;
+        return (int) ((bpm / 128.0) * bpm);
     }
 
     static double TicksInSecs(int ticks, int resolution) {

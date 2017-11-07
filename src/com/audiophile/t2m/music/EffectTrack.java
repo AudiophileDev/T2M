@@ -23,6 +23,7 @@ public class EffectTrack implements TrackGenerator {
 
     //TODO stop effecting from overlaying each other
     EffectTrack(Sentence[] sentences, Tempo tempo) {
+        StringBuilder string = new StringBuilder();
         this.tempo = tempo;
         effects = new HashMap<>();
         int index = 0;
@@ -30,11 +31,13 @@ public class EffectTrack implements TrackGenerator {
             for (Word w : s.getWords()) {
                 if (w.getEntry() != null && w.getEntry().getEffect() != null) {
                     effects.put(w.getEntry().getEffect(), (float) index);
+                    string.append(w.getName()).append(" : ").append(w.getEntry().getEffect()).append("; ");
                 }
                 index++;
             }
         final int i = index;
         effects.forEach((k, v) -> effects.put(k, v / (float) i));
+        System.out.println(string.toString());
     }
 
     @Override
@@ -43,8 +46,7 @@ public class EffectTrack implements TrackGenerator {
         for (String name : effects.keySet()) {
             Sequence sequence = FileUtils.LoadMidiFile("effects\\" + name.trim() + ".mid");
             if (sequence != null) {
-                int start =
-                        // Position effect in track
+                int start =// Position effect in track
                         (int) (QUARTER * tempo.averageBpm / 60.0 *  //beats per second
                                 15 * //because 15 seconds
                                 effects.get(name)  //i-th word in text

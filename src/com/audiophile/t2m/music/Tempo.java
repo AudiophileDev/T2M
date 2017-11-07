@@ -12,9 +12,10 @@ public class Tempo {
      * @param avgWordLengths The average word length in the article for every sentence
      */
     Tempo(float[] avgWordLengths) {
+        int maxTempo = 180, minTempo = 60;
         getBounds(avgWordLengths);
-        double m = (60 - 200) / (this.maxLength - this.minLength);
-        double t = 60 - m * this.maxLength;
+        double m = (minTempo - maxTempo) / (this.maxLength - this.minLength);
+        double t = minTempo - m * this.maxLength;
         for (float x : avgWordLengths) {
             averageBpm += m * x + t;
         }

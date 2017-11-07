@@ -59,6 +59,7 @@ public class Main {
 
         boolean noEffects = hasArgument("noeffects", args);
         Ensemble ensemble = Ensemble.map(extractArgument("i", args, Ensemble.Piano.name()),Ensemble.Piano);
+
         String article = buffer.toString();
         Composer composer = new Composer(article, noEffects, ensemble);
         // Generate music

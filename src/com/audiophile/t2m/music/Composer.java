@@ -23,6 +23,8 @@ public class Composer {
 
     private boolean noEffects;
 
+    public String title;
+
     /**
      * This class merges the different MIDI channels of rhythm, melody and sound effects
      * it also calculates the meta data of the music (dynamic, tempo, key)
@@ -43,11 +45,15 @@ public class Composer {
         //this.tempo.averageBpm = this.tempo.averageBpm / 2;
 
         MusicData musicData = new MusicData(tempo, dynamic, key);
+        System.out.println("Tempo: " + tempo.averageBpm + " BPM");
+        System.out.println("Resolution: " + tempo.resolution + " PPQ");
         this.trackGenerators = new TrackGenerator[noEffects ? 2 : 3];
         this.trackGenerators[0] = new MelodyTrack(musicData, sentences, "noteMapping.csv", ensemble);
         this.trackGenerators[1] = new RhythmTrack(musicData, avgWordLen, MyInstrument.Drums);
         if (!noEffects)
             this.trackGenerators[2] = new EffectTrack(sentences, tempo);
+        System.out.println("Article" + " in " + Harmony.quintCycle.get(key.getBaseNoteMidi() % 12 + 60) + "-" + key.getMode().toString()
+        );
     }
 
     /**
