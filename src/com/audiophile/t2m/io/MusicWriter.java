@@ -99,10 +99,11 @@ public class MusicWriter {
             MidiToWavRenderer renderer = new MidiToWavRenderer();
             File wavFile = new File(fileName);
             renderer.createWavFile(sequence, wavFile);
-            String run = "open";
+            /*String run = "open";
             if (System.getProperty("os.name").startsWith("Windows"))
                 run = "cmd /c start";
             Runtime.getRuntime().exec(run +" "+ wavFile); //TODO remove
+            */
         } catch (MidiUnavailableException | InvalidMidiDataException e) {
             e.printStackTrace();
         }

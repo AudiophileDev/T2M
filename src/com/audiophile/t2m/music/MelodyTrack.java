@@ -110,10 +110,7 @@ public class MelodyTrack implements TrackGenerator {
                             MidiUtils.ChangeInstrument(ensemble.instruments[currentVoice++], track, ++channel, 0);
 
                             if (currentVoice >= ensemble.instruments.length) // Sets fixed track length of 15sec
-                            {
-                                System.out.println("Used chars: " + chars + ", words:" + words + ", sen: " + sen);
                                 return;
-                            }
                             n = 0;
                         }
                     }

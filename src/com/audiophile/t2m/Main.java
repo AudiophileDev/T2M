@@ -3,17 +3,11 @@ package com.audiophile.t2m;
 import com.audiophile.t2m.io.FileUtils;
 import com.audiophile.t2m.io.MusicWriter;
 import com.audiophile.t2m.music.Composer;
-import com.audiophile.t2m.music.MyInstrument;
+import com.audiophile.t2m.music.Ensemble;
 import com.audiophile.t2m.text.DatabaseHandler;
-import com.audiophile.t2m.text.Sentence;
-import com.audiophile.t2m.text.TextAnalyser;
-import com.audiophile.t2m.text.Word;
-import com.sun.deploy.util.ArrayUtil;
 
 import javax.sound.midi.Sequence;
-import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Main {
 
@@ -26,15 +20,15 @@ public class Main {
             + MusicWriter.MIDI + " | "
             + MusicWriter.PLAY
             + "}] "
-            + "[-i {" + String.join(" | ", MyInstrument.stringValues()) + "} "
+            + "[-i {" + String.join(" | ", Ensemble.stringValues()) + "} "
             + "[-p]\n"
             + "[-noeffects]\n"
             + "Args:\n"
             + "\t articlefile: The article saved as file\n"
             + "\t outputfile: The file to write the music to\n"
             + "\t databasefile: The words database file\n"
-            + "\t -o: The output type\n"
-            + "\t -i: The instrument\n"
+            + "\t -o: The output type (mp3 is default)\n"
+            + "\t -i: The ensemble which plays the music (piano is default)\n"
             + "\t -p: Enables precise search\n"
             + "\t -noeffects: Disables all effects in the music\n";
 
@@ -63,10 +57,10 @@ public class Main {
         System.out.println("Analyzed \"" + args[0] + "\" in " + (endTime - startTime) + "ms");
         startTime = System.currentTimeMillis();
 
-        boolean noEffects = hasArgument("noeffects",args);
-
+        boolean noEffects = hasArgument("noeffects", args);
+        Ensemble ensemble = Ensemble.map(extractArgument("i", args, Ensemble.Piano.name()),Ensemble.Piano);
         String article = buffer.toString();
-        Composer composer = new Composer(article,noEffects);
+        Composer composer = new Composer(article, noEffects, ensemble);
         // Generate music
         Sequence sequence = composer.getSequence();
         endTime = System.currentTimeMillis();
