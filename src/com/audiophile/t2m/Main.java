@@ -58,8 +58,7 @@ public class Main {
         startTime = System.currentTimeMillis();
 
         boolean noEffects = hasArgument("noeffects", args);
-        Ensemble ensemble = Ensemble.map(extractArgument("i", args, Ensemble.Piano.name()),Ensemble.Piano);
-
+        Ensemble ensemble = Ensemble.map(extractArgument("i", args, Ensemble.Piano.name()), Ensemble.Piano);
         String article = buffer.toString();
         Composer composer = new Composer(article, noEffects, ensemble);
         // Generate music
@@ -70,7 +69,7 @@ public class Main {
         // Output music
         String outputType = extractArgument("o", args, "mp3");
         outputMusic(outputType, args[1], sequence);
-
+        System.out.println(args[0].substring(0, args[0].lastIndexOf(".")) + " " + composer.title);
     }
 
     /**
@@ -111,6 +110,7 @@ public class Main {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
         }
     }
 

@@ -31,7 +31,7 @@ public class Composer {
      *
      * @param text The article as plain text
      */
-    public Composer(String text, boolean noEffects,Ensemble ensemble) {
+    public Composer(String text, boolean noEffects, Ensemble ensemble) {
         this.noEffects = noEffects;
         Sentence[] sentences = TextAnalyser.analyseSentences(text);
         float[] avgWordLen = TextAnalyser.getAvgWordLength(sentences);
@@ -52,8 +52,7 @@ public class Composer {
         this.trackGenerators[1] = new RhythmTrack(musicData, avgWordLen, MyInstrument.Drums);
         if (!noEffects)
             this.trackGenerators[2] = new EffectTrack(sentences, tempo);
-        System.out.println("Article" + " in " + Harmony.quintCycle.get(key.getBaseNoteMidi() % 12 + 60) + "-" + key.getMode().toString()
-        );
+        this.title = "in " + Harmony.quintCycle.get(key.getBaseNoteMidi() % 12 + 60) + "-" + key.getMode().toString() + ", played by a " + ensemble.toString() + "-Ensemble";
     }
 
     /**

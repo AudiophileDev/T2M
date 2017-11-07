@@ -112,7 +112,10 @@ public class MelodyTrack implements TrackGenerator {
                             dynamic.initDynamic -= 5;
 
                             if (currentVoice >= ensemble.instruments.length) // Sets fixed track length of 15sec
+                            {
+                                // System.out.println("Track Length: " + TicksInSecs(n,tempo.resolution));
                                 return;
+                            }
                             n = 0;
                         } else if (i == sentences.length - 1) {
                             i = 0;
@@ -121,6 +124,7 @@ public class MelodyTrack implements TrackGenerator {
                 }
             }
             //TODO add end phrase
+
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }

@@ -1,6 +1,9 @@
 package com.audiophile.t2m.io;
 
-import it.sauronsoftware.jave.*;
+import it.sauronsoftware.jave.AudioAttributes;
+import it.sauronsoftware.jave.Encoder;
+import it.sauronsoftware.jave.EncoderException;
+import it.sauronsoftware.jave.EncodingAttributes;
 
 import javax.sound.midi.*;
 import java.io.File;
@@ -46,8 +49,7 @@ public class MusicWriter {
         String file = fileNameWithoutEnding(fileName);
         File wav = new File(file + System.currentTimeMillis() + ".wav");
         File mp3 = new File(file + ".mp3");
-        if (!mp3.createNewFile())
-            return;
+
         writeWav(sequence, wav.getPath());
 
         //Convert wav to mp3

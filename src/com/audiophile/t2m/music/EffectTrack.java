@@ -8,6 +8,7 @@ import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Track;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.audiophile.t2m.music.MidiUtils.*;
@@ -23,7 +24,7 @@ public class EffectTrack implements TrackGenerator {
 
     //TODO stop effecting from overlaying each other
     EffectTrack(Sentence[] sentences, Tempo tempo) {
-        StringBuilder string = new StringBuilder();
+        ArrayList<String> strings = new ArrayList<>();
         this.tempo = tempo;
         effects = new HashMap<>();
         int index = 0;
@@ -31,13 +32,13 @@ public class EffectTrack implements TrackGenerator {
             for (Word w : s.getWords()) {
                 if (w.getEntry() != null && w.getEntry().getEffect() != null) {
                     effects.put(w.getEntry().getEffect(), (float) index);
-                    string.append(w.getName()).append(" : ").append(w.getEntry().getEffect()).append("; ");
+                    strings.add(w.getName() + " : " + w.getEntry().getEffect() + "; ");
                 }
                 index++;
             }
         final int i = index;
         effects.forEach((k, v) -> effects.put(k, v / (float) i));
-        System.out.println(string.toString());
+        System.out.println("Effects:" + strings.toString());
     }
 
     @Override
