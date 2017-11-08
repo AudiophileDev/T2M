@@ -49,6 +49,7 @@ public class MusicWriter {
         String file = fileNameWithoutEnding(fileName);
         File wav = new File(file + System.currentTimeMillis() + ".wav");
         File mp3 = new File(file + ".mp3");
+        mp3.delete();
 
         writeWav(sequence, wav.getPath());
 
@@ -56,7 +57,7 @@ public class MusicWriter {
         AudioAttributes audio = new AudioAttributes();
         audio.setCodec("libmp3lame");
         audio.setBitRate(64000);
-        audio.setChannels(1);
+        audio.setChannels(2);
         audio.setSamplingRate(22050);
         EncodingAttributes attrs = new EncodingAttributes();
         attrs.setFormat("mp3");
@@ -100,6 +101,7 @@ public class MusicWriter {
         try {
             MidiToWavRenderer renderer = new MidiToWavRenderer();
             File wavFile = new File(fileName);
+            wavFile.delete();
             renderer.createWavFile(sequence, wavFile);
             /*String run = "open";
             if (System.getProperty("os.name").startsWith("Windows"))
