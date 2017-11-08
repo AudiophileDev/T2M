@@ -41,7 +41,7 @@ public class EffectTrack implements TrackGenerator {
     public void writeToTrack(Track track, int channel) {
         long lastEnd = 0;
         for (String name : effects.keySet()) {
-            Sequence sequence = FileUtils.LoadMidiFile("effects\\" + name.trim() + ".mid");
+            Sequence sequence = FileUtils.LoadMidiFile("effects/" + name+ ".mid");
             if (sequence != null) {
                 int start =
                         // Position effect in track

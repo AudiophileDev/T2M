@@ -139,7 +139,7 @@ public class CSVTools {
             }
 
         }
-        result.add(curVal.toString());
+        result.add(curVal.toString().trim());
 
         // Return result as Array
         String[] array = new String[result.size()];

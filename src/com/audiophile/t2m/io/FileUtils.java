@@ -4,6 +4,7 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 import java.io.*;
+import java.net.URISyntaxException;
 
 /**
  * A class that holds a collection of methods for file reading.
@@ -21,7 +22,7 @@ public class FileUtils {
      */
     public static String ReadPlainFile(String fileName) throws IOException {
         // Read bytes in file
-        FileInputStream stream = new FileInputStream(fileName);
+        InputStream stream = new FileInputStream(fileName);
         byte[] data = new byte[stream.available()];
         stream.read(data);
         stream.close();
@@ -56,7 +57,7 @@ public class FileUtils {
         try {
             return MidiSystem.getSequence(new FileInputStream(file));
         } catch (InvalidMidiDataException | IOException e) {
-            e.printStackTrace();
+            System.err.println("Midi file '"+file+"' not found");
             return null;
         }
     }
