@@ -28,12 +28,9 @@ public class Composer {
     /**
      * This class merges the different MIDI channels of rhythm, melody and sound effects
      * it also calculates the meta data of the music (dynamic, tempo, key)
-     *
-     * @param text The article as plain text
      */
-    public Composer(String text, boolean noEffects, Ensemble ensemble) {
+    public Composer(Sentence[] sentences, boolean noEffects, Ensemble ensemble) {
         this.noEffects = noEffects;
-        Sentence[] sentences = TextAnalyser.analyseSentences(text);
         float[] avgWordLen = TextAnalyser.getAvgWordLength(sentences);
         Word.Tendency avgTendency = TextAnalyser.getAvgWordTendency(sentences);
 

@@ -5,6 +5,8 @@ import com.audiophile.t2m.io.MusicWriter;
 import com.audiophile.t2m.music.Composer;
 import com.audiophile.t2m.music.Ensemble;
 import com.audiophile.t2m.text.DatabaseHandler;
+import com.audiophile.t2m.text.Sentence;
+import com.audiophile.t2m.text.TextAnalyser;
 
 import javax.sound.midi.Sequence;
 import java.io.IOException;
@@ -60,7 +62,16 @@ public class Main {
         boolean noEffects = hasArgument("noeffects", args);
         Ensemble ensemble = Ensemble.map(extractArgument("i", args, Ensemble.Piano.name()), Ensemble.Piano);
         String article = buffer.toString();
-        Composer composer = new Composer(article, noEffects, ensemble);
+
+        Sentence[] sentences = TextAnalyser.analyseSentences(article);
+        int words=0;
+        for(Sentence s:sentences)
+            words+=s.getWords().length;
+        if(words<50) {
+            System.err.println("Article needs to be al least 50 words long");
+            return;
+        }
+        Composer composer = new Composer(sentences, noEffects, ensemble);
         // Generate music
         Sequence sequence = composer.getSequence();
         endTime = System.currentTimeMillis();
