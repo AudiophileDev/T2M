@@ -47,7 +47,8 @@ public class MelodyTrack implements TrackGenerator {
         int chars = 0, words = 0, sen = 0;
         try {
             MidiUtils.ChangeInstrument(ensemble.instruments[currentVoice], track, channel, 0);
-            for (Sentence s : sentences) {
+            for (int i = 0; i < sentences.length; i++) {
+                Sentence s = sentences[i];
                 sen++;
                 // Increase loudness for exclamation sentences
                 if (s.getSentenceType() == Sentence.SentenceType.Exclamation)
@@ -72,9 +73,10 @@ public class MelodyTrack implements TrackGenerator {
 
                         if (prevLen == SEMIQUAVER + QUAVER || prevLen == QUARTER + QUAVER) { //handling punctuated notes
                             len = prevLen / 3;
+                        } else if (prevLen == SEMIQUAVER) {
+                            len = SEMIQUAVER;
                         } else len = setRhythm(c, currentVoice + 1);
                         prevLen = len;
-
                         //chord on the first beat of every bar
                         if (n % WHOLE <= QUAVER) { //beginning of every bar
                             //len = QUARTER;
@@ -83,20 +85,19 @@ public class MelodyTrack implements TrackGenerator {
                             }
                             MidiUtils.addNote(track, n + 64 * ((playable % 4) + 1), len, playable, dynamic.initDynamic, channel);
                             notes[(n + 64 * ((playable % 4) + 1)) / 64][playable % 12] = true;
-
-                            /*MidiUtils.addChord(track, n, len, currentKey.getNotesNumber(), -1, dynamic.initDynamic, channel, false);
+                            /*
+                            MidiUtils.addChord(track, n, len, currentKey.getNotesNumber(), -1, dynamic.initDynamic, channel, false);
                             MidiUtils.addPowerChord(track, n, len, currentKey.getNotesNumber(), -2, dynamic.initDynamic, channel);
                             notes[n / 64][currentKey.getNotesNumber().get(0) % 12] = true;
                             notes[n / 64][currentKey.getNotesNumber().get(1) % 12] = true;
-                            notes[n / 64][currentKey.getNotesNumber().get(2) % 12] = true;*/
-                            //len = prevLen;
+                            notes[n / 64][currentKey.getNotesNumber().get(2) % 12] = true;
+                            */
                             MidiUtils.addNote(track, n, len, isConsonant(playable, n), dynamic.initDynamic, channel);
                             notes[n / 64][playable % 12] = true;
                         } else {
                             if (dynamic.dynamicGradient.length > j) {
                                 if (Dynamic.isValidDynamic(dynamic.initDynamic + dynamic.dynamicGradient[j]))
                                     dynamic.initDynamic += dynamic.dynamicGradient[j];
-                                // System.out.print(dynamic.initDynamic + ", ");
                             }
                             MidiUtils.addNote(track, n, len, isConsonant(playable, n), dynamic.initDynamic, channel);
                             notes[n / 64][playable % 12] = true;
@@ -108,13 +109,16 @@ public class MelodyTrack implements TrackGenerator {
                             pitch = -12 * ((currentVoice <= 1) ? 0 : (currentVoice - 1));
                             this.currentKey = new Harmony(this.baseKey, pitch);
                             MidiUtils.ChangeInstrument(ensemble.instruments[currentVoice++], track, ++channel, 0);
+                            dynamic.initDynamic -= 5;
 
                             if (currentVoice >= ensemble.instruments.length) // Sets fixed track length of 15sec
                             {
-                                System.out.println("Used chars: " + chars + ", words:" + words + ", sen: " + sen);
+                                // System.out.println("Track Length: " + TicksInSecs(n,tempo.resolution));
                                 return;
                             }
                             n = 0;
+                        } else if (i == sentences.length - 1) {
+                            i = 0;
                         }
                     }
                 }
@@ -189,27 +193,30 @@ public class MelodyTrack implements TrackGenerator {
      */
     private int setRhythm(int c, int inTwoVoices) {
         int len;
-        switch (c % (6 / inTwoVoices)) {
+        switch (c * 2 % (6 / inTwoVoices)) {
             case 0:
+            case 1:
                 len = HALF;
                 break;
-            case 1:
+            case 2:
                 len = QUARTER + QUAVER;
                 break;
-            case 2:
+            case 3:
+            case 4:
                 len = QUARTER;
                 break;
-            case 3:
+            case 5:
+            case 6:
+            case 10:
                 len = QUAVER;
                 break;
-            case 4:
+            case 7:
                 len = QUAVER + SEMIQUAVER;
                 break;
-            case 5:
+            case 8:
+            case 9:
+            case 11:
                 len = SEMIQUAVER;
-                break;
-            case 6:
-                len = QUAVER;
                 break;
             default:
                 len = QUARTER;

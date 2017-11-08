@@ -22,21 +22,6 @@ class MidiUtils {
         track.add(new MidiEvent(off, startTick + tickLength));
     }
 
-    static void addChord(Track track, int startTick, int tickLength, ArrayList<Integer> chordNotes, int octave, int velocity, int channel, boolean arpeggio) throws InvalidMidiDataException {
-        for (Integer note : chordNotes) {
-            if (arpeggio)
-                startTick += 16;
-            addNote(track, startTick, tickLength, note + octave * 12, velocity, channel);
-        }
-    }
-
-    static void addPowerChord(Track track, int startTick, int tickLength, ArrayList<Integer> chordNotes, int octave, int velocity, int channel) throws InvalidMidiDataException {
-        for (Integer note : chordNotes) {
-            if (!Objects.equals(note, chordNotes.get(2)) || Objects.equals(note, chordNotes.get(0)))
-                addNote(track, startTick, tickLength, note + octave * 12, velocity, channel);
-        }
-    }
-
     static void ChangeInstrument(MyInstrument instrument, Track track, int channel, int tick) throws InvalidMidiDataException {
 
         ShortMessage sm = new ShortMessage();
@@ -45,11 +30,11 @@ class MidiUtils {
     }
 
     static int ResToBPM(int res) {
-        return (int) (res / 128.0) * 60;
+        return (int) Math.sqrt(128 * res);
     }
 
     static int BpmToRes(int bpm) {
-        return (int) (bpm / 60.0) * 128;
+        return (int) ((bpm / 128.0) * bpm);
     }
 
     static double TicksInSecs(int ticks, int resolution) {

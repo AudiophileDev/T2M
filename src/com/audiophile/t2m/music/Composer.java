@@ -23,13 +23,15 @@ public class Composer {
 
     private boolean noEffects;
 
+    public String title;
+
     /**
      * This class merges the different MIDI channels of rhythm, melody and sound effects
      * it also calculates the meta data of the music (dynamic, tempo, key)
      *
      * @param text The article as plain text
      */
-    public Composer(String text, boolean noEffects) {
+    public Composer(String text, boolean noEffects, Ensemble ensemble) {
         this.noEffects = noEffects;
         Sentence[] sentences = TextAnalyser.analyseSentences(text);
         float[] avgWordLen = TextAnalyser.getAvgWordLength(sentences);
@@ -43,12 +45,14 @@ public class Composer {
         //this.tempo.averageBpm = this.tempo.averageBpm / 2;
 
         MusicData musicData = new MusicData(tempo, dynamic, key);
-        System.out.println("Tempo: " + tempo.averageBpm + "BPM");
+        System.out.println("Tempo: " + tempo.averageBpm + " BPM");
+        System.out.println("Resolution: " + tempo.resolution + " PPQ");
         this.trackGenerators = new TrackGenerator[noEffects ? 2 : 3];
-        this.trackGenerators[0] = new MelodyTrack(musicData, sentences, "noteMapping.csv", Ensemble.Piano);
+        this.trackGenerators[0] = new MelodyTrack(musicData, sentences, "noteMapping.csv", ensemble);
         this.trackGenerators[1] = new RhythmTrack(musicData, avgWordLen, MyInstrument.Drums);
         if (!noEffects)
             this.trackGenerators[2] = new EffectTrack(sentences, tempo);
+        this.title = "in " + Harmony.quintCycle.get(key.getBaseNoteMidi() % 12 + 60) + "-" + key.getMode().toString() + ", played by a " + ensemble.toString() + "-Ensemble";
     }
 
     /**

@@ -8,6 +8,7 @@ import javax.sound.midi.MidiEvent;
 import javax.sound.midi.MidiMessage;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Track;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.audiophile.t2m.music.MidiUtils.*;
@@ -23,6 +24,7 @@ public class EffectTrack implements TrackGenerator {
 
     //TODO stop effecting from overlaying each other
     EffectTrack(Sentence[] sentences, Tempo tempo) {
+        ArrayList<String> strings = new ArrayList<>();
         this.tempo = tempo;
         effects = new HashMap<>();
         int index = 0;
@@ -30,11 +32,13 @@ public class EffectTrack implements TrackGenerator {
             for (Word w : s.getWords()) {
                 if (w.getEntry() != null && w.getEntry().getEffect() != null) {
                     effects.put(w.getEntry().getEffect(), (float) index);
+                    strings.add(w.getName() + " : " + w.getEntry().getEffect() + "; ");
                 }
                 index++;
             }
         final int i = index;
         effects.forEach((k, v) -> effects.put(k, v / (float) i));
+        System.out.println("Effects:" + strings.toString());
     }
 
     @Override
@@ -43,8 +47,7 @@ public class EffectTrack implements TrackGenerator {
         for (String name : effects.keySet()) {
             Sequence sequence = FileUtils.LoadMidiFile("effects/" + name+ ".mid");
             if (sequence != null) {
-                int start =
-                        // Position effect in track
+                int start =// Position effect in track
                         (int) (QUARTER * tempo.averageBpm / 60.0 *  //beats per second
                                 15 * //because 15 seconds
                                 effects.get(name)  //i-th word in text

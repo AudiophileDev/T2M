@@ -5,6 +5,8 @@ import com.audiophile.t2m.Utils;
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.Track;
 
+import static com.audiophile.t2m.music.MidiUtils.*;
+
 //TODO documentation
 public class RhythmTrack implements TrackGenerator {
     private Tempo tempo;
@@ -35,40 +37,51 @@ public class RhythmTrack implements TrackGenerator {
     }
 
     /**
+     * Rounds the given value to a full semiquaver
+     *
+     * @param val The value to round
+     * @return A multiple of {@link MidiUtils#SEMIQUAVER}
+     */
+    private int roundToQuaver(float val) {
+        return (((int) val) / QUAVER) * QUAVER;
+    }
+
+    /**
      * Rounds the given value to a full quaver
      *
      * @param val The value to round
      * @return A multiple of {@link MidiUtils#QUAVER}
      */
-    private int roundToQuaver(float val) {
-        return (((int) val) / MidiUtils.QUAVER) * MidiUtils.QUAVER;
+    private int roundToSemiQuaver(float val) {
+        return (((int) val) / SEMIQUAVER) * SEMIQUAVER;
     }
 
     @Override
     public void writeToTrack(Track track, int channel) {
-        int length = ((MidiUtils.QUARTER * tempo.averageBpm) / 60 * 15);
+
+        int length = SecsInTicks(15, tempo.resolution);
         int bass, snare, hiHat;
         int vel = 64;
         try {
             // Add bass
             int i = 0;
             for (int n = 0; n < length; n += bass) {
-                MidiUtils.addNote(track, n, MidiUtils.QUARTER, 36, vel, channel);
-                bass = roundToQuaver(MidiUtils.QUARTER * avgWordLen[(i += 3) % avgWordLen.length]);
+                addNote(track, n, QUARTER, 36, vel, channel);
+                bass = roundToQuaver(QUARTER * avgWordLen[(i += 3) % avgWordLen.length]);
             }
 
             //Add snare
             i = 0;
             for (int n = 0; n < length; n += snare) {
-                MidiUtils.addNote(track, n, MidiUtils.QUARTER, 38, vel, channel);
-                snare = roundToQuaver(MidiUtils.QUARTER * avgWordLen[(i += 3 + 1) % avgWordLen.length]);
+                addNote(track, n, QUARTER, 38, vel, channel);
+                snare = roundToQuaver(QUAVER * avgWordLen[(i += 3 + 1) % avgWordLen.length]);
             }
 
             //Add hi-hat
             i = 0;
-            for (int n = 0; n < length; n += hiHat) {
-                MidiUtils.addNote(track, n, MidiUtils.QUAVER, 42, vel, channel);
-                hiHat = roundToQuaver(MidiUtils.QUARTER * avgWordLen[(i += 3 + 2) % avgWordLen.length]);
+            for (int n = 0; n < length; n += hiHat % QUAVER != 0 ? SEMIQUAVER : QUAVER) {
+                hiHat = roundToSemiQuaver(SEMIQUAVER * avgWordLen[(i += 3 + 2) % avgWordLen.length]);
+                addNote(track, n, SEMIQUAVER, 42, vel, channel);
             }
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();

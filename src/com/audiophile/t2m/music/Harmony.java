@@ -36,20 +36,22 @@ public class Harmony {
                 put("H", 71);
             }});
 
-    private static final char[] quintCycle = {
-            60,//C
-            61,//C#, Db
-            62,//D
-            63,//D#, Eb
-            64,//E, Fb
-            65,//F
-            66,//F#, Gb
-            67,//G
-            68,//G# Ab
-            69,//A
-            70,//A#, B
-            71//H
-    };
+    static final Map<Integer, String> quintCycle = Collections.unmodifiableMap(
+            new HashMap<Integer, String>() {{
+                put(60, "C");
+                put(61, "C#");// Db
+                put(62, "D");
+                put(63, "D#"); //Eb
+                put(64, "E"); //Fb
+                put(65, "F");
+                put(66, "F#");// Gb
+                put(67, "G");
+                put(68, "G#");//Ab
+                put(69, "A");
+                put(70, "A#");// B
+                put(71, "H");
+            }}
+    );
 
     /**
      * Create a harmony by chord name and modus

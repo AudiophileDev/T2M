@@ -14,7 +14,7 @@ class Dynamic {
      * The extrema of the average word length are calculated. They will be later used for getting the dynamic to change.
      *
      * @param avgWordLength The average word length of the input text
-     * @return Returns at maximum 5 extremae in the word length averages
+     * @return Returns at maximum 5 extrema in the word length averages
      */
     private float[] getExtrema(float[] avgWordLength) {
         float[] extrema = new float[5];

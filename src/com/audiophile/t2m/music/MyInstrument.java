@@ -49,20 +49,4 @@ public enum MyInstrument {
         this.midiValue = midiValue;
         this.instrumentClass = instrumentClass;
     }
-
-    public static String[] stringValues() {
-        MyInstrument[] instruments = MyInstrument.values();
-        String[] values = new String[instruments.length];
-        for(int i=0;i<values.length;i++)
-            values[i] = instruments[i].getInstrumentClass();
-        return values;
-    }
-
-    public int getMidiValue() {
-        return midiValue;
-    }
-
-    public String getInstrumentClass() {
-        return instrumentClass;
-    }
 }
