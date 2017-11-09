@@ -25,7 +25,7 @@ public enum Ensemble {
     /**
      * Maps the short names to the ensembles
      *
-     * @param key      The short namegithub
+     * @param key      The short name
      * @param fallback the fallback if no ensemble with the given short name exists
      * @return An corresponding ensemble
      */
