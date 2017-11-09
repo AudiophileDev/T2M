@@ -44,8 +44,6 @@ public class Composer {
         Harmony key = new Harmony(sentences[0].getWords()[0].getName().substring(0, 1), avgTendency.ordinal() < Word.Tendency.Neutral.ordinal() ? Mode.Minor : Mode.Major, false);
         Dynamic dynamic = new Dynamic(avgTendency.ordinal() * 32, Utils.BlurData(avgWordLen, 10));
         this.tempo = new Tempo(avgWordLen);
-        int i = (key.getMode() == Mode.Minor ? 2 : 1);
-        //this.tempo.averageBpm = this.tempo.averageBpm / 2;
 
         MusicData musicData = new MusicData(tempo, dynamic, key);
         System.out.println("Tempo: " + tempo.averageBpm + " BPM");
@@ -55,7 +53,7 @@ public class Composer {
         this.trackGenerators[1] = new RhythmTrack(musicData, avgWordLen);
         if (!noEffects)
             this.trackGenerators[2] = new EffectTrack(sentences, tempo);
-        this.title = "in " + Harmony.quintCycle.get(key.getBaseNoteMidi() % 12 + 60) + "-" + key.getMode().toString() + ", played by a " + ensemble.toString() + "-Ensemble";
+        this.title = "in " + Harmony.quintCycle.get(key.baseNoteMidi % 12 + 60) + "-" + key.mode.toString() + ", played by a " + ensemble.toString() + "-Ensemble";
     }
 
     /**

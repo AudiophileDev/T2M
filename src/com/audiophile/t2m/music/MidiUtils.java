@@ -4,8 +4,6 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiEvent;
 import javax.sound.midi.ShortMessage;
 import javax.sound.midi.Track;
-import java.util.ArrayList;
-import java.util.Objects;
 
 /**
  * A class that holds a collection of static methods for creating midi sequences
@@ -28,7 +26,6 @@ class MidiUtils {
      */
     static void addNote(Track track, int startTick, int tickLength, int key, int velocity, int channel) throws InvalidMidiDataException {
         ShortMessage on = new ShortMessage();
-
         on.setMessage(ShortMessage.NOTE_ON, channel, key, velocity);
         ShortMessage off = new ShortMessage();
         off.setMessage(ShortMessage.NOTE_OFF, channel, key, velocity);

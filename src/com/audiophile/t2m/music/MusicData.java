@@ -22,5 +22,4 @@ public class MusicData {
         this.dynamic = dynamic;
         this.baseKey = baseKey;
     }
-
 }

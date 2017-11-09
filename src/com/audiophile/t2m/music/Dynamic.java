@@ -37,7 +37,6 @@ class Dynamic {
             }
             if (j > extrema.length - 1) return extrema;
         }
-        // System.out.println(Arrays.toString(extrema));
         return extrema;
     }
 
@@ -57,8 +56,6 @@ class Dynamic {
             musicalGradient[j] = dif;
             j++;
         }
-        //System.out.println(Arrays.toString(extrema));
-        //System.out.println(Arrays.toString(musicalGradient));
         return musicalGradient;
     }
 

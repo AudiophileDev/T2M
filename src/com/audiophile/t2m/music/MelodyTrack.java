@@ -68,7 +68,7 @@ public class MelodyTrack implements TrackGenerator {
     }
 
     /**
-     * Creates
+     * Creates a track based on the calculated {@link MusicData} and the input {@link MelodyTrack#sentences}.
      *
      * @param track   The track to write to
      * @param channel The channel to write to
@@ -78,7 +78,7 @@ public class MelodyTrack implements TrackGenerator {
         int dynamicIndex = 0, n = 0, currentVoice = 0; // Marks position an track
         int pitch;
         int len = QUARTER, prevLen = len; // Length of the notes in 128th per beat
-        int playable, previous = baseKey.getBaseNoteMidi();
+        int playable, previous = baseKey.baseNoteMidi;
         try {
             MidiUtils.ChangeInstrument(ensemble.instruments[currentVoice], track, channel, 0);
             for (int i = 0; i < sentences.length; i++) {
@@ -171,22 +171,22 @@ public class MelodyTrack implements TrackGenerator {
         } else { //chord should be completed
             switch (filled.get(1) - filled.get(0)) { //existing interval
                 case 3: //small third
-                    if (currentKey.getMode() == Mode.Minor) //minor key
+                    if (currentKey.mode == Mode.Minor) //minor key
                         return note + 7 - newNote;
                     else
                         return note + 8 - newNote;
                 case 4: //big third
-                    if (currentKey.getMode() == Mode.Minor) //minor key
+                    if (currentKey.mode == Mode.Minor) //minor key
                         return note + 9 - newNote;
                     else
                         return note + 7 - newNote;
                 case 5: // clean fourth
-                    if (currentKey.getMode() == Mode.Minor) //minor key
+                    if (currentKey.mode == Mode.Minor) //minor key
                         return note + 8 - newNote;
                     else
                         return note + 9 - newNote;
                 case 7: //clean fifth
-                    return note + this.currentKey.getMode().third - newNote;
+                    return note + this.currentKey.mode.third - newNote;
                 default:
                     return note; //should not happen
             }
@@ -242,7 +242,7 @@ public class MelodyTrack implements TrackGenerator {
      */
     private int inScale(int tone) {
         int toneToCalc = tone % 12; // get tone to one octave
-        int[] compNotes = {0, 2, currentKey.getMode().third, 5, 7, (currentKey.getMode() == Mode.Minor ? 8 : 9), (currentKey.getMode() == Mode.Minor ? 10 : 11)};
+        int[] compNotes = {0, 2, currentKey.mode.third, 5, 7, (currentKey.mode == Mode.Minor ? 8 : 9), (currentKey.mode == Mode.Minor ? 10 : 11)};
         // min: 0,2,3,5,7,8,10,12 ; maj : 0,2,4,5,7,9,11,12
         for (int i : compNotes)
             if (i == toneToCalc) { //tone is in the scale
@@ -264,7 +264,7 @@ public class MelodyTrack implements TrackGenerator {
             tone = previous + (tone % 12);
         else if (tone < previous - 12)
             tone = previous - (tone % 12);
-        range = tone - this.baseKey.getBaseNoteMidi();
+        range = tone - this.baseKey.baseNoteMidi;
         if (range >= 24 || tone > 90) {
             tone = previous - (tone % 12);
         } else if (range <= -24 || tone < 36)

@@ -14,11 +14,16 @@ public class Harmony {
     /**
      * the base note as an integer value, ready to use
      */
-    private int baseNoteMidi;
+    int baseNoteMidi;
     /**
      * if true, the chord is a seventh chord
      */
     private boolean sept;
+    /**
+     * The mode of the piece.
+     * It is either Major or Minor
+     */
+    Mode mode;
     /**
      * Mapping from MidiValue to corresponding value.
      */
@@ -52,10 +57,6 @@ public class Harmony {
                 put("B", 70);
                 put("H", 71);
             }});
-    /**
-     * The mode of the piece
-     */
-    private Mode mode;
 
     /**
      * Create a harmony by chord name and mode
@@ -120,14 +121,6 @@ public class Harmony {
         if (!note.contains(baseNote))
             baseNote = String.valueOf(note.toCharArray()[baseNote.toCharArray()[0] % note.length()]);
         return chords.get(baseNote) + 12;
-    }
-
-    Mode getMode() {
-        return mode;
-    }
-
-    int getBaseNoteMidi() {
-        return baseNoteMidi;
     }
 }
 
