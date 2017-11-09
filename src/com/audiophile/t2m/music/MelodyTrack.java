@@ -105,20 +105,20 @@ public class MelodyTrack implements TrackGenerator {
                         n += len;
                         previous = playable; //save previous to prevent going of the scale
                         //TODO Only input as much text as needed (remove filler words)
-                        if (TicksInSecs(n + len, tempo.resolution) >= 15) {                        //finishing part
+                        if (i == sentences.length - 1) {
+                            i = 0;
+                        }
+                        if (TicksInSecs(n, tempo.resolution) >= 15) {                        //finishing part
+                            if (currentVoice >= ensemble.instruments.length) // Sets fixed track length of 15sec
+                            {
+                                //System.out.println("Track Length: " + TicksInSecs(n, tempo.resolution));
+                                return;
+                            }
+                            n = 0;
                             pitch = -12 * ((currentVoice <= 1) ? 0 : (currentVoice - 1));
                             this.currentKey = new Harmony(this.baseKey, pitch);
                             MidiUtils.ChangeInstrument(ensemble.instruments[currentVoice++], track, ++channel, 0);
                             dynamic.initDynamic -= 5;
-
-                            if (currentVoice >= ensemble.instruments.length) // Sets fixed track length of 15sec
-                            {
-                                // System.out.println("Track Length: " + TicksInSecs(n,tempo.resolution));
-                                return;
-                            }
-                            n = 0;
-                        } else if (i == sentences.length - 1) {
-                            i = 0;
                         }
                     }
                 }

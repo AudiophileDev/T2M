@@ -12,14 +12,20 @@ public class Tempo {
      * @param avgWordLengths The average word length in the article for every sentence
      */
     Tempo(float[] avgWordLengths) {
+        double m, t, diff;
         int maxTempo = 180, minTempo = 60;
         getBounds(avgWordLengths);
-        double m = (minTempo - maxTempo) / (this.maxLength - this.minLength);
-        double t = minTempo - m * this.maxLength;
+        if (this.maxLength == this.minLength)
+            diff = this.maxLength;
+        else diff = this.maxLength - this.minLength;
+        m = (minTempo - maxTempo) / (diff);
+        t = minTempo - m * this.maxLength;
         for (float x : avgWordLengths) {
             averageBpm += m * x + t;
         }
         this.averageBpm /= avgWordLengths.length;
+        if (this.averageBpm > maxTempo) this.averageBpm = maxTempo;
+
         this.resolution = MidiUtils.BpmToRes(averageBpm);
     }
 
