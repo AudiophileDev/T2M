@@ -126,20 +126,8 @@ public class Harmony {
         return mode;
     }
 
-    public boolean getSept() {
-        return sept;
-    }
-
     int getBaseNoteMidi() {
         return baseNoteMidi;
-    }
-
-    ArrayList<Integer> getNotesNumber() {
-        return notesNumber;
-    }
-
-    public void setBaseNoteMidi(int baseNoteMidi) {
-        this.baseNoteMidi = baseNoteMidi;
     }
 }
 

@@ -14,15 +14,27 @@ import java.util.HashMap;
 import static com.audiophile.t2m.music.MidiUtils.*;
 
 /**
+ * A class for adding effects to the music
  * @author Simon
  * Created on 03.11.2017.
  */
 public class EffectTrack implements TrackGenerator {
 
+    /**
+     * The mapping of effects to the position in the track
+     * The key is the name of the effect and the value the position in the track as percentage
+     */
     private HashMap<String, Float> effects;
+    /**
+     * The tempo of the music
+     */
     private Tempo tempo;
 
-    //TODO stop effecting from overlaying each other
+    /**
+     * Creates a new instance which can generate effects based on the given text
+     * @param sentences The analysed text split into sentences
+     * @param tempo The tempo of the generated music
+     */
     EffectTrack(Sentence[] sentences, Tempo tempo) {
         ArrayList<String> strings = new ArrayList<>();
         this.tempo = tempo;
@@ -41,6 +53,11 @@ public class EffectTrack implements TrackGenerator {
         System.out.println("Effects:" + strings.toString());
     }
 
+    /**
+     * Loads and adds the effects to the given midi track
+     * @param track The track to write to
+     * @param channel The channel to write to
+     */
     @Override
     public void writeToTrack(Track track, int channel) {
         long lastEnd = 0;

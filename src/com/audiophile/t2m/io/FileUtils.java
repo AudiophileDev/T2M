@@ -4,7 +4,6 @@ import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.Sequence;
 import java.io.*;
-import java.net.URISyntaxException;
 
 /**
  * A class that holds a collection of methods for file reading.
@@ -53,6 +52,11 @@ public class FileUtils {
         writer.close();
     }
 
+    /**
+     * Loads a midi sequence from a file
+     * @param file The path to the midi file
+     * @return A midi sequence
+     */
     public static Sequence LoadMidiFile(String file) {
         try {
             return MidiSystem.getSequence(new FileInputStream(file));

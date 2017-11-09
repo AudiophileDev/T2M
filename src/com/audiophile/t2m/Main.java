@@ -34,7 +34,10 @@ public class Main {
             + "\t -p: Enables precise search\n"
             + "\t -noeffects: Disables all effects in the music\n";
 
-
+    /**
+     * T2M start
+     * @param args The run parameters
+     */
     public static void main(String[] args) {
         long startTime = System.currentTimeMillis();
 

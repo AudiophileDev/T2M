@@ -7,11 +7,25 @@ import javax.sound.midi.Track;
 
 import static com.audiophile.t2m.music.MidiUtils.*;
 
-//TODO documentation
+/**
+ * A class that generates a rhythm based on the given text.s
+ */
 public class RhythmTrack implements TrackGenerator {
+    /**
+     * The tempo of the music
+     */
     private Tempo tempo;
+    /**
+     * The average word length per sentence in the text
+     */
     private float[] avgWordLen;
 
+    /**
+     * Creates a new rhythm generator, which can generate music based on the given music data
+     *
+     * @param musicData  Meta data about the text
+     * @param avgWordLen The average word length per sentence in the text
+     */
     RhythmTrack(MusicData musicData, float[] avgWordLen) {
         this.tempo = musicData.tempo;
         this.avgWordLen = Utils.BlurData(avgWordLen, 3);
@@ -54,6 +68,12 @@ public class RhythmTrack implements TrackGenerator {
         return (((int) val) / SEMIQUAVER) * SEMIQUAVER;
     }
 
+    /**
+     * Generates the rhythm and writes it to the given track on the given channel
+     *
+     * @param track   The track to write to
+     * @param channel The channel to write to
+     */
     @Override
     public void writeToTrack(Track track, int channel) {
 

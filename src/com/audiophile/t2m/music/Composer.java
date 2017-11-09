@@ -21,8 +21,15 @@ public class Composer {
      */
     private Tempo tempo;
 
+    /**
+     * Defines if effects are added to the music
+     */
     private boolean noEffects;
 
+    /**
+     * The title name of the generated music.
+     * Holds various music about the music like ensemble,key and article names
+     */
     public String title;
 
     /**
@@ -34,7 +41,6 @@ public class Composer {
         float[] avgWordLen = TextAnalyser.getAvgWordLength(sentences);
         Word.Tendency avgTendency = TextAnalyser.getAvgWordTendency(sentences);
 
-        //TODO get key from tendencies
         Harmony key = new Harmony(sentences[0].getWords()[0].getName().substring(0, 1), avgTendency.ordinal() < Word.Tendency.Neutral.ordinal() ? Mode.Minor : Mode.Major, false);
         Dynamic dynamic = new Dynamic(avgTendency.ordinal() * 32, Utils.BlurData(avgWordLen, 10));
         this.tempo = new Tempo(avgWordLen);
