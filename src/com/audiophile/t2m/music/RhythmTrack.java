@@ -11,11 +11,9 @@ import static com.audiophile.t2m.music.MidiUtils.*;
 public class RhythmTrack implements TrackGenerator {
     private Tempo tempo;
     private float[] avgWordLen;
-    private MyInstrument instrument;
 
-    RhythmTrack(MusicData musicData, float[] avgWordLen, MyInstrument instrument) {
-        this.instrument = instrument;
-        this.tempo = musicData.getTempo();
+    RhythmTrack(MusicData musicData, float[] avgWordLen) {
+        this.tempo = musicData.tempo;
         this.avgWordLen = Utils.BlurData(avgWordLen, 3);
 
         // Find min and max avg word length in the text

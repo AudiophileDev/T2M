@@ -20,22 +20,8 @@ public class Harmony {
      */
     private boolean sept;
     /**
-     * a value of 3 or 4 indicating the mode
+     * Mapping from MidiValue to corresponding value.
      */
-    private Mode mode;
-
-    private static final Map<String, Integer> chords = Collections.unmodifiableMap(
-            new HashMap<String, Integer>() {{
-                put("C", 60);
-                put("D", 62);
-                put("E", 64);
-                put("F", 65);
-                put("G", 67);
-                put("A", 69);
-                put("B", 70);
-                put("H", 71);
-            }});
-
     static final Map<Integer, String> quintCycle = Collections.unmodifiableMap(
             new HashMap<Integer, String>() {{
                 put(60, "C");
@@ -52,9 +38,27 @@ public class Harmony {
                 put(71, "H");
             }}
     );
+    /**
+     * Mapping from Letter to MidiValue.
+     */
+    private static final Map<String, Integer> chords = Collections.unmodifiableMap(
+            new HashMap<String, Integer>() {{
+                put("C", 60);
+                put("D", 62);
+                put("E", 64);
+                put("F", 65);
+                put("G", 67);
+                put("A", 69);
+                put("B", 70);
+                put("H", 71);
+            }});
+    /**
+     * The mode of the piece
+     */
+    private Mode mode;
 
     /**
-     * Create a harmony by chord name and modus
+     * Create a harmony by chord name and mode
      * <p>
      * sets if sept chord or if its the base of a piece
      *
@@ -70,6 +74,10 @@ public class Harmony {
         buildChord();
     }
 
+    /**
+     * @param harmony the preceding harmony
+     * @param pitch   pitching the harmony to dominant,
+     */
     Harmony(Harmony harmony, int pitch) {
         this.sept = harmony.sept;
         this.mode = harmony.mode;

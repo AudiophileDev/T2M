@@ -2,7 +2,6 @@ package com.audiophile.t2m.music;
 
 //TODO documentation
 public enum MyInstrument {
-   // add instrument here first..
    Piano(1, "p"),
     AcousticPiano(2, "acpn"),
     Celesta(9, "clt"),

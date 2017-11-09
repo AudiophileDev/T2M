@@ -2,7 +2,13 @@ package com.audiophile.t2m.music;
 
 class Dynamic {
 
+    /**
+     * Is responsible for the crescendo and the decrescendo during the track
+     */
     int[] dynamicGradient;
+    /**
+     * Initial dynamic of the track
+     */
     int initDynamic;
 
     public Dynamic(int initDynamic, float[] avgWordLength) {

@@ -46,7 +46,7 @@ public class Composer {
         System.out.println("Resolution: " + tempo.resolution + " PPQ");
         this.trackGenerators = new TrackGenerator[noEffects ? 2 : 3];
         this.trackGenerators[0] = new MelodyTrack(musicData, sentences, "noteMapping.csv", ensemble);
-        this.trackGenerators[1] = new RhythmTrack(musicData, avgWordLen, MyInstrument.Drums);
+        this.trackGenerators[1] = new RhythmTrack(musicData, avgWordLen);
         if (!noEffects)
             this.trackGenerators[2] = new EffectTrack(sentences, tempo);
         this.title = "in " + Harmony.quintCycle.get(key.getBaseNoteMidi() % 12 + 60) + "-" + key.getMode().toString() + ", played by a " + ensemble.toString() + "-Ensemble";

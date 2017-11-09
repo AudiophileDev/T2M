@@ -13,107 +13,118 @@ import java.util.ArrayList;
 import static com.audiophile.t2m.music.MidiUtils.*;
 
 public class MelodyTrack implements TrackGenerator {
-    private final Harmony baseKey;
-    private int[] toneMapping;
-    private Sentence[] sentences;
-    private Harmony currentKey;
-    private Tempo tempo;
-    private boolean[][] notes; // initialize in multiples of 64
-    private Dynamic dynamic;
-    private Ensemble ensemble;
-    private int voices;
+    /**
+     *
+     */
     private static final int numOfChars = 255, numOfNotes = 128;
+    /**
+     * The basic key of the whole music piece
+     */
+    private final Harmony baseKey;
+    /**
+     * Maps each letter to a corresponding MidiValue
+     */
+    private int[] toneMapping;
+    /**
+     * Array of sentences of the analyzed text.
+     */
+    private Sentence[] sentences;
+    /**
+     * The current key during the melody track
+     */
+    private Harmony currentKey;
+    /**
+     * The tempo object containing the BPM and the resolution of the track.
+     */
+    private Tempo tempo;
+    /**
+     * An array storing the notes on every whole quarter.
+     * It is used to check for dissonances across the different voices.
+     */
+    private boolean[][] notes; // initialize in multiples of 64
+    /**
+     * The dynamic and its gradient during the track
+     */
+    private Dynamic dynamic;
+    /**
+     * The ensemble playing the piece. Consists of {@link MyInstrument}.
+     */
+    private Ensemble ensemble;
+    /**
+     * Number of different voices playing the track
+     */
+    private int voices;
 
     MelodyTrack(MusicData musicData, Sentence[] text, String noteMappingFile, Ensemble ensemble) {
         this.sentences = text;
         loadToneMapping(noteMappingFile);
-        this.baseKey = musicData.getBaseKey();
-        this.tempo = musicData.getTempo();
+        this.baseKey = musicData.baseKey;
+        this.tempo = musicData.tempo;
         this.currentKey = new Harmony(baseKey, 0);
         this.voices = ensemble.instruments.length;
         this.notes = new boolean[127][12];
-        //Todo make depending on initial mood
         this.dynamic = musicData.dynamic;
         this.ensemble = ensemble;
     }
 
+    /**
+     * Creates
+     *
+     * @param track   The track to write to
+     * @param channel The channel to write to
+     */
     @Override
     public void writeToTrack(Track track, int channel) {
-        int j = 0, n = 0, currentVoice = 0; // Marks position an track
-        int pitch = 0;
+        int dynamicIndex = 0, n = 0, currentVoice = 0; // Marks position an track
+        int pitch;
         int len = QUARTER, prevLen = len; // Length of the notes in 128th per beat
-        int part = 0;
         int playable, previous = baseKey.getBaseNoteMidi();
-        int chars = 0, words = 0, sen = 0;
         try {
             MidiUtils.ChangeInstrument(ensemble.instruments[currentVoice], track, channel, 0);
             for (int i = 0; i < sentences.length; i++) {
                 Sentence s = sentences[i];
-                sen++;
-                // Increase loudness for exclamation sentences
-                if (s.getSentenceType() == Sentence.SentenceType.Exclamation)
+                if (s.getSentenceType() == Sentence.SentenceType.Exclamation)       // Increase loudness for exclamation sentences
                     dynamic.initDynamic = 127;
                 else dynamic.initDynamic = 64;
                 for (Word w : s.getWords()) {
                     if (w.isFiller()) // Skip filler words
                         continue;
-                    words++;
                     for (char c : Utils.normalizeText(w.getName()).toCharArray()) {
-                        chars++;
                         int tone = c >= toneMapping.length ? getClosestTone(c) : c;
-                        if (n % (4 * WHOLE) == 0) {
-                            currentKey = new Harmony(baseKey, 7);
-                        } else if (n % (2 * WHOLE) == 0) {
-                            currentKey = new Harmony(baseKey, 5);
-                        }
+                        if (n % (4 * WHOLE) == 0) currentKey = new Harmony(baseKey, 7);
+                        else if (n % (2 * WHOLE) == 0) currentKey = new Harmony(baseKey, 5);
+
                         playable = toneMapping[tone];
                         playable = catchOutliers(playable, previous); // prevents notes jumping around or going too high or low
-                        //TODO add notes off the scale for special effects
                         playable = inScale(playable); //ensures note is in scale
 
-                        if (prevLen == SEMIQUAVER + QUAVER || prevLen == QUARTER + QUAVER) { //handling punctuated notes
-                            len = prevLen / 3;
-                        } else if (prevLen == SEMIQUAVER) {
-                            len = SEMIQUAVER;
-                        } else len = setRhythm(c, currentVoice + 1);
+                        //handling punctuated notes
+                        if (prevLen == SEMIQUAVER + QUAVER || prevLen == QUARTER + QUAVER) len = prevLen / 3;
+                        else if (prevLen == SEMIQUAVER) len = SEMIQUAVER;
+                        else len = setRhythm(c, currentVoice + 1);
                         prevLen = len;
                         //chord on the first beat of every bar
                         if (n % WHOLE <= QUAVER) { //beginning of every bar
-                            //len = QUARTER;
-                            if (dynamic.dynamicGradient.length > j && n > QUARTER) {
-                                j++;
-                            }
+                            if (dynamic.dynamicGradient.length > dynamicIndex && n > QUARTER) dynamicIndex++;
                             MidiUtils.addNote(track, n + 64 * ((playable % 4) + 1), len, playable, dynamic.initDynamic, channel);
                             notes[(n + 64 * ((playable % 4) + 1)) / 64][playable % 12] = true;
-                            /*
-                            MidiUtils.addChord(track, n, len, currentKey.getNotesNumber(), -1, dynamic.initDynamic, channel, false);
-                            MidiUtils.addPowerChord(track, n, len, currentKey.getNotesNumber(), -2, dynamic.initDynamic, channel);
-                            notes[n / 64][currentKey.getNotesNumber().get(0) % 12] = true;
-                            notes[n / 64][currentKey.getNotesNumber().get(1) % 12] = true;
-                            notes[n / 64][currentKey.getNotesNumber().get(2) % 12] = true;
-                            */
                             MidiUtils.addNote(track, n, len, isConsonant(playable, n), dynamic.initDynamic, channel);
                             notes[n / 64][playable % 12] = true;
                         } else {
-                            if (dynamic.dynamicGradient.length > j) {
-                                if (Dynamic.isValidDynamic(dynamic.initDynamic + dynamic.dynamicGradient[j]))
-                                    dynamic.initDynamic += dynamic.dynamicGradient[j];
-                            }
+                            if (dynamic.dynamicGradient.length > dynamicIndex)
+                                if (Dynamic.isValidDynamic(dynamic.initDynamic + dynamic.dynamicGradient[dynamicIndex]))
+                                    dynamic.initDynamic += dynamic.dynamicGradient[dynamicIndex];
                             MidiUtils.addNote(track, n, len, isConsonant(playable, n), dynamic.initDynamic, channel);
                             notes[n / 64][playable % 12] = true;
                         }
                         n += len;
                         previous = playable; //save previous to prevent going of the scale
-                        //TODO Only input as much text as needed (remove filler words)
                         if (i == sentences.length - 1) {
                             i = 0;
                         }
-                        if (TicksInSecs(n, tempo.resolution) >= 15) {                        //finishing part
-                            if (currentVoice >= ensemble.instruments.length) // Sets fixed track length of 15sec
-                            {
-                                //System.out.println("Track Length: " + TicksInSecs(n, tempo.resolution));
+                        if (TicksInSecs(n, this.tempo.resolution) >= 15) {                        //finishing part
+                            if (currentVoice >= this.voices) // Sets fixed track length of 15sec
                                 return;
-                            }
                             n = 0;
                             pitch = -12 * ((currentVoice <= 1) ? 0 : (currentVoice - 1));
                             this.currentKey = new Harmony(this.baseKey, pitch);
@@ -123,8 +134,6 @@ public class MelodyTrack implements TrackGenerator {
                     }
                 }
             }
-            //TODO add end phrase
-
         } catch (InvalidMidiDataException e) {
             e.printStackTrace();
         }

@@ -64,10 +64,10 @@ public class Main {
         String article = buffer.toString();
 
         Sentence[] sentences = TextAnalyser.analyseSentences(article);
-        int words=0;
-        for(Sentence s:sentences)
-            words+=s.getWords().length;
-        if(words<50) {
+        int words = 0;
+        for (Sentence s : sentences)
+            words += s.getWords().length;
+        if (words < 50) {
             System.err.println("Article needs to be al least 50 words long");
             return;
         }
