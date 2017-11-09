@@ -202,7 +202,7 @@ public class MelodyTrack implements TrackGenerator {
      */
     private int setRhythm(int c, int inTwoVoices) {
         int len;
-        switch (c * 2 % (6 / inTwoVoices)) {
+        switch (c % (12 / inTwoVoices)) {
             case 0:
             case 1:
                 len = HALF;
@@ -216,14 +216,14 @@ public class MelodyTrack implements TrackGenerator {
                 break;
             case 5:
             case 6:
-            case 10:
+            case 7:
                 len = QUAVER;
                 break;
-            case 7:
+            case 8:
                 len = QUAVER + SEMIQUAVER;
                 break;
-            case 8:
             case 9:
+            case 10:
             case 11:
                 len = SEMIQUAVER;
                 break;
